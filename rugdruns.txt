@@ -44,3 +44,9 @@ PATH="/home/husky/anaconda3/envs/stdcseg18/bin:$PATH" /home/husky/anaconda3/envs
 #   python eval_rugd.py --pths checkpoints/train_STDC2-Seg-RUGD-HI1/pths/model_iter15000_*.pth \
 #     --use_brh --per_class
 # compare against the baseline at the SAME iteration, on mIoU_sup / mIoU_fw.
+
+training iteration 60000, model saved to: checkpoints/train_STDC2-Seg-RUGD-HI1/pths/model_iter60000_mIOU50_0.3782_mIOU75_0.4127.pth
+mIOU50 is: 0.3782326281070709, mIOU75 is: 0.41268008947372437
+maxmIOU50 is: 0.39539527893066406, maxmIOU75 is: 0.4375462532043457.
+training done, model saved to: checkpoints/train_STDC2-Seg-RUGD-HI1/pths/model_final.pth
+epoch:  201
