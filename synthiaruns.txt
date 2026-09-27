@@ -42,7 +42,7 @@ epoch:  171
 
 export CUDA_VISIBLE_DEVICES=0
 PATH="/home/husky/anaconda3/envs/stdcseg18/bin:$PATH" /home/husky/anaconda3/envs/stdcseg/bin/python -m torch.distributed.launch --nproc_per_node=1 train.py \
-  --respath checkpoints/train_STDC2-Seg-Synthia-I1/ \
+  --respath checkpoints/train_STDC2-Seg-Synthia-HI1/ \
   --backbone STDCNet1446 \
   --mode train \
   --dataset synthia \

@@ -1,0 +1,6 @@
+Qualitative results: 6 columns: stdc seg, stdc seg+ours, hrnet, hrnet+ours
+
+transformer, transformer+ours(don't have so it's fine to ignore)
+
+6 rows: 2 rows for cityscapes, 2 rows for synthia, 2 rows for rugd
+
