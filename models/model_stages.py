@@ -38,23 +38,54 @@ class ConvBNReLU(nn.Module):
                 nn.init.kaiming_normal_(ly.weight, a=1)
                 if not ly.bias is None: nn.init.constant_(ly.bias, 0)
 
+BRH_VARIANTS = ('full', 'no_hr', 'no_logit', 'no_gate', 'no_residual', 's8')
+
 class BoundaryRefine(nn.Module):
     """Refine stride-8 segmentation logits at stride 4 using high-resolution
     detail features (feat_res4) that the baseline computes and discards.
-    Zero-init residual => identical to baseline at initialisation."""
-    def __init__(self, n_classes=19, hr_chan=64, mid=64, *args, **kwargs):
+    Zero-init residual => identical to baseline at initialisation.
+
+    variant (ablations -- each removes exactly ONE component):
+      'full'        : out = up + res_scale * delta(fuse([up, proj(hr)]))   (Arm H as published)
+      'no_hr'       : feat_res4 replaced by zeros (same params/FLOPs, detail INFORMATION removed)
+      'no_logit'    : upsampled logits replaced by zeros inside the fuse input (same params/FLOPs)
+      'no_gate'     : res_scale removed (fixed 1.0)
+      'no_residual' : out = delta(fuse(...)) (replace instead of correct)
+      's8'          : same module but run at stride 8 (feat_res4 avg-pooled)
+    """
+    def __init__(self, n_classes=19, hr_chan=64, mid=64, variant='full', *args, **kwargs):
         super(BoundaryRefine, self).__init__()
+        assert variant in BRH_VARIANTS, 'unknown brh_variant %s' % variant
+        self.variant = variant
+        # architecture is IDENTICAL for every variant except the gate; ablations remove
+        # information or a connection, never parameters, so capacity is held fixed.
         self.proj  = ConvBNReLU(hr_chan, mid, ks=3, stride=1, padding=1)
         self.fuse  = ConvBNReLU(mid + n_classes, mid, ks=3, stride=1, padding=1)
         self.delta = nn.Conv2d(mid, n_classes, kernel_size=1, bias=False)
-        self.res_scale = nn.Parameter(torch.zeros(1))
+        # stamped into the checkpoint so evaluation.py can refuse a wrong --brh_variant
+        # (several variants share identical state-dict keys, so key matching can't catch it)
+        self.register_buffer('variant_code', torch.tensor([BRH_VARIANTS.index(variant)]))
+        if variant not in ('no_gate', 'no_residual'):
+            self.res_scale = nn.Parameter(torch.zeros(1))
+        else:
+            self.res_scale = None
         self.init_weight()
 
     def forward(self, logits8, feat_hr):
-        # logits8: [N,19,H/8,W/8]   feat_hr: [N,64,H/4,W/4]
-        hr = self.proj(feat_hr)
+        # logits8: [N,C,H/8,W/8]   feat_hr: [N,64,H/4,W/4]
+        v = self.variant
+        if v == 's8':
+            # keep the information source, drop the resolution
+            feat_hr = F.avg_pool2d(feat_hr, kernel_size=2, stride=2)
+            feat_hr = F.interpolate(feat_hr, logits8.size()[2:], mode='bilinear', align_corners=True)
         up = F.interpolate(logits8, feat_hr.size()[2:], mode='bilinear', align_corners=True)
-        d  = self.delta(self.fuse(torch.cat([up, hr], dim=1)))
+        hr_in = torch.zeros_like(feat_hr) if v == 'no_hr' else feat_hr
+        lg_in = torch.zeros_like(up)      if v == 'no_logit' else up
+        d = self.delta(self.fuse(torch.cat([lg_in, self.proj(hr_in)], dim=1)))
+        if v == 'no_residual':
+            return d
+        if v == 'no_gate':
+            return up + d
         return up + self.res_scale * d
 
     def init_weight(self):
@@ -71,7 +102,8 @@ class BoundaryRefine(nn.Module):
                 if module.bias is not None: nowd_params.append(module.bias)
             elif isinstance(module, BatchNorm2d):
                 nowd_params += list(module.parameters())
-        nowd_params.append(self.res_scale)   # CRITICAL: bare Parameter, else frozen
+        if self.res_scale is not None:
+            nowd_params.append(self.res_scale)   # CRITICAL: bare Parameter, else frozen
         return wd_params, nowd_params
 
 class BiSeNetOutput(nn.Module):
@@ -257,7 +289,7 @@ class FeatureFusionModule(nn.Module):
 
 
 class BiSeNet(nn.Module):
-    def __init__(self, backbone, n_classes, pretrain_model='', use_boundary_2=False, use_boundary_4=False, use_boundary_8=False, use_boundary_16=False, use_conv_last=False, heat_map=False, use_brh=False, brh_mid=64, *args, **kwargs):        
+    def __init__(self, backbone, n_classes, pretrain_model='', use_boundary_2=False, use_boundary_4=False, use_boundary_8=False, use_boundary_16=False, use_conv_last=False, heat_map=False, use_brh=False, brh_mid=64, brh_variant='full', *args, **kwargs):        
         super(BiSeNet, self).__init__()
         
         self.use_boundary_2 = use_boundary_2
@@ -299,7 +331,9 @@ class BiSeNet(nn.Module):
         self.conv_out_sp2 = BiSeNetOutput(sp2_inplanes, 64, 1)
         self.use_brh = use_brh
         if use_brh:
-            self.brh = BoundaryRefine(n_classes=n_classes, hr_chan=sp4_inplanes, mid=brh_mid)
+            self.brh = BoundaryRefine(n_classes=n_classes, hr_chan=sp4_inplanes, mid=brh_mid,
+                                      variant=brh_variant)
+
         self.init_weight()
         self.init_weight()
 

@@ -157,8 +157,15 @@ def parse_args():
     parse.add_argument('--brh_mid',     dest='brh_mid',     type=int,      default=64)
     parse.add_argument('--bnd_radius',  dest='bnd_radius',  type=int,      default=3)
     parse.add_argument('--bnd_weight',  dest='bnd_weight',  type=float,    default=1.0)
+    # ---- ablation flags (defaults == published Arm H + Arm I behaviour) ----
+    parse.add_argument('--brh_variant', dest='brh_variant', type=str, default='full',
+            choices=('full', 'no_hr', 'no_logit', 'no_gate', 'no_residual', 's8'))
+    parse.add_argument('--ohem_mode',   dest='ohem_mode',   type=str, default='weighted_rank',
+            choices=('weighted_rank', 'unweighted_rank', 'none'))
+    parse.add_argument('--use_aux',     dest='use_aux',     type=str2bool, default=True)   # criteria_16/32
+    parse.add_argument('--use_detail_bce',  dest='use_detail_bce',  type=str2bool, default=True)
+    parse.add_argument('--use_detail_dice', dest='use_detail_dice', type=str2bool, default=True)
     return parse.parse_args()
-
 
 def train():
     args = parse_args()
@@ -206,7 +213,11 @@ def train():
         logger.info('use_boundary_8: {}'.format(use_boundary_8))
         logger.info('use_boundary_16: {}'.format(use_boundary_16))
         logger.info('mode: {}'.format(args.mode))
-    
+        # log every ablation knob so each run folder is self-describing
+        for k in ('dataset', 'backbone', 'max_iter', 'use_brh', 'brh_mid', 'brh_variant',
+                  'bnd_weight', 'bnd_radius', 'ohem_mode', 'use_aux',
+                  'use_detail_bce', 'use_detail_dice'):
+            logger.info('{}: {}'.format(k, getattr(args, k)))    
     
     ds = DatasetClass(dspth, cropsize=cropsize, mode=mode, randomscale=randomscale)
     sampler = torch.utils.data.distributed.DistributedSampler(ds)
@@ -232,7 +243,7 @@ def train():
     net = BiSeNet(backbone=args.backbone, n_classes=n_classes, pretrain_model=args.pretrain_path, 
     use_boundary_2=use_boundary_2, use_boundary_4=use_boundary_4, use_boundary_8=use_boundary_8, 
     use_boundary_16=use_boundary_16, use_conv_last=args.use_conv_last,
-    use_brh=args.use_brh, brh_mid=args.brh_mid)
+    use_brh=args.use_brh, brh_mid=args.brh_mid, brh_variant=args.brh_variant)
 
     if not args.ckpt is None:
         net.load_state_dict(torch.load(args.ckpt, map_location='cpu'))
@@ -246,9 +257,9 @@ def train():
 
     score_thres = 0.7
     n_min = n_img_per_gpu*cropsize[0]*cropsize[1]//16
-
     criteria_p = BoundaryOhemCELoss(thresh=score_thres, n_min=n_min, ignore_lb=ignore_idx,
-                                    radius=args.bnd_radius, w_bnd=args.bnd_weight)
+                                    radius=args.bnd_radius, w_bnd=args.bnd_weight,
+                                    ohem_mode=args.ohem_mode)
     criteria_16 = OhemCELoss(thresh=score_thres, n_min=n_min, ignore_lb=ignore_idx)
     criteria_32 = OhemCELoss(thresh=score_thres, n_min=n_min, ignore_lb=ignore_idx)
     boundary_loss_func = DetailAggregateLoss()
@@ -345,8 +356,14 @@ def train():
             boundery_bce_loss += boundery_bce_loss8
             boundery_dice_loss += boundery_dice_loss8
 
-        loss = lossp + loss2 + loss3 + boundery_bce_loss + boundery_dice_loss
-        
+        loss = lossp
+        if args.use_aux:
+            loss = loss + loss2 + loss3
+        if args.use_detail_bce:
+            loss = loss + boundery_bce_loss
+        if args.use_detail_dice:
+            loss = loss + boundery_dice_loss
+                    
         loss.backward()
         optim.step()
 

@@ -1,0 +1,100 @@
+Module 1: M2, refine at stride 8 (is stride-4 resolution the point?)
+
+export CUDA_VISIBLE_DEVICES=0
+PATH="/home/husky/anaconda3/envs/stdcseg18/bin:$PATH" /home/husky/anaconda3/envs/stdcseg/bin/python -m torch.distributed.launch --nproc_per_node=1 train.py \
+  --respath checkpoints/train_STDC2-Seg-ABL-M2-s8/ \
+  --backbone STDCNet1446 \
+  --mode train \
+  --n_workers_train 12 \
+  --n_workers_val 1 \
+  --max_iter 60000 \
+  --use_boundary_8 True \
+  --pretrain_path checkpoints/STDCNet1446_76.47.tar \
+  --use_brh True \
+  --bnd_weight 3.0 \
+  --brh_variant s8
+
+  100%|████████████████████████████████████████████████████████████████████| 250/250 [01:42<00:00,  2.43it/s]
+100%|████████████████████████████████████████████████████████████████████| 250/250 [01:44<00:00,  2.38it/s]
+training iteration 60000, model saved to: checkpoints/train_STDC2-Seg-ABL-M2-s8/pths/model_iter60000_mIOU50_0.7295_mIOU75_0.7655.pth
+max mIOU model saved to: checkpoints/train_STDC2-Seg-ABL-M2-s8/pths/model_maxmIOU75.pth
+mIOU50 is: 0.7295359969139099, mIOU75 is: 0.7654615044593811
+maxmIOU50 is: 0.7304626107215881, maxmIOU75 is: 0.7654615044593811.
+training done, model saved to: checkpoints/train_STDC2-Seg-ABL-M2-s8/pths/model_final.pth
+epoch:  324
+
+Module 2: M1, no high-resolution features (is it the detail features, or just extra convolutions?)
+
+export CUDA_VISIBLE_DEVICES=0
+PATH="/home/husky/anaconda3/envs/stdcseg18/bin:$PATH" /home/husky/anaconda3/envs/stdcseg/bin/python -m torch.distributed.launch --nproc_per_node=1 train.py \
+  --respath checkpoints/train_STDC2-Seg-ABL-M1-noHR/ \
+  --backbone STDCNet1446 \
+  --mode train \
+  --n_workers_train 12 \
+  --n_workers_val 1 \
+  --max_iter 60000 \
+  --use_boundary_8 True \
+  --pretrain_path checkpoints/STDCNet1446_76.47.tar \
+  --use_brh True \
+  --bnd_weight 3.0 \
+  --brh_variant no_hr
+
+compute the mIOU
+100%|████████████████████████████████████████████████████████████████████| 250/250 [01:37<00:00,  2.57it/s]
+100%|████████████████████████████████████████████████████████████████████| 250/250 [01:37<00:00,  2.55it/s]
+training iteration 60000, model saved to: checkpoints/train_STDC2-Seg-ABL-M1-noHR/pths/model_iter60000_mIOU50_0.7384_mIOU75_0.773.pth
+mIOU50 is: 0.7383520007133484, mIOU75 is: 0.7730047702789307
+maxmIOU50 is: 0.7383682131767273, maxmIOU75 is: 0.7734351754188538.
+training done, model saved to: checkpoints/train_STDC2-Seg-ABL-M1-noHR/pths/model_final.pth
+epoch:  324
+
+
+export CUDA_VISIBLE_DEVICES=0
+PATH="/home/husky/anaconda3/envs/stdcseg18/bin:$PATH" /home/husky/anaconda3/envs/stdcseg/bin/python -m torch.distributed.launch --nproc_per_node=1 train.py \
+  --respath checkpoints/train_STDC2-Seg-ABL-L1-unwRank/ \
+  --backbone STDCNet1446 \
+  --mode train \
+  --n_workers_train 12 \
+  --n_workers_val 1 \
+  --max_iter 60000 \
+  --use_boundary_8 True \
+  --pretrain_path checkpoints/STDCNet1446_76.47.tar \
+  --use_brh True \
+  --bnd_weight 3.0 \
+  --ohem_mode unweighted_rank
+
+  100%|████████████████████████████████████████████████| 250/250 [01:36<00:00,  2.59it/s]
+100%|████████████████████████████████████████████████| 250/250 [01:37<00:00,  2.57it/s]
+training iteration 60000, model saved to: checkpoints/train_STDC2-Seg-ABL-L1-unwRank/pths/model_iter60000_mIOU50_0.7341_mIOU75_0.7649.pth
+mIOU50 is: 0.7341355681419373, mIOU75 is: 0.7649070620536804
+maxmIOU50 is: 0.7352102398872375, maxmIOU75 is: 0.7683280110359192.
+training done, model saved to: checkpoints/train_STDC2-Seg-ABL-L1-unwRank/pths/model_final.pth
+epoch:  324
+
+
+
+export CUDA_VISIBLE_DEVICES=0
+PATH="/home/husky/anaconda3/envs/stdcseg18/bin:$PATH" /home/husky/anaconda3/envs/stdcseg/bin/python -m torch.distributed.launch --nproc_per_node=1 train.py \
+  --respath checkpoints/train_STDC2-Seg-ABL-L2-noOHEM/ \
+  --backbone STDCNet1446 \
+  --mode train \
+  --n_workers_train 12 \
+  --n_workers_val 1 \
+  --max_iter 60000 \
+  --use_boundary_8 True \
+  --pretrain_path checkpoints/STDCNet1446_76.47.tar \
+  --use_brh True \
+  --bnd_weight 3.0 \
+  --ohem_mode none
+
+  evaluating the model ...
+setup and restore model
+compute the mIOU
+100%|████████████████████████████████████████████████| 250/250 [01:37<00:00,  2.56it/s]
+100%|████████████████████████████████████████████████| 250/250 [01:37<00:00,  2.56it/s]
+training iteration 60000, model saved to: checkpoints/train_STDC2-Seg-ABL-L2-noOHEM/pths/model_iter60000_mIOU50_0.7313_mIOU75_0.7674.pth
+max mIOU model saved to: checkpoints/train_STDC2-Seg-ABL-L2-noOHEM/pths/model_maxmIOU75.pth
+mIOU50 is: 0.7313142418861389, mIOU75 is: 0.7673801779747009
+maxmIOU50 is: 0.7325152158737183, maxmIOU75 is: 0.7673801779747009.
+training done, model saved to: checkpoints/train_STDC2-Seg-ABL-L2-noOHEM/pths/model_final.pth
+epoch:  324

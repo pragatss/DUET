@@ -85,13 +85,15 @@ def gt_boundary(label, ignore=255):
     d = label[:, :, 1:] != label[:, :, :-1]
     v = (label[:, :, 1:] != ignore) & (label[:, :, :-1] != ignore)
     e = (d & v).float()
-    bnd[:, :, 1:] = torch.maximum(bnd[:, :, 1:], e)
-    bnd[:, :, :-1] = torch.maximum(bnd[:, :, :-1], e)
+    # torch.maximum doesn't exist in torch 1.1.0 -- torch.max(a, b) is the
+    # elementwise-max equivalent (same substitution as loss.boundary_weight_map).
+    bnd[:, :, 1:] = torch.max(bnd[:, :, 1:], e)
+    bnd[:, :, :-1] = torch.max(bnd[:, :, :-1], e)
     d = label[:, 1:, :] != label[:, :-1, :]
     v = (label[:, 1:, :] != ignore) & (label[:, :-1, :] != ignore)
     e = (d & v).float()
-    bnd[:, 1:, :] = torch.maximum(bnd[:, 1:, :], e)
-    bnd[:, :-1, :] = torch.maximum(bnd[:, :-1, :], e)
+    bnd[:, 1:, :] = torch.max(bnd[:, 1:, :], e)
+    bnd[:, :-1, :] = torch.max(bnd[:, :-1, :], e)
     return bnd
 
 
@@ -102,24 +104,44 @@ def dilate(bnd, r):
                          padding=r).squeeze(1) > 0.5)
 
 
-def load_net(respth, backbone, use_boundary_8, use_brh, brh_mid, n_classes):
+def load_net(respth, backbone, use_boundary_8, use_brh, brh_mid, n_classes, brh_variant='full'):
     net = BiSeNet(backbone=backbone, n_classes=n_classes,
                   use_boundary_2=False, use_boundary_4=False,
                   use_boundary_8=use_boundary_8, use_boundary_16=False,
                   use_conv_last=False,
-                  use_brh=use_brh, brh_mid=brh_mid)
+                  use_brh=use_brh, brh_mid=brh_mid, brh_variant=brh_variant)
+        
     sd = torch.load(respth, map_location='cpu')
     sd = sd.get('state_dict', sd)
     # defensive: strip a DDP 'module.' prefix if one is ever present
     if any(k.startswith('module.') for k in sd):
         sd = {k.replace('module.', '', 1): v for k, v in sd.items()}
+
+
+
+    from models.model_stages import BRH_VARIANTS
+    if 'brh.variant_code' in sd:
+        trained = BRH_VARIANTS[int(sd['brh.variant_code'].flatten()[0])]
+        if trained != brh_variant:
+            raise RuntimeError("%s was trained with brh_variant='%s' but you asked for '%s'"
+                               % (respth, trained, brh_variant))
     missing, unexpected = net.load_state_dict(sd, strict=False)
+    # checkpoints from before the ablation patch (H1, HI1) have no variant stamp -> they are 'full'
+    missing = [k for k in missing if not k.endswith('variant_code')]
+    if use_brh and 'brh.variant_code' not in sd and brh_variant != 'full':
+        raise RuntimeError("%s predates the ablation patch, so it can only be 'full'" % respth)
     if missing:
         print("  [warn] missing keys (%d): %s" % (len(missing), missing[:4]))
     if unexpected:
         print("  [warn] unexpected keys (%d): %s" % (len(unexpected), unexpected[:4]))
-    if not missing and not unexpected:
-        print("  checkpoint loaded cleanly (all keys matched)")
+    if missing or unexpected:
+        raise RuntimeError("state-dict mismatch: use_brh / brh_variant do not match "
+                           "how %s was trained" % respth)
+    print("  checkpoint loaded cleanly (all keys matched)")
+
+        
+
+        
     # report res_scale so you can see whether the module actually engaged
     for k, v in sd.items():
         if 'res_scale' in k:
@@ -129,14 +151,14 @@ def load_net(respth, backbone, use_boundary_8, use_brh, brh_mid, n_classes):
 
 @torch.no_grad()
 def evaluate_boundary(respth, dspth='./data', backbone='STDCNet1446', scale=0.75,
-                      use_boundary_8=True, use_brh=False, brh_mid=64,
+                      use_boundary_8=True, use_brh=False, brh_mid=64, brh_variant='full',
                       radii=(1, 3), n_classes=19, ignore=255, batchsize=5,
                       n_workers=2, verbose=True):
     dsval = CityScapes(dspth, mode='val')
     dl = DataLoader(dsval, batch_size=batchsize, shuffle=False,
                     num_workers=n_workers, drop_last=False)
 
-    net = load_net(respth, backbone, use_boundary_8, use_brh, brh_mid, n_classes)
+    net = load_net(respth, backbone, use_boundary_8, use_brh, brh_mid, n_classes, brh_variant)
     net.cuda().eval()
 
     I = {r: torch.zeros(n_classes).cuda() for r in radii}

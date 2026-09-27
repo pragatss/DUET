@@ -48,22 +48,49 @@ def boundary_weight_map(labels, radius=3, w_bnd=3.0, ignore_lb=255):
     band = F.max_pool2d(bnd.unsqueeze(1), kernel_size=k, stride=1, padding=radius).squeeze(1)
     return 1.0 + (w_bnd - 1.0) * (band > 0.5).float()
 
+OHEM_MODES = ('weighted_rank', 'unweighted_rank', 'none')
 
 class BoundaryOhemCELoss(nn.Module):
     """OHEM cross-entropy that upweights pixels near GT boundaries.
-       w_bnd=1.0 reproduces stock OhemCELoss exactly."""
-    def __init__(self, thresh, n_min, ignore_lb=255, radius=3, w_bnd=3.0, *args, **kwargs):
+       w_bnd=1.0 reproduces stock OhemCELoss exactly (any ohem_mode except 'none').
+
+    ohem_mode (loss ablations):
+      'weighted_rank'   : weight THEN sort/select   (Arm I as published)
+      'unweighted_rank' : sort/select on UNweighted CE, then average the weighted CE of
+                          the survivors (weight kept, selection advantage removed)
+      'none'            : no hard-example mining -- weighted CE averaged over all valid pixels
+    """
+    def __init__(self, thresh, n_min, ignore_lb=255, radius=3, w_bnd=3.0,
+                 ohem_mode='weighted_rank', *args, **kwargs):
         super(BoundaryOhemCELoss, self).__init__()
+        assert ohem_mode in OHEM_MODES, 'unknown ohem_mode %s' % ohem_mode
         self.thresh = -torch.log(torch.tensor(thresh, dtype=torch.float)).cuda()
         self.n_min = n_min
         self.ignore_lb = ignore_lb
         self.radius = radius
         self.w_bnd = w_bnd
+        self.ohem_mode = ohem_mode
         self.criteria = nn.CrossEntropyLoss(ignore_index=ignore_lb, reduction='none')
 
     def forward(self, logits, labels):
         loss = self.criteria(logits, labels)                       # [N,H,W]
         w = boundary_weight_map(labels, self.radius, self.w_bnd, self.ignore_lb)
+
+        if self.ohem_mode == 'none':
+            valid = (labels != self.ignore_lb).float()
+            return (loss * w * valid).sum() / valid.sum().clamp(min=1.0)
+
+        if self.ohem_mode == 'unweighted_rank':
+            raw = loss.view(-1)
+            wl = (loss * w).view(-1)
+            raw_sorted, idx = torch.sort(raw, descending=True)
+            if raw_sorted[self.n_min] > self.thresh:
+                keep = idx[raw_sorted > self.thresh]
+            else:
+                keep = idx[:self.n_min]
+            return torch.mean(wl[keep])
+
+        # 'weighted_rank' (default, original behaviour)
         loss = (loss * w).view(-1)
         loss, _ = torch.sort(loss, descending=True)
         if loss[self.n_min] > self.thresh:
