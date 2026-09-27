@@ -1,0 +1,208 @@
+{
+  "generated": "2026-09-27 10:41",
+  "reference": "HI1",
+  "protocol": {
+    "input": "bilinear resize to scale 0.75 (768x1536), align_corners=True",
+    "scale": 0.75,
+    "batchsize": 5,
+    "radii": [
+      1,
+      3
+    ]
+  },
+  "noise_floor": {
+    "full": 0.012313199401970176,
+    "bnd_r1": 0.0032428016334815624,
+    "bnd_r3": 0.004742649944982025,
+    "thin_r1": 0.004186146514021161,
+    "thin_r3": 0.005507056658923037
+  },
+  "noise_floor_source": "range across I0, Baseline2, Baseline",
+  "baseline_replicates": [
+    "I0",
+    "Baseline2",
+    "Baseline"
+  ],
+  "rows": [
+    {
+      "group": "reference",
+      "key": "HI1",
+      "label": "Full model (RSR + BPM)",
+      "status": "done",
+      "full": 0.7725001271765032,
+      "bnd_r1": 0.39768746459899473,
+      "bnd_r3": 0.498241599958465,
+      "thin_r1": 0.3862436479109648,
+      "thin_r3": 0.48389549842564406,
+      "delta_vs_ref": {
+        "full": 0.0,
+        "bnd_r1": 0.0,
+        "bnd_r3": 0.0,
+        "thin_r1": 0.0,
+        "thin_r3": 0.0
+      }
+    },
+    {
+      "group": "baseline",
+      "key": "__baseline_mean__",
+      "label": "Baseline (no RSR, no BPM)",
+      "status": "done",
+      "full": 0.7582112653329892,
+      "bnd_r1": 0.3580488469787562,
+      "bnd_r3": 0.4491143473098303,
+      "thin_r1": 0.3316094969654799,
+      "thin_r3": 0.41838747398299514,
+      "delta_vs_ref": {
+        "full": -0.014288861843513967,
+        "bnd_r1": -0.039638617620238514,
+        "bnd_r3": -0.04912725264863471,
+        "thin_r1": -0.054634150945484905,
+        "thin_r3": -0.06550802444264892
+      }
+    },
+    {
+      "group": "component",
+      "key": "I1",
+      "label": "w/o RSR (BPM only)",
+      "status": "done",
+      "full": 0.7704243457185103,
+      "bnd_r1": 0.37784021123179784,
+      "bnd_r3": 0.4768147544474437,
+      "thin_r1": 0.35432807219014356,
+      "thin_r3": 0.4502729041598212,
+      "delta_vs_ref": {
+        "full": -0.00207578145799292,
+        "bnd_r1": -0.019847253367196893,
+        "bnd_r3": -0.02142684551102131,
+        "thin_r1": -0.031915575720821265,
+        "thin_r3": -0.03362259426582287
+      }
+    },
+    {
+      "group": "component",
+      "key": "H1",
+      "label": "w/o BPM (RSR only)",
+      "status": "done",
+      "full": 0.7660109743089445,
+      "bnd_r1": 0.3756926844305786,
+      "bnd_r3": 0.4707525760920744,
+      "thin_r1": 0.35404485379886724,
+      "thin_r3": 0.44525698350940107,
+      "delta_vs_ref": {
+        "full": -0.00648915286755869,
+        "bnd_r1": -0.021994780168416106,
+        "bnd_r3": -0.027489023866390627,
+        "thin_r1": -0.032198794112097584,
+        "thin_r3": -0.03863851491624298
+      }
+    },
+    {
+      "group": "module",
+      "key": "ABL-M1-noHR",
+      "label": "RSR w/o high-res features",
+      "status": "done",
+      "full": 0.7734352917422853,
+      "bnd_r1": 0.38440898772281207,
+      "bnd_r3": 0.48550219065020633,
+      "thin_r1": 0.3726497233897094,
+      "thin_r3": 0.4697079132733446,
+      "delta_vs_ref": {
+        "full": 0.0009351645657821317,
+        "bnd_r1": -0.013278476876182665,
+        "bnd_r3": -0.012739409308258676,
+        "thin_r1": -0.013593924521255407,
+        "thin_r3": -0.014187585152299453
+      }
+    },
+    {
+      "group": "module",
+      "key": "ABL-M2-s8",
+      "label": "RSR at stride 8 instead of 4",
+      "status": "done",
+      "full": 0.7654615653090354,
+      "bnd_r1": 0.3793890586382069,
+      "bnd_r3": 0.47873917978922015,
+      "thin_r1": 0.36262641702418685,
+      "thin_r3": 0.45930263340136507,
+      "delta_vs_ref": {
+        "full": -0.007038561867467763,
+        "bnd_r1": -0.018298405960787856,
+        "bnd_r3": -0.01950242016924486,
+        "thin_r1": -0.023617230886777973,
+        "thin_r3": -0.024592865024278987
+      }
+    },
+    {
+      "group": "module",
+      "key": "ABL-M3-noRes",
+      "label": "RSR w/o residual",
+      "status": "pending"
+    },
+    {
+      "group": "module",
+      "key": "ABL-M4-noLogit",
+      "label": "RSR w/o logit input",
+      "status": "pending"
+    },
+    {
+      "group": "module",
+      "key": "ABL-M5-noGate",
+      "label": "RSR w/o gate",
+      "status": "pending"
+    },
+    {
+      "group": "loss",
+      "key": "ABL-L1-unwRank",
+      "label": "BPM w/ unweighted OHEM rank",
+      "status": "done",
+      "full": 0.7683280731321894,
+      "bnd_r1": 0.3882262727032399,
+      "bnd_r3": 0.4850288894634122,
+      "thin_r1": 0.37730266526845413,
+      "thin_r3": 0.4708374150138764,
+      "delta_vs_ref": {
+        "full": -0.0041720540443137555,
+        "bnd_r1": -0.009461191895754839,
+        "bnd_r3": -0.013212710495052793,
+        "thin_r1": -0.008940982642510698,
+        "thin_r3": -0.013058083411767674
+      }
+    },
+    {
+      "group": "loss",
+      "key": "ABL-L2-noOHEM",
+      "label": "BPM w/o OHEM (w=3)",
+      "status": "done",
+      "full": 0.7673800933650384,
+      "bnd_r1": 0.38717794338796324,
+      "bnd_r3": 0.48506415222100163,
+      "thin_r1": 0.3704737081928838,
+      "thin_r3": 0.4643517680252915,
+      "delta_vs_ref": {
+        "full": -0.0051200338114647526,
+        "bnd_r1": -0.010509521211031492,
+        "bnd_r3": -0.013177447737463377,
+        "thin_r1": -0.01576993971808105,
+        "thin_r3": -0.019543730400352566
+      }
+    },
+    {
+      "group": "loss",
+      "key": "ABL-L2b-noOHEM-w1",
+      "label": "w/o OHEM, w=1",
+      "status": "pending"
+    },
+    {
+      "group": "loss",
+      "key": "ABL-L3-noDetail",
+      "label": "w/o detail-head loss",
+      "status": "pending"
+    },
+    {
+      "group": "loss",
+      "key": "ABL-L4-noAux",
+      "label": "w/o auxiliary heads",
+      "status": "pending"
+    }
+  ]
+}

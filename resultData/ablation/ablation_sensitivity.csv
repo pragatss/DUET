@@ -1,0 +1,10 @@
+Param,Value,Key,Status,Bnd r=1,Bnd r=3,Thin r=1,Thin r=3,Full mIoU
+bnd_weight,1,H1,done,37.57,47.08,35.40,44.53,76.60
+bnd_weight,2,SENS-w2,pending,,,,,
+bnd_weight,3,HI1,done,39.77,49.82,38.62,48.39,77.25
+bnd_weight,5,SENS-w5,pending,,,,,
+bnd_weight,8,SENS-w8,pending,,,,,
+bnd_radius,1,SENS-r1,pending,,,,,
+bnd_radius,2,SENS-r2,pending,,,,,
+bnd_radius,3,HI1,done,39.77,49.82,38.62,48.39,77.25
+bnd_radius,5,SENS-r5,pending,,,,,

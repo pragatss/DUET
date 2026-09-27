@@ -1,0 +1,15 @@
+Group,Key,Model variation,Status,Bnd r=1,d Bnd r=1,d/noise Bnd r=1,Bnd r=3,d Bnd r=3,d/noise Bnd r=3,Thin r=1,d Thin r=1,d/noise Thin r=1,Thin r=3,d Thin r=3,d/noise Thin r=3,Full mIoU,d Full mIoU,d/noise Full mIoU,Description
+reference,HI1,Full model (RSR + BPM),done,39.77,,,49.82,,,38.62,,,48.39,,,77.25,,,"RSR + BPM: use_brh, bnd_weight=3.0 (headline)"
+baseline,__baseline_mean__,"Baseline (no RSR, no BPM)",done,35.80,-3.96,12.2,44.91,-4.91,10.4,33.16,-5.46,13.1,41.84,-6.55,11.9,75.82,-1.43,1.2,mean of I0+Baseline2+Baseline
+component,I1,w/o RSR (BPM only),done,37.78,-1.98,6.1,47.68,-2.14,4.5,35.43,-3.19,7.6,45.03,-3.36,6.1,77.04,-0.21,0.2,BPM only: bnd_weight=3.0 (Arm I)
+component,H1,w/o BPM (RSR only),done,37.57,-2.20,6.8,47.08,-2.75,5.8,35.40,-3.22,7.7,44.53,-3.86,7.0,76.60,-0.65,0.5,RSR only: use_brh (Arm H)
+module,ABL-M1-noHR,RSR w/o high-res features,done,38.44,-1.33,4.1,48.55,-1.27,2.7,37.26,-1.36,3.2,46.97,-1.42,2.6,77.34,+0.09,0.1,no high-res features
+module,ABL-M2-s8,RSR at stride 8 instead of 4,done,37.94,-1.83,5.6,47.87,-1.95,4.1,36.26,-2.36,5.6,45.93,-2.46,4.5,76.55,-0.70,0.6,refine at stride 8
+module,ABL-M3-noRes,RSR w/o residual,pending,,,,,,,,,,,,,,,,no residual
+module,ABL-M4-noLogit,RSR w/o logit input,pending,,,,,,,,,,,,,,,,no logit input
+module,ABL-M5-noGate,RSR w/o gate,pending,,,,,,,,,,,,,,,,no gate
+loss,ABL-L1-unwRank,BPM w/ unweighted OHEM rank,done,38.82,-0.95,2.9,48.50,-1.32,2.8,37.73,-0.89,2.1,47.08,-1.31,2.4,76.83,-0.42,0.3,unweighted OHEM rank
+loss,ABL-L2-noOHEM,BPM w/o OHEM (w=3),done,38.72,-1.05,3.2,48.51,-1.32,2.8,37.05,-1.58,3.8,46.44,-1.95,3.5,76.74,-0.51,0.4,"no OHEM, w=3"
+loss,ABL-L2b-noOHEM-w1,"w/o OHEM, w=1",pending,,,,,,,,,,,,,,,,"no OHEM, w=1"
+loss,ABL-L3-noDetail,w/o detail-head loss,pending,,,,,,,,,,,,,,,,no detail loss
+loss,ABL-L4-noAux,w/o auxiliary heads,pending,,,,,,,,,,,,,,,,no aux heads
