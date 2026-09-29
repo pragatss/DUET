@@ -6,11 +6,12 @@ and deltas are in **points**.
 
 | folder | generator | paper artifact | reference layout |
 |---|---|---|---|
-| `perclass/` | `gen_perclass.py` | per-class IoU table (STDC-Seg and HRNet, each ± Ours) | `ref_images/quantative/PerClass.png` |
+| `perclass/` | `gen_perclass.py` | per-class IoU tables per dataset (Cityscapes: STDC-Seg and HRNet; SYNTHIA, RUGD: STDC-Seg; each ± Ours) and a cross-dataset summary | `ref_images/quantative/PerClass.png` |
 | `ablation/` | `gen_ablation.py` | ablation table (STDC-Seg only, vs full model HI1) | `ref_images/quantative/Ablation.png` |
 | `runtime/` | `gen_runtime_memory.py` | training/inference throughput + GPU memory | `ref_images/quantative/RuntimeAndMemory.png` |
 | `qualitative/` | (planned) `gen_qualitative.py` | prediction grid | `ref_images/qualitative/QualitativeData.png` |
 | `cache/eval/` | `paper/eval_worker.py` | one JSON per evaluated checkpoint | — |
+| `digest/` | `gen_digest.py` | `eval_digest.md`, `perclass_digest.md`: compact, self-describing summaries for building the paper tables elsewhere | — |
 
 All three generators run under any python. They start the GPU work themselves, one
 subprocess per host, each in that host's conda env (`paper/common.py` `ENV_PY`; override
@@ -19,26 +20,45 @@ with the `STDC_PY` / `HRNET_PY` env vars).
 ## Metric definitions (identical for every host)
 - **full**: full-image IoU over valid (non-ignore) pixels. mIoU = mean over classes with union > 0.
 - **bnd_rN**: the same IoU restricted to pixels within N px (max-pool dilation) of a GT class
-  boundary, computed on the full-resolution 1024x2048 GT. This is the primary metric.
-- **thin_rN**: mean IoU of pole, traffic light, traffic sign, rider, motorcycle, bicycle inside the r=N band.
+  boundary, computed on the full-resolution GT. This is the primary metric.
+- **thin_rN**: mean IoU of the dataset's thin classes inside the r=N band. Cityscapes and SYNTHIA: pole,
+  traffic light, traffic sign, rider, motorcycle, bicycle. RUGD: pole, sign, fence, bicycle, log.
+  Same rule everywhere: narrow or small structures, typically thinner than one stride-8 cell.
+- Each dataset is scored in its own classes (no mapping to Cityscapes). The boundary band is
+  wherever the GT label changes, so the metric works for any label set.
+- **RUGD support filter**: RUGD val is two videos, and several classes are nearly absent. Every
+  RUGD mean (full, boundary, thin) uses only classes with >= 0.1% of val GT pixels, the same as
+  `eval_rugd.py`. `mIoU (all classes)` is the unfiltered mean over present classes, which is
+  what train.py logs. Classes absent from a val set (SYNTHIA: terrain, truck, train) are blank
+  and excluded.
 - The math is a copy of `evaluation.py` (`paper/common.py` `SegMeter`). The new evaluator reproduces the HI1 row
   of `ablation_results.txt` to 4 decimals.
 - Each host is evaluated with its own native protocol (`paper/common.py` `PROTOCOL`):
   STDC-Seg input resized to scale 0.75; HRNet at full resolution. Compare only within a host.
+- SYNTHIA and RUGD at scale 0.75 (570x960, 412x516) are not 32-divisible, and non-32-divisible
+  inputs caused boundary artifacts before. Each checkpoint is therefore also scored at a nearby
+  32-divisible size (576x960, 416x512), in `<dataset>/scale_check.csv`. The Ours-minus-baseline
+  deltas should agree between the two.
 
 ## cache/eval/
-`<host>__<key>.json`: summary metrics, per-class IoU / GT pixel counts / union for every
+`<host>__<key>[__s32].json` (`__s32` = 32-divisible input): summary metrics, per-class IoU / GT pixel counts / union for every
 region, and a fingerprint (checkpoint path, mtime, size, protocol). A cache entry is used
 only when its fingerprint still matches the checkpoint on disk. If a checkpoint is retrained,
 its entry is re-evaluated automatically. `--force` re-evaluates everything.
 
 ## perclass/
-- `perclass_{full,bnd_r1,bnd_r3}.csv`: one table per region. `Row type` = `main` (the
-  paper rows) or `replicate` (single STDC baseline seeds that make up the mean). The last
-  column is the mIoU delta vs that host's baseline row.
-- `perclass_delta.csv`: Ours minus baseline per class, per host and region.
-- `perclass_long.csv`: tidy format (host, method, region, class, iou fraction, gt_pixels), for plots.
-- `perclass_summary.json`: everything at full precision.
+- `datasets_summary.csv` / `.md`: every dataset x method in one table: full mIoU, full mIoU
+  (all classes), bnd r=1 / r=3, thin r=1 / r=3, and deltas vs the host baseline. Start here.
+- `<dataset>/` (cityscapes, synthia, rugd):
+  - `perclass_{full,bnd_r1,bnd_r3}.csv`: one table per region. The first rows are `support`
+    (% of val GT pixels per class) and `mask` (1 = class enters the means). `Row type`:
+    `main` = the paper rows; `replicate` = single Cityscapes baseline seeds behind the mean;
+    `arm` = a single-arm run (e.g. SYNTHIA BPM-only). The last column is the mIoU delta vs
+    that host's baseline row.
+  - `perclass_delta.csv`: Ours minus baseline per class, per host and region.
+  - `perclass_long.csv`: tidy format (iou as a fraction, used_in_mean, gt_pixels), for plots.
+  - `perclass_summary.json`: everything at full precision, plus the thin and used class lists.
+  - `scale_check.csv` (synthia, rugd): scale 0.75 vs 32-divisible input.
 
 ## ablation/
 - `ablation.csv`: for each metric, the absolute value, `d` (variant minus full model), and `d/noise`

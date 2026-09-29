@@ -1,0 +1,7 @@
+Input,Method,Full mIoU,Full mIoU (all classes),Bnd r=1,Bnd r=3,Thin r=1,Thin r=3
+scale 0.75,STDC-Seg,53.14,41.56,25.22,30.51,17.16,20.28
+scale 0.75,STDC-Seg + Ours,54.62,43.75,26.65,33.13,19.23,23.21
+scale 0.75,delta (Ours - baseline),+1.48,+2.19,+1.43,+2.62,+2.07,+2.92
+32-div 416x512,STDC-Seg,54.77,38.86,26.36,32.46,18.54,22.70
+32-div 416x512,STDC-Seg + Ours,55.99,44.77,27.37,34.29,20.65,24.95
+32-div 416x512,delta (Ours - baseline),+1.22,+5.91,+1.02,+1.83,+2.11,+2.26

@@ -1,0 +1,145 @@
+dataset,host,method,row_type,runs,region,class,iou,used_in_mean,gt_pixels
+rugd,stdc,STDC-Seg,main,RUGD,full,asphalt,0.842409,1,10629992
+rugd,stdc,STDC-Seg,main,RUGD,full,bicycle,,0,0
+rugd,stdc,STDC-Seg,main,RUGD,full,bridge,,0,0
+rugd,stdc,STDC-Seg,main,RUGD,full,building,0.345595,1,996788
+rugd,stdc,STDC-Seg,main,RUGD,full,bush,0.389721,1,2969700
+rugd,stdc,STDC-Seg,main,RUGD,full,concrete,0.004122,0,219103
+rugd,stdc,STDC-Seg,main,RUGD,full,container,0.144825,0,41224
+rugd,stdc,STDC-Seg,main,RUGD,full,dirt,0.000000,1,374314
+rugd,stdc,STDC-Seg,main,RUGD,full,fence,0.255921,1,2664957
+rugd,stdc,STDC-Seg,main,RUGD,full,grass,0.851578,1,59322369
+rugd,stdc,STDC-Seg,main,RUGD,full,gravel,0.771251,1,15249455
+rugd,stdc,STDC-Seg,main,RUGD,full,log,0.295724,1,2084525
+rugd,stdc,STDC-Seg,main,RUGD,full,mulch,0.802200,1,43613398
+rugd,stdc,STDC-Seg,main,RUGD,full,person,0.000000,0,4019
+rugd,stdc,STDC-Seg,main,RUGD,full,picnic-table,0.541556,1,423724
+rugd,stdc,STDC-Seg,main,RUGD,full,pole,0.200918,0,229159
+rugd,stdc,STDC-Seg,main,RUGD,full,rock,0.395637,1,604762
+rugd,stdc,STDC-Seg,main,RUGD,full,rock-bed,,0,0
+rugd,stdc,STDC-Seg,main,RUGD,full,sand,,0,0
+rugd,stdc,STDC-Seg,main,RUGD,full,sign,0.000000,0,9246
+rugd,stdc,STDC-Seg,main,RUGD,full,sky,0.539905,1,17528365
+rugd,stdc,STDC-Seg,main,RUGD,full,tree,0.887407,1,119274410
+rugd,stdc,STDC-Seg,main,RUGD,full,vehicle,0.521358,1,790182
+rugd,stdc,STDC-Seg,main,RUGD,full,water,0.522119,0,176061
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,asphalt,0.290163,1,214283
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,bicycle,,0,0
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,bridge,,0,0
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,building,0.171131,1,305793
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,bush,0.212791,1,377639
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,concrete,0.002762,0,83913
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,container,0.091697,0,18135
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,dirt,0.000000,1,49209
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,fence,0.178944,1,363015
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,grass,0.374577,1,2289245
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,gravel,0.365374,1,444152
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,log,0.164285,1,527147
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,mulch,0.360044,1,1752797
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,person,0.000000,0,2087
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,picnic-table,0.288861,1,150164
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,pole,0.156654,0,145141
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,rock,0.206090,1,108672
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,rock-bed,,0,0
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,sand,,0,0
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,sign,0.000000,0,5348
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,sky,0.167115,1,6453584
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,tree,0.505401,1,9201398
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,vehicle,0.246153,1,184720
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r1,water,0.126062,0,29185
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,asphalt,0.359190,1,402613
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,bicycle,,0,0
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,bridge,,0,0
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,building,0.218265,1,503607
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,bush,0.235619,1,721026
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,concrete,0.003552,0,134183
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,container,0.120165,0,30991
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,dirt,0.000000,1,92830
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,fence,0.204143,1,677078
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,grass,0.435698,1,4501471
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,gravel,0.405029,1,917616
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,log,0.201516,1,979807
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,mulch,0.409659,1,3388023
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,person,0.000000,0,3322
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,picnic-table,0.387556,1,260109
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,pole,0.200636,0,200642
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,rock,0.235069,1,210897
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,rock-bed,,0,0
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,sand,,0,0
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,sign,0.000000,0,8096
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,sky,0.264986,1,9639354
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,tree,0.596389,1,17623637
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,vehicle,0.318586,1,350540
+rugd,stdc,STDC-Seg,main,RUGD,bnd_r3,water,0.171413,0,55291
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,asphalt,0.932105,1,10629992
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,bicycle,,0,0
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,bridge,,0,0
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,building,0.356958,1,996788
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,bush,0.255347,1,2969700
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,concrete,0.045480,0,219103
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,container,0.225252,0,41224
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,dirt,0.000000,1,374314
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,fence,0.285618,1,2664957
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,grass,0.853306,1,59322369
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,gravel,0.823598,1,15249455
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,log,0.273644,1,2084525
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,mulch,0.810131,1,43613398
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,person,0.000000,0,4019
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,picnic-table,0.592473,1,423724
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,pole,0.280972,0,229159
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,rock,0.371729,1,604762
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,rock-bed,,0,0
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,sand,,0,0
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,sign,0.000000,0,9246
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,sky,0.589860,1,17528365
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,tree,0.892542,1,119274410
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,vehicle,0.609557,1,790182
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,full,water,0.552351,0,176061
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,asphalt,0.301100,1,214283
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,bicycle,,0,0
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,bridge,,0,0
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,building,0.160211,1,305793
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,bush,0.213015,1,377639
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,concrete,0.069577,0,83913
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,container,0.142240,0,18135
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,dirt,0.000000,1,49209
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,fence,0.220623,1,363015
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,grass,0.417574,1,2289245
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,gravel,0.356511,1,444152
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,log,0.164023,1,527147
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,mulch,0.357785,1,1752797
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,person,0.000000,0,2087
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,picnic-table,0.342374,1,150164
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,pole,0.276157,0,145141
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,rock,0.136086,1,108672
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,rock-bed,,0,0
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,sand,,0,0
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,sign,0.000000,0,5348
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,sky,0.214291,1,6453584
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,tree,0.534198,1,9201398
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,vehicle,0.312883,1,184720
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r1,water,0.233037,0,29185
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,asphalt,0.374349,1,402613
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,bicycle,,0,0
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,bridge,,0,0
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,building,0.218235,1,503607
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,bush,0.235340,1,721026
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,concrete,0.070709,0,134183
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,container,0.204377,0,30991
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,dirt,0.000000,1,92830
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,fence,0.259528,1,677078
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,grass,0.484334,1,4501471
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,gravel,0.413691,1,917616
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,log,0.204623,1,979807
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,mulch,0.415188,1,3388023
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,person,0.000000,0,3322
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,picnic-table,0.465683,1,260109
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,pole,0.322265,0,200642
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,rock,0.172959,1,210897
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,rock-bed,,0,0
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,sand,,0,0
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,sign,0.000000,0,8096
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,sky,0.348614,1,9639354
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,tree,0.632898,1,17623637
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,vehicle,0.412413,1,350540
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,water,0.290499,0,55291

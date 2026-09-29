@@ -115,6 +115,28 @@ HRNet-W48, Cityscapes (full-res eval, n=1 each; gen_perclass.py 2026-09-27):
   -> +2.4 bnd r1, +3.6 thin r1. Only per-class loss is Train (-2.5 bnd r1),
      a class with ~40% IoU and tiny val support; truck is ~flat.
 
+SYNTHIA / RUGD, STDC only, n=1 (gen_perclass.py; resultData/perclass/datasets_summary.*):
+  full / bnd r1 / thin r1 at scale 0.75 (the training-log protocol)
+  SYNTHIA base 72.56 / 37.41 / 31.40   HI1 77.19 / 43.67 / 38.56  (+4.6/+6.3/+7.2)
+          "I1" 72.90 / 38.17 / 31.81   (BPM alone ~ +0.3..0.8: all of the SYNTHIA gain needs RSR)
+  RUGD    base 53.14 / 25.22 / 17.16   HI1 54.62 / 26.65 / 19.23  (+1.5/+1.4/+2.1)
+          (support-filtered, >= 0.1% of val px; all-class mIoU 41.56 -> 43.75)
+  CHECKPOINT TRAPS (fixed in paper/common.py, don't undo):
+  - Synthia/model_maxmIOU75.pth was OVERWRITTEN on 08-30 by an aborted restart
+    (first val 0.2063). Use model_iter58000_..._0.7256.pth.
+  - Synthia-HI1/ contains two 60k runs. The 08-30 one has no brh.* weights, so it
+    is inferred to be the I1 command launched into the wrong respath (flags
+    not logged). Registered as 'Synthia-I1' -> iter50000 (0.729).
+    model_maxmIOU75.pth in that folder is the real HI1 (res_scale -3.22).
+  32-divisible check: SYNTHIA at 576x960 instead of 570x960 gives +5.8 mIoU for
+  EVERY model (base 78.38, HI1 82.16), so scale 0.75 is badly hit by the
+  stride-32 artifact on SYNTHIA. Ours - baseline holds (+3.8 full, +7.4 bnd r1).
+  RUGD 416x512: deltas hold (+1.2 full, +1.0 bnd r1, +2.1 thin). All-class mIoU
+  is unstable (+5.9 there), which is why the support filter is used.
+  RUGD thin set after the support filter = fence + log only: bicycle is absent,
+  and pole (0.083%), sign, person are below 0.1%. Pole shows the largest RUGD gain
+  (bnd r1 15.7 -> 27.6) but is excluded; don't lower the threshold after the fact.
+
 Cost (gen_runtime_memory.py 2026-09-27, T4, paired deltas vs host baseline):
   STDC  +Ours: +0.086M params, +9.5% GMACs, train -8.5% it/s (+0.58 GB),
                infer -5 to -9% img/s (RSR-only and Ours share an arch but
@@ -157,11 +179,18 @@ Layout:
   paper/host_hrnet.py      HRNet build/eval/train-step (sys.path -> HRNet lib)
   paper/eval_worker.py     scores checkpoints -> resultData/cache/eval/<host>__<key>.json
   paper/runtime_worker.py  throughput/memory/params/GMACs -> resultData/runtime/raw/
-  gen_perclass.py          Cityscapes per-class IoU, full + bnd r1/r3,
-                           STDC (n=3 baseline mean) and HRNet, each +/- Ours
+  gen_perclass.py          per-class IoU (full + bnd r1/r3) per dataset, plus
+                           datasets_summary.* (all datasets, mIoU + boundary):
+                           Cityscapes = STDC (n=3 baseline mean) + HRNet,
+                           SYNTHIA/RUGD = STDC only; each +/- Ours. Datasets are
+                           scored in their own classes (paper/common.py DATASETS).
   gen_ablation.py          STDC-only ablations vs HI1, all 5 metrics, with d and d/noise
   gen_runtime_memory.py    train/infer throughput + peak memory, params, GMACs,
                            plus as-trained it/s parsed from the training logs
+  gen_digest.py            resultData/digest/{eval,perclass}_digest.md: compact,
+                           self-describing summaries (context header, key tables,
+                           caveats) to hand to another Claude session that builds
+                           the paper tables. Re-run after any new eval.
 Every gen_*.py runs under any python and launches GPU work itself, one
 subprocess per host in that host's env (stdc -> envs/stdcseg, hrnet ->
 envs/hrnet). STDC and HRNet cannot share a process: both have a top-level

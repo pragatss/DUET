@@ -1,0 +1,5 @@
+Method,Host,Row type,Runs,asphalt,bicycle,bridge,building,bush,concrete,container,dirt,fence,grass,gravel,log,mulch,person,picnic-table,pole,rock,rock-bed,sand,sign,sky,tree,vehicle,water,mIoU,mIoU (all classes),Thin mean,Delta mIoU vs host baseline
+GT support (% of val px),,support,,3.8347,0.0000,0.0000,0.3596,1.0713,0.0790,0.0149,0.1350,0.9614,21.4001,5.5011,0.7520,15.7332,0.0014,0.1529,0.0827,0.2182,0.0000,0.0000,0.0033,6.3232,43.0274,0.2851,0.0635,,,,
+Used in means (1=yes),,mask,,1,0,0,1,1,0,0,1,1,1,1,1,1,0,1,0,1,0,0,0,1,1,1,0,,,,
+STDC-Seg,stdc,main,RUGD,84.24,,,34.56,38.97,0.41,14.48,0.00,25.59,85.16,77.13,29.57,80.22,0.00,54.16,20.09,39.56,,,0.00,53.99,88.74,52.14,52.21,53.14,41.56,27.58,
+STDC-Seg + Ours,stdc,main,RUGD-HI1,93.21,,,35.70,25.53,4.55,22.53,0.00,28.56,85.33,82.36,27.36,81.01,0.00,59.25,28.10,37.17,,,0.00,58.99,89.25,60.96,55.24,54.62,43.75,27.96,+1.48

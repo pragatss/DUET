@@ -1,6 +1,6 @@
-# Per-class IoU (%%) -- Cityscapes val
+# Per-class IoU (%) -- cityscapes val
 
-generated 2026-09-27 10:35 by gen_perclass.py
+generated 2026-09-27 21:26 by gen_perclass.py
 
 ## Full image
 
@@ -40,4 +40,4 @@ generated 2026-09-27 10:35 by gen_perclass.py
 | hrnet | bnd_r1 | +1.60 | +1.09 | +2.76 | +4.54 | +3.42 | +3.85 | +3.60 | +3.51 | +1.42 | +1.92 | +2.28 | +3.02 | +3.87 | +0.54 | -0.13 | +3.46 | -2.51 | +4.13 | +2.51 | +2.36 | +3.58 |
 | hrnet | bnd_r3 | +1.86 | +1.70 | +2.94 | +5.32 | +3.64 | +3.97 | +4.05 | +4.17 | +1.68 | +2.23 | +1.51 | +3.82 | +4.45 | +1.58 | +0.87 | +4.51 | -2.67 | +5.53 | +3.09 | +2.85 | +4.21 |
 
-Notes: STDC baseline = mean of 3 seed replicates. HRNet rows are n=1. Full-image mIoU is a regression guard; the boundary tables carry the claim.
+Thin classes: pole, tlight, tsign, rider, moto, bicycle.

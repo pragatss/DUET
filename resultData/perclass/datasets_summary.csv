@@ -1,0 +1,10 @@
+Dataset,Host,Method,Row type,Runs,Note,Full mIoU,Full mIoU (all classes),Bnd r=1,Bnd r=3,Thin r=1,Thin r=3,d Full mIoU,d Full mIoU (all classes),d Bnd r=1,d Bnd r=3,d Thin r=1,d Thin r=3,# classes in mean,Thin classes
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,mean of 3 seed replicates,75.82,75.82,35.80,44.91,33.16,41.84,,,,,,,19,"pole, tlight, tsign, rider, moto, bicycle"
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,"RSR + BPM, single run",77.25,77.25,39.77,49.82,38.62,48.39,+1.43,+1.43,+3.96,+4.91,+5.46,+6.55,19,"pole, tlight, tsign, rider, moto, bicycle"
+cityscapes,hrnet,HRNet-W48,main,baseline,single run,75.62,75.62,40.88,50.89,41.70,51.60,,,,,,,19,"pole, tlight, tsign, rider, moto, bicycle"
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,"RSR + BPM, single run",77.22,77.22,43.24,53.75,45.28,55.81,+1.60,+1.60,+2.36,+2.85,+3.58,+4.21,19,"pole, tlight, tsign, rider, moto, bicycle"
+synthia,stdc,STDC-Seg,main,Synthia,single run,72.56,72.56,37.41,47.64,31.40,40.45,,,,,,,16,"pole, tlight, tsign, rider, moto, bicycle"
+synthia,stdc,STDC-Seg + Ours,main,Synthia-HI1,"RSR + BPM, single run",77.19,77.19,43.67,55.31,38.56,48.93,+4.63,+4.63,+6.26,+7.67,+7.16,+8.48,16,"pole, tlight, tsign, rider, moto, bicycle"
+synthia,stdc,STDC-Seg [Synthia-I1],arm,Synthia-I1,SYNTHIA BPM only (inferred: no-BRH run in the HI1 folder),72.90,72.90,38.17,48.53,31.81,41.20,+0.34,+0.34,+0.76,+0.89,+0.41,+0.75,16,"pole, tlight, tsign, rider, moto, bicycle"
+rugd,stdc,STDC-Seg,main,RUGD,single run,53.14,41.56,25.22,30.51,17.16,20.28,,,,,,,14,"pole, sign, fence, bicycle, log"
+rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,"RSR + BPM, single run",54.62,43.75,26.65,33.13,19.23,23.21,+1.48,+2.19,+1.43,+2.62,+2.07,+2.92,14,"pole, sign, fence, bicycle, log"

@@ -7,7 +7,7 @@ import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader
 
-from paper.common import PROTOCOL, STDC_RUNS, ckpt_path
+from paper.common import DATASETS, PROTOCOL, STDC_RUNS, ckpt_path
 
 BACKBONE = 'STDCNet1446'
 N_CLASSES = 19
@@ -21,8 +21,9 @@ def load_eval_net(key):
     variant-stamp and key-mismatch checks are the same as every other eval."""
     from evaluation import load_net
     run = STDC_RUNS[key]
+    n_classes = len(DATASETS[run.get('dataset', 'cityscapes')]['classes'])
     net = load_net(ckpt_path('stdc', key), BACKBONE, True, run['use_brh'], 64,
-                   N_CLASSES, run['brh_variant'])
+                   n_classes, run['brh_variant'])
     return net.cuda().eval()
 
 
@@ -34,28 +35,37 @@ def build_net(use_brh):
                    use_conv_last=False, use_brh=use_brh, brh_mid=64)
 
 
-def val_loader(n_workers=2):
-    from cityscapes import CityScapes
-    ds = CityScapes('./data', mode='val')
+def val_loader(dataset='cityscapes', n_workers=2):
+    root = DATASETS[dataset]['root']
+    if dataset == 'synthia':
+        from synthia import Synthia
+        ds = Synthia(root, mode='val')
+    elif dataset == 'rugd':
+        from rugd import RUGD
+        ds = RUGD(root, mode='val')
+    else:
+        from cityscapes import CityScapes
+        ds = CityScapes(root, mode='val')
     return DataLoader(ds, batch_size=PROTOCOL['stdc']['batchsize'], shuffle=False,
                       num_workers=n_workers, drop_last=False)
 
 
-def predict(net, imgs, out_size, scale=PROTOCOL['stdc']['scale']):
-    """Exactly evaluation.evaluate_boundary's inference path."""
+def predict(net, imgs, out_size, scale=PROTOCOL['stdc']['scale'], input_hw=None):
+    """Exactly evaluation.evaluate_boundary's inference path (input_hw
+    overrides the scale with an exact size, for the 32-divisible check)."""
     N, C, H, W = imgs.size()
-    im = F.interpolate(imgs, [int(H * scale), int(W * scale)],
-                       mode='bilinear', align_corners=True)
+    hw = list(input_hw) if input_hw else [int(H * scale), int(W * scale)]
+    im = F.interpolate(imgs, hw, mode='bilinear', align_corners=True)
     logits = net(im)[0]
     logits = F.interpolate(logits, size=out_size, mode='bilinear', align_corners=True)
     return torch.argmax(logits, dim=1)
 
 
-def iterate_val(net):
+def iterate_val(net, dataset='cityscapes', input_hw=None):
     """yield (pred, label) at GT resolution, [N,H,W] long cuda."""
-    for imgs, label in val_loader():
+    for imgs, label in val_loader(dataset):
         label = label.squeeze(1).cuda()
-        yield predict(net, imgs.cuda(), label.shape[-2:]), label
+        yield predict(net, imgs.cuda(), label.shape[-2:], input_hw=input_hw), label
 
 
 # ---------------------------------------------------------------------------

@@ -1,0 +1,400 @@
+dataset,host,method,row_type,runs,region,class,iou,used_in_mean,gt_pixels
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,full,road,0.981096,1,345264442
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,full,sidewalk,0.846968,1,49568652
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,full,building,0.918515,1,201005428
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,full,wall,0.567639,1,6718315
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,full,fence,0.595571,1,7521741
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,full,pole,0.565714,1,13565658
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,full,tlight,0.656263,1,1808393
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,full,tsign,0.745769,1,6098373
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,full,veg,0.915792,1,158868008
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,full,terrain,0.627024,1,7625026
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,full,sky,0.942463,1,30765347
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,full,person,0.785885,1,11913424
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,full,rider,0.590210,1,1975596
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,full,car,0.944682,1,59731217
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,full,truck,0.783900,1,2760211
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,full,bus,0.851467,1,3563120
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,full,train,0.769385,1,1031648
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,full,moto,0.577485,1,729415
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,full,bicycle,0.740187,1,6504475
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r1,road,0.468217,1,2925138
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r1,sidewalk,0.414517,1,3212308
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r1,building,0.413574,1,7269713
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r1,wall,0.214199,1,463366
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r1,fence,0.247463,1,514750
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r1,pole,0.331828,1,4549158
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r1,tlight,0.329367,1,378159
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r1,tsign,0.367237,1,917506
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r1,veg,0.441529,1,6469319
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r1,terrain,0.299007,1,587602
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r1,sky,0.473578,1,1377555
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r1,person,0.400335,1,1522580
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r1,rider,0.319802,1,344123
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r1,car,0.486143,1,2235481
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r1,truck,0.303262,1,102643
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r1,bus,0.375654,1,146145
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r1,train,0.275793,1,55386
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r1,moto,0.270419,1,97305
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r1,bicycle,0.371003,1,825668
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r3,road,0.585835,1,6015551
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r3,sidewalk,0.526316,1,6413328
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r3,building,0.516305,1,14500231
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r3,wall,0.273191,1,902602
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r3,fence,0.296948,1,998834
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r3,pole,0.425671,1,7713706
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r3,tlight,0.425819,1,718945
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r3,tsign,0.476429,1,1785462
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r3,veg,0.546061,1,13193908
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r3,terrain,0.366745,1,1159465
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r3,sky,0.608380,1,2787238
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r3,person,0.510553,1,3088888
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r3,rider,0.395346,1,681471
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r3,car,0.612295,1,4593792
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r3,truck,0.374130,1,207010
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r3,bus,0.469056,1,295246
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r3,train,0.337034,1,110538
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r3,moto,0.330965,1,192188
+cityscapes,stdc,STDC-Seg,main,I0+Baseline2+Baseline,bnd_r3,bicycle,0.456094,1,1629424
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,full,road,0.982836,1,345264442
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,full,sidewalk,0.859561,1,49568652
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,full,building,0.922735,1,201005428
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,full,wall,0.522030,1,6718315
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,full,fence,0.600208,1,7521741
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,full,pole,0.638359,1,13565658
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,full,tlight,0.695725,1,1808393
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,full,tsign,0.774364,1,6098373
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,full,veg,0.922324,1,158868008
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,full,terrain,0.664991,1,7625026
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,full,sky,0.947814,1,30765347
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,full,person,0.808060,1,11913424
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,full,rider,0.600761,1,1975596
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,full,car,0.950041,1,59731217
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,full,truck,0.792041,1,2760211
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,full,bus,0.843342,1,3563120
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,full,train,0.774960,1,1031648
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,full,moto,0.619038,1,729415
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,full,bicycle,0.758313,1,6504475
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r1,road,0.493888,1,2925138
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r1,sidewalk,0.455586,1,3212308
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r1,building,0.448785,1,7269713
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r1,wall,0.235006,1,463366
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r1,fence,0.265246,1,514750
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r1,pole,0.448348,1,4549158
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r1,tlight,0.392082,1,378159
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r1,tsign,0.438935,1,917506
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r1,veg,0.474416,1,6469319
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r1,terrain,0.339175,1,587602
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r1,sky,0.522347,1,1377555
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r1,person,0.451622,1,1522580
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r1,rider,0.342727,1,344123
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r1,car,0.521274,1,2235481
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r1,truck,0.323461,1,102643
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r1,bus,0.394465,1,146145
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r1,train,0.313328,1,55386
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r1,moto,0.286579,1,97305
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r1,bicycle,0.408790,1,825668
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r3,road,0.620472,1,6015551
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r3,sidewalk,0.573574,1,6413328
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r3,building,0.567142,1,14500231
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r3,wall,0.297199,1,902602
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r3,fence,0.321615,1,998834
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r3,pole,0.554618,1,7713706
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r3,tlight,0.503127,1,718945
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r3,tsign,0.559688,1,1785462
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r3,veg,0.592553,1,13193908
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r3,terrain,0.413987,1,1159465
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r3,sky,0.667686,1,2787238
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r3,person,0.572028,1,3088888
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r3,rider,0.430028,1,681471
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r3,car,0.652119,1,4593792
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r3,truck,0.405035,1,207010
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r3,bus,0.491938,1,295246
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r3,train,0.387870,1,110538
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r3,moto,0.352850,1,192188
+cityscapes,stdc,STDC-Seg + Ours,main,HI1,bnd_r3,bicycle,0.503062,1,1629424
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,full,road,0.981338,1,345264442
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,full,sidewalk,0.846162,1,49568652
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,full,building,0.918489,1,201005428
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,full,wall,0.587327,1,6718315
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,full,fence,0.596675,1,7521741
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,full,pole,0.562691,1,13565658
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,full,tlight,0.650630,1,1808393
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,full,tsign,0.742656,1,6098373
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,full,veg,0.914593,1,158868008
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,full,terrain,0.607865,1,7625026
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,full,sky,0.943111,1,30765347
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,full,person,0.785614,1,11913424
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,full,rider,0.595877,1,1975596
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,full,car,0.944912,1,59731217
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,full,truck,0.811117,1,2760211
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,full,bus,0.858325,1,3563120
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,full,train,0.801708,1,1031648
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,full,moto,0.615403,1,729415
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,full,bicycle,0.741960,1,6504475
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r1,road,0.465997,1,2925138
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r1,sidewalk,0.413017,1,3212308
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r1,building,0.414089,1,7269713
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r1,wall,0.222120,1,463366
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r1,fence,0.240371,1,514750
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r1,pole,0.329161,1,4549158
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r1,tlight,0.313537,1,378159
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r1,tsign,0.368087,1,917506
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r1,veg,0.442931,1,6469319
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r1,terrain,0.288831,1,587602
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r1,sky,0.473220,1,1377555
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r1,person,0.388880,1,1522580
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r1,rider,0.306676,1,344123
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r1,car,0.490931,1,2235481
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r1,truck,0.304715,1,102643
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r1,bus,0.374883,1,146145
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r1,train,0.309245,1,55386
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r1,moto,0.296298,1,97305
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r1,bicycle,0.365374,1,825668
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r3,road,0.583761,1,6015551
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r3,sidewalk,0.524343,1,6413328
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r3,building,0.516040,1,14500231
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r3,wall,0.281963,1,902602
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r3,fence,0.290619,1,998834
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r3,pole,0.422502,1,7713706
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r3,tlight,0.409824,1,718945
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r3,tsign,0.474915,1,1785462
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r3,veg,0.546049,1,13193908
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r3,terrain,0.355747,1,1159465
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r3,sky,0.608324,1,2787238
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r3,person,0.501169,1,3088888
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r3,rider,0.384874,1,681471
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r3,car,0.614104,1,4593792
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r3,truck,0.374651,1,207010
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r3,bus,0.466375,1,295246
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r3,train,0.375449,1,110538
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r3,moto,0.358635,1,192188
+cityscapes,stdc,STDC-Seg [I0],replicate,I0,bnd_r3,bicycle,0.451500,1,1629424
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,full,road,0.981058,1,345264442
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,full,sidewalk,0.847850,1,49568652
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,full,building,0.918885,1,201005428
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,full,wall,0.573328,1,6718315
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,full,fence,0.588130,1,7521741
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,full,pole,0.564421,1,13565658
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,full,tlight,0.657521,1,1808393
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,full,tsign,0.746337,1,6098373
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,full,veg,0.916590,1,158868008
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,full,terrain,0.633707,1,7625026
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,full,sky,0.942445,1,30765347
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,full,person,0.785366,1,11913424
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,full,rider,0.582499,1,1975596
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,full,car,0.943994,1,59731217
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,full,truck,0.770534,1,2760211
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,full,bus,0.829997,1,3563120
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,full,train,0.724086,1,1031648
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,full,moto,0.527953,1,729415
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,full,bicycle,0.737802,1,6504475
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r1,road,0.470242,1,2925138
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r1,sidewalk,0.410587,1,3212308
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r1,building,0.412431,1,7269713
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r1,wall,0.213092,1,463366
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r1,fence,0.243974,1,514750
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r1,pole,0.331378,1,4549158
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r1,tlight,0.337403,1,378159
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r1,tsign,0.366652,1,917506
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r1,veg,0.440562,1,6469319
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r1,terrain,0.303414,1,587602
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r1,sky,0.473409,1,1377555
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r1,person,0.406370,1,1522580
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r1,rider,0.328746,1,344123
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r1,car,0.482175,1,2235481
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r1,truck,0.302653,1,102643
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r1,bus,0.366901,1,146145
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r1,train,0.258008,1,55386
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r1,moto,0.250659,1,97305
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r1,bicycle,0.370750,1,825668
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r3,road,0.586911,1,6015551
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r3,sidewalk,0.524019,1,6413328
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r3,building,0.514917,1,14500231
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r3,wall,0.273683,1,902602
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r3,fence,0.293372,1,998834
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r3,pole,0.424361,1,7713706
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r3,tlight,0.432383,1,718945
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r3,tsign,0.475813,1,1785462
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r3,veg,0.545014,1,13193908
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r3,terrain,0.370408,1,1159465
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r3,sky,0.608365,1,2787238
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r3,person,0.514674,1,3088888
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r3,rider,0.401199,1,681471
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r3,car,0.609679,1,4593792
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r3,truck,0.375726,1,207010
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r3,bus,0.460653,1,295246
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r3,train,0.309021,1,110538
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r3,moto,0.308924,1,192188
+cityscapes,stdc,STDC-Seg [Baseline2],replicate,Baseline2,bnd_r3,bicycle,0.455161,1,1629424
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,full,road,0.980893,1,345264442
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,full,sidewalk,0.846892,1,49568652
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,full,building,0.918171,1,201005428
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,full,wall,0.542261,1,6718315
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,full,fence,0.601908,1,7521741
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,full,pole,0.570029,1,13565658
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,full,tlight,0.660639,1,1808393
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,full,tsign,0.748314,1,6098373
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,full,veg,0.916192,1,158868008
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,full,terrain,0.639500,1,7625026
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,full,sky,0.941833,1,30765347
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,full,person,0.786673,1,11913424
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,full,rider,0.592253,1,1975596
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,full,car,0.945139,1,59731217
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,full,truck,0.770048,1,2760211
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,full,bus,0.866081,1,3563120
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,full,train,0.782362,1,1031648
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,full,moto,0.589098,1,729415
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,full,bicycle,0.740799,1,6504475
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r1,road,0.468414,1,2925138
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r1,sidewalk,0.419947,1,3212308
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r1,building,0.414202,1,7269713
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r1,wall,0.207386,1,463366
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r1,fence,0.258044,1,514750
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r1,pole,0.334946,1,4549158
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r1,tlight,0.337162,1,378159
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r1,tsign,0.366972,1,917506
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r1,veg,0.441093,1,6469319
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r1,terrain,0.304776,1,587602
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r1,sky,0.474106,1,1377555
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r1,person,0.405756,1,1522580
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r1,rider,0.323984,1,344123
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r1,car,0.485324,1,2235481
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r1,truck,0.302417,1,102643
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r1,bus,0.385177,1,146145
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r1,train,0.260125,1,55386
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r1,moto,0.264302,1,97305
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r1,bicycle,0.376886,1,825668
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r3,road,0.586833,1,6015551
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r3,sidewalk,0.530584,1,6413328
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r3,building,0.517957,1,14500231
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r3,wall,0.263929,1,902602
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r3,fence,0.306853,1,998834
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r3,pole,0.430149,1,7713706
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r3,tlight,0.435251,1,718945
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r3,tsign,0.478558,1,1785462
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r3,veg,0.547119,1,13193908
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r3,terrain,0.374079,1,1159465
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r3,sky,0.608452,1,2787238
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r3,person,0.515815,1,3088888
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r3,rider,0.399966,1,681471
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r3,car,0.613103,1,4593792
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r3,truck,0.372013,1,207010
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r3,bus,0.480139,1,295246
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r3,train,0.326632,1,110538
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r3,moto,0.325337,1,192188
+cityscapes,stdc,STDC-Seg [Baseline],replicate,Baseline,bnd_r3,bicycle,0.461622,1,1629424
+cityscapes,hrnet,HRNet-W48,main,baseline,full,road,0.983472,1,345264442
+cityscapes,hrnet,HRNet-W48,main,baseline,full,sidewalk,0.861660,1,49568652
+cityscapes,hrnet,HRNet-W48,main,baseline,full,building,0.927287,1,201005428
+cityscapes,hrnet,HRNet-W48,main,baseline,full,wall,0.550805,1,6718315
+cityscapes,hrnet,HRNet-W48,main,baseline,full,fence,0.615256,1,7521741
+cityscapes,hrnet,HRNet-W48,main,baseline,full,pole,0.673472,1,13565658
+cityscapes,hrnet,HRNet-W48,main,baseline,full,tlight,0.725805,1,1808393
+cityscapes,hrnet,HRNet-W48,main,baseline,full,tsign,0.799096,1,6098373
+cityscapes,hrnet,HRNet-W48,main,baseline,full,veg,0.928104,1,158868008
+cityscapes,hrnet,HRNet-W48,main,baseline,full,terrain,0.652805,1,7625026
+cityscapes,hrnet,HRNet-W48,main,baseline,full,sky,0.945318,1,30765347
+cityscapes,hrnet,HRNet-W48,main,baseline,full,person,0.820176,1,11913424
+cityscapes,hrnet,HRNet-W48,main,baseline,full,rider,0.611473,1,1975596
+cityscapes,hrnet,HRNet-W48,main,baseline,full,car,0.952253,1,59731217
+cityscapes,hrnet,HRNet-W48,main,baseline,full,truck,0.778461,1,2760211
+cityscapes,hrnet,HRNet-W48,main,baseline,full,bus,0.774000,1,3563120
+cityscapes,hrnet,HRNet-W48,main,baseline,full,train,0.387167,1,1031648
+cityscapes,hrnet,HRNet-W48,main,baseline,full,moto,0.610397,1,729415
+cityscapes,hrnet,HRNet-W48,main,baseline,full,bicycle,0.770583,1,6504475
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r1,road,0.477159,1,2925138
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r1,sidewalk,0.481275,1,3212308
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r1,building,0.460027,1,7269713
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r1,wall,0.233972,1,463366
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r1,fence,0.271117,1,514750
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r1,pole,0.489959,1,4549158
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r1,tlight,0.427729,1,378159
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r1,tsign,0.481195,1,917506
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r1,veg,0.486559,1,6469319
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r1,terrain,0.338820,1,587602
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r1,sky,0.545192,1,1377555
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r1,person,0.482886,1,1522580
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r1,rider,0.378675,1,344123
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r1,car,0.540277,1,2235481
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r1,truck,0.351821,1,102643
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r1,bus,0.392760,1,146145
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r1,train,0.203111,1,55386
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r1,moto,0.304127,1,97305
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r1,bicycle,0.420244,1,825668
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r3,road,0.619963,1,6015551
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r3,sidewalk,0.597218,1,6413328
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r3,building,0.581976,1,14500231
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r3,wall,0.304328,1,902602
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r3,fence,0.334088,1,998834
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r3,pole,0.596738,1,7713706
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r3,tlight,0.546127,1,718945
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r3,tsign,0.606174,1,1785462
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r3,veg,0.605001,1,13193908
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r3,terrain,0.411565,1,1159465
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r3,sky,0.676123,1,2787238
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r3,person,0.603219,1,3088888
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r3,rider,0.460748,1,681471
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r3,car,0.668247,1,4593792
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r3,truck,0.424313,1,207010
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r3,bus,0.486240,1,295246
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r3,train,0.261374,1,110538
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r3,moto,0.366976,1,192188
+cityscapes,hrnet,HRNet-W48,main,baseline,bnd_r3,bicycle,0.519169,1,1629424
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,full,road,0.983382,1,345264442
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,full,sidewalk,0.862253,1,49568652
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,full,building,0.932590,1,201005428
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,full,wall,0.619895,1,6718315
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,full,fence,0.629320,1,7521741
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,full,pole,0.703811,1,13565658
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,full,tlight,0.749487,1,1808393
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,full,tsign,0.821085,1,6098373
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,full,veg,0.930654,1,158868008
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,full,terrain,0.661122,1,7625026
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,full,sky,0.945843,1,30765347
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,full,person,0.841680,1,11913424
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,full,rider,0.641180,1,1975596
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,full,car,0.956980,1,59731217
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,full,truck,0.758728,1,2760211
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,full,bus,0.802573,1,3563120
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,full,train,0.380207,1,1031648
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,full,moto,0.662400,1,729415
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,full,bicycle,0.788943,1,6504475
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r1,road,0.493182,1,2925138
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r1,sidewalk,0.492176,1,3212308
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r1,building,0.487643,1,7269713
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r1,wall,0.279332,1,463366
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r1,fence,0.305319,1,514750
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r1,pole,0.528474,1,4549158
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r1,tlight,0.463764,1,378159
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r1,tsign,0.516313,1,917506
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r1,veg,0.500797,1,6469319
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r1,terrain,0.358005,1,587602
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r1,sky,0.568035,1,1377555
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r1,person,0.513061,1,1522580
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r1,rider,0.417420,1,344123
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r1,car,0.545709,1,2235481
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r1,truck,0.350531,1,102643
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r1,bus,0.427344,1,146145
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r1,train,0.178049,1,55386
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r1,moto,0.345411,1,97305
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r1,bicycle,0.445300,1,825668
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r3,road,0.638516,1,6015551
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r3,sidewalk,0.614235,1,6413328
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r3,building,0.611375,1,14500231
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r3,wall,0.357533,1,902602
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r3,fence,0.370469,1,998834
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r3,pole,0.636445,1,7713706
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r3,tlight,0.586613,1,718945
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r3,tsign,0.647882,1,1785462
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r3,veg,0.621755,1,13193908
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r3,terrain,0.433849,1,1159465
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r3,sky,0.691249,1,2787238
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r3,person,0.641394,1,3088888
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r3,rider,0.505291,1,681471
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r3,car,0.684066,1,4593792
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r3,truck,0.433007,1,207010
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r3,bus,0.531377,1,295246
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r3,train,0.234691,1,110538
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r3,moto,0.422241,1,192188
+cityscapes,hrnet,HRNet-W48 + Ours,main,HI1,bnd_r3,bicycle,0.550043,1,1629424

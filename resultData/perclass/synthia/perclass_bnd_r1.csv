@@ -1,0 +1,6 @@
+Method,Host,Row type,Runs,Road,S.walk,Build.,Wall,Fence,Pole,Tr.Light,Sign,Veget.,Terrain,Sky,Person,Rider,Car,Truck,Bus,Train,M.bike,Bike,mIoU,mIoU (all classes),Thin mean,Delta mIoU vs host baseline
+GT support (% of val px),,support,,19.4941,19.2673,29.8876,0.2916,0.3108,1.1037,0.0411,0.1081,11.2628,0.0000,7.1645,4.2969,0.4794,4.3846,0.0000,1.4543,0.0000,0.2293,0.2239,,,,
+Used in means (1=yes),,mask,,1,1,1,1,1,1,1,1,1,0,1,1,1,1,0,1,0,1,1,,,,
+STDC-Seg,stdc,main,Synthia,40.02,41.43,43.53,36.23,37.66,31.22,32.50,26.16,45.25,,47.75,41.90,34.65,37.93,,38.50,,39.25,24.59,37.41,37.41,31.40,
+STDC-Seg + Ours,stdc,main,Synthia-HI1,45.29,47.21,47.94,41.01,41.90,43.83,41.45,33.29,46.70,,60.90,51.17,39.13,41.83,,43.49,,43.57,30.07,43.67,43.67,38.56,+6.26
+STDC-Seg [Synthia-I1],stdc,arm,Synthia-I1,40.96,42.14,45.62,37.93,38.58,34.81,31.61,28.41,43.74,,51.44,40.64,33.20,38.16,,40.60,,38.85,23.98,38.17,38.17,31.81,+0.76

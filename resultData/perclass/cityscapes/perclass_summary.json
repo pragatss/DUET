@@ -1,27 +1,36 @@
 {
-  "generated": "2026-09-27 10:35",
-  "dataset": "cityscapes val (500 images)",
-  "protocol": {
-    "stdc": {
-      "input": "bilinear resize to scale 0.75 (768x1536), align_corners=True",
-      "scale": 0.75,
-      "batchsize": 5,
-      "radii": [
-        1,
-        3
-      ]
-    },
-    "hrnet": {
-      "input": "full resolution 1024x2048, align_corners=False",
-      "scale": 1.0,
-      "batchsize": 1,
-      "radii": [
-        1,
-        3
-      ]
-    }
-  },
-  "stdc_baseline": "mean",
+  "generated": "2026-09-27 21:26",
+  "dataset": "cityscapes",
+  "thin_classes": [
+    "pole",
+    "tlight",
+    "tsign",
+    "rider",
+    "moto",
+    "bicycle"
+  ],
+  "min_support": null,
+  "classes_used_in_means": [
+    "road",
+    "sidewalk",
+    "building",
+    "wall",
+    "fence",
+    "pole",
+    "tlight",
+    "tsign",
+    "veg",
+    "terrain",
+    "sky",
+    "person",
+    "rider",
+    "car",
+    "truck",
+    "bus",
+    "train",
+    "moto",
+    "bicycle"
+  ],
   "rows": [
     {
       "host": "stdc",
@@ -34,6 +43,7 @@
       ],
       "note": "mean of 3 seed replicates",
       "full": 0.7582112653329892,
+      "full_all": 0.7582112653329892,
       "bnd_r1": 0.3580488469787562,
       "bnd_r3": 0.4491143473098303,
       "thin_r1": 0.3316094969654799,
@@ -111,8 +121,9 @@
       "runs": [
         "HI1"
       ],
-      "note": "RSR + BPM",
+      "note": "RSR + BPM, single run",
       "full": 0.7725001271765032,
+      "full_all": 0.7725001271765032,
       "bnd_r1": 0.39768746459899473,
       "bnd_r3": 0.498241599958465,
       "thin_r1": 0.3862436479109648,
@@ -192,6 +203,7 @@
       ],
       "note": "baseline, bnd_weight=1.0 (lambda=1 control); paper baseline",
       "full": 0.7634976053327446,
+      "full_all": 0.7634976053327446,
       "bnd_r1": 0.35833481943188894,
       "bnd_r3": 0.44951809516369967,
       "thin_r1": 0.32985558817382393,
@@ -271,6 +283,7 @@
       ],
       "note": "baseline seed replicate (same config as I0)",
       "full": 0.7511844059307744,
+      "full_all": 0.7511844059307744,
       "bnd_r1": 0.35628445993544916,
       "bnd_r3": 0.44654114841040465,
       "thin_r1": 0.33093116803477085,
@@ -350,6 +363,7 @@
       ],
       "note": "baseline seed replicate (pre-cutoff, command not recorded)",
       "full": 0.7599517847354489,
+      "full_all": 0.7599517847354489,
       "bnd_r1": 0.3595272615689307,
       "bnd_r3": 0.4512837983553867,
       "thin_r1": 0.3340417346878451,
@@ -429,6 +443,7 @@
       ],
       "note": "single run",
       "full": 0.7561889781653071,
+      "full_all": 0.7561889781653071,
       "bnd_r1": 0.40878437208092455,
       "bnd_r3": 0.508925589185948,
       "thin_r1": 0.41698812179567973,
@@ -508,6 +523,7 @@
       ],
       "note": "RSR + BPM, single run",
       "full": 0.7722174986239808,
+      "full_all": 0.7722174986239808,
       "bnd_r1": 0.43241386014606237,
       "bnd_r3": 0.5374754280693272,
       "thin_r1": 0.4527804409057472,
