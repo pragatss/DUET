@@ -34,3 +34,6 @@ data/leftImg8bit
 data/gtFine
 data/leftImg8bit
 checkpoints/*
+
+# regenerable prediction cache from gen_qualitative.py (~135 MB)
+resultData/qualitative/cache/

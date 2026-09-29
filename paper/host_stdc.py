@@ -35,18 +35,22 @@ def build_net(use_brh):
                    use_conv_last=False, use_brh=use_brh, brh_mid=64)
 
 
-def val_loader(dataset='cityscapes', n_workers=2):
+def val_dataset(dataset='cityscapes'):
+    """val split; .imnames gives the image order, .imgs[name] the RGB path"""
     root = DATASETS[dataset]['root']
     if dataset == 'synthia':
         from synthia import Synthia
-        ds = Synthia(root, mode='val')
-    elif dataset == 'rugd':
+        return Synthia(root, mode='val')
+    if dataset == 'rugd':
         from rugd import RUGD
-        ds = RUGD(root, mode='val')
-    else:
-        from cityscapes import CityScapes
-        ds = CityScapes(root, mode='val')
-    return DataLoader(ds, batch_size=PROTOCOL['stdc']['batchsize'], shuffle=False,
+        return RUGD(root, mode='val')
+    from cityscapes import CityScapes
+    return CityScapes(root, mode='val')
+
+
+def val_loader(dataset='cityscapes', n_workers=2, ds=None):
+    return DataLoader(ds if ds is not None else val_dataset(dataset),
+                      batch_size=PROTOCOL['stdc']['batchsize'], shuffle=False,
                       num_workers=n_workers, drop_last=False)
 
 

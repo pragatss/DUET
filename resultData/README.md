@@ -9,7 +9,7 @@ and deltas are in **points**.
 | `perclass/` | `gen_perclass.py` | per-class IoU tables per dataset (Cityscapes: STDC-Seg and HRNet; SYNTHIA, RUGD: STDC-Seg; each ± Ours) and a cross-dataset summary | `ref_images/quantative/PerClass.png` |
 | `ablation/` | `gen_ablation.py` | ablation table (STDC-Seg only, vs full model HI1) | `ref_images/quantative/Ablation.png` |
 | `runtime/` | `gen_runtime_memory.py` | training/inference throughput + GPU memory | `ref_images/quantative/RuntimeAndMemory.png` |
-| `qualitative/` | (planned) `gen_qualitative.py` | prediction grid | `ref_images/qualitative/QualitativeData.png` |
+| `qualitative/` | `gen_qualitative.py` | qualitative grid panels + framework-diagram panels; see `qualitative/GUIDE.md` | `ref_images/qualitative/QualitativeData.png`, `duet_framework.png` |
 | `cache/eval/` | `paper/eval_worker.py` | one JSON per evaluated checkpoint | — |
 | `digest/` | `gen_digest.py` | `eval_digest.md`, `perclass_digest.md`: compact, self-describing summaries for building the paper tables elsewhere | — |
 
@@ -86,8 +86,7 @@ its entry is re-evaluated automatically. `--force` re-evaluates everything.
     counters differ, so never mix them in one table.
 - `raw/<host>.json`: every per-round sample, the GPU temperature/clock/power per round, and the memory pass.
 
-## qualitative/ (planned)
-Grid: rows = 2 Cityscapes, 2 SYNTHIA, 2 RUGD; columns = RGB, GT, STDC-Seg, STDC-Seg+Ours,
-HRNet, HRNet+Ours (a transformer host is optional or not yet available). HRNet was trained
-on Cityscapes only, so the SYNTHIA and RUGD rows have no HRNet predictions unless HRNet is
-trained on those datasets.
+## qualitative/
+See `qualitative/GUIDE.md`, which is generated with the actual image names: every file, which box of each
+figure it goes in, and how to assemble both figures in PowerPoint. `cache/` holds the per-image predictions
+(gitignored, regenerable).

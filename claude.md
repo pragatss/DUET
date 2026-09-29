@@ -187,6 +187,7 @@ Layout:
   gen_ablation.py          STDC-only ablations vs HI1, all 5 metrics, with d and d/noise
   gen_runtime_memory.py    train/infer throughput + peak memory, params, GMACs,
                            plus as-trained it/s parsed from the training logs
+  gen_qualitative.py       qualitative figure + framework-diagram panels, GUIDE.md
   gen_digest.py            resultData/digest/{eval,perclass}_digest.md: compact,
                            self-describing summaries (context header, key tables,
                            caveats) to hand to another Claude session that builds
@@ -223,14 +224,23 @@ Decisions:
 - The I0 cutoff date "2026-08-09 21:05" in models_i_care_about.txt is the
   name of an EMPTY log. I0's actual 60k-iter log is BiSeNet-2026-08-07-18-59-32.log.
 
-Qualitative (TODO, same pattern -> resultData/qualitative/): 6 rows = 2
-Cityscapes, 2 SYNTHIA, 2 RUGD; columns = RGB, GT, STDC-Seg, STDC-Seg+Ours,
-HRNet, HRNet+Ours (a transformer host is optional or unavailable). Gap: HRNet
-has only Cityscapes checkpoints, so the SYNTHIA and RUGD rows have no HRNet
-predictions. Plan: a gen_qualitative.py that saves per-image
-color-coded predictions + GT + RGB (Cityscapes palette, as in the reference) and
-ranks candidate images by per-image boundary-IoU gain, so the user can pick
-the rows.
+Qualitative (DONE: gen_qualitative.py -> resultData/qualitative/, read GUIDE.md there):
+  Run with envs/stdcseg python (needs matplotlib/cv2). paper/qual_worker.py caches
+  per-image predictions + stats per model (cache/ is gitignored, ~135 MB).
+  Fig A (QualitativeData.png): rows 2 Cityscapes, 2 SYNTHIA, 2 RUGD; cols RGB, GT,
+    STDC, STDC+Ours, HRNet, HRNet+Ours. Baseline/HI only (I0/HI1, Synthia/Synthia-HI1,
+    RUGD/RUGD-HI1, HRNet baseline/HI1). HRNet columns exist for Cityscapes rows only;
+    recommended layout = two blocks (Cityscapes x6 cols, SYNTHIA/RUGD x4 cols).
+    Images auto-chosen by per-image boundary-band (r=1) accuracy gain (Cityscapes: min
+    of STDC and HRNet gains), one per city/sequence; dashed box = window with most
+    boundary/thin-class corrections. Override: --pick dataset:image; --strategy median.
+  Fig B (duet_framework.png): real HI1 tensors on one Cityscapes image (default = row 1),
+    F01..F10 map 1:1 to the diagram's hatched boxes, extras X1..X8 for Z~', P, Delta,
+    RSR-changed pixels, B, B_r, w*l, stock-OHEM selection. Use zoom/ (square) crops.
+    The diagram's bottom-left "Output image I" box is a mislabel; fill it with F10
+    (OHEM-selected pixels S_w), ideally next to X8 (stock OHEM).
+    lindau_000021_000019: BPM keeps 39% of OHEM pixels in the boundary band vs 23% for
+    stock OHEM (band = 3% of pixels); Z at stride 8 misses the poles, Z' recovers them.
 
 ## Out of scope — do not modify or revive
 SBG (Arms A-G, branch ARM-D-Option1) and CtxGCN (branch GCN) are archived

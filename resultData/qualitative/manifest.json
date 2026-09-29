@@ -1,0 +1,311 @@
+{
+  "generated": "2026-09-29 19:27",
+  "strategy": "top",
+  "rows": [
+    {
+      "folder": "fig_qualitative/row1_cityscapes__lindau_000021_000019",
+      "files": {
+        "rgb": "1_rgb.png",
+        "gt": "2_gt.png",
+        "stdc": "3_stdc.png",
+        "stdc_ours": "4_stdc_ours.png",
+        "hrnet": "5_hrnet.png",
+        "hrnet_ours": "6_hrnet_ours.png"
+      },
+      "box": [
+        500,
+        280,
+        950,
+        607
+      ],
+      "size": [
+        1024,
+        2048
+      ],
+      "present": [
+        0,
+        1,
+        2,
+        5,
+        7,
+        10
+      ],
+      "dataset": "cityscapes",
+      "name": "lindau_000021_000019",
+      "rank": 1,
+      "n": 500,
+      "score": 0.1353264387389306,
+      "gains": {
+        "stdc": {
+          "band": 0.03551845772360563,
+          "thin": 0.3266679865373193,
+          "full": -0.0016697003138749947
+        },
+        "hrnet": {
+          "band": 0.013271400132714002,
+          "thin": 0.2441100772124332,
+          "full": 0.036337224182092544
+        }
+      }
+    },
+    {
+      "folder": "fig_qualitative/row2_cityscapes__munster_000164_000019",
+      "files": {
+        "rgb": "1_rgb.png",
+        "gt": "2_gt.png",
+        "stdc": "3_stdc.png",
+        "stdc_ours": "4_stdc_ours.png",
+        "hrnet": "5_hrnet.png",
+        "hrnet_ours": "6_hrnet_ours.png"
+      },
+      "box": [
+        324,
+        272,
+        774,
+        599
+      ],
+      "size": [
+        1024,
+        2048
+      ],
+      "present": [
+        0,
+        1,
+        2,
+        3,
+        5,
+        7,
+        8,
+        9,
+        13,
+        15
+      ],
+      "dataset": "cityscapes",
+      "name": "munster_000164_000019",
+      "rank": 3,
+      "n": 500,
+      "score": 0.13025542385879563,
+      "gains": {
+        "stdc": {
+          "band": 0.046312971138062375,
+          "thin": 0.16788490544146653,
+          "full": 0.01939184208059625
+        },
+        "hrnet": {
+          "band": 0.02435176183721931,
+          "thin": 0.22206752523494605,
+          "full": 0.005945791205701069
+        }
+      }
+    },
+    {
+      "folder": "fig_qualitative/row3_synthia__0003112",
+      "files": {
+        "rgb": "1_rgb.png",
+        "gt": "2_gt.png",
+        "stdc": "3_stdc.png",
+        "stdc_ours": "4_stdc_ours.png"
+      },
+      "box": [
+        628,
+        164,
+        909,
+        407
+      ],
+      "size": [
+        760,
+        1280
+      ],
+      "present": [
+        0,
+        1,
+        2,
+        4,
+        5,
+        7,
+        8,
+        10,
+        11,
+        13,
+        17,
+        18
+      ],
+      "dataset": "synthia",
+      "name": "0003112",
+      "rank": 1,
+      "n": 940,
+      "score": 0.21846908933582676,
+      "gains": {
+        "stdc": {
+          "band": 0.06523167926388432,
+          "thin": 0.3064748201438849,
+          "full": 0.009833471697130808
+        }
+      }
+    },
+    {
+      "folder": "fig_qualitative/row4_synthia__0007665",
+      "files": {
+        "rgb": "1_rgb.png",
+        "gt": "2_gt.png",
+        "stdc": "3_stdc.png",
+        "stdc_ours": "4_stdc_ours.png"
+      },
+      "box": [
+        516,
+        0,
+        797,
+        243
+      ],
+      "size": [
+        760,
+        1280
+      ],
+      "present": [
+        0,
+        1,
+        2,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        11,
+        12,
+        13,
+        15,
+        18
+      ],
+      "dataset": "synthia",
+      "name": "0007665",
+      "rank": 2,
+      "n": 940,
+      "score": 0.20431534116843175,
+      "gains": {
+        "stdc": {
+          "band": 0.07071566619551735,
+          "thin": 0.26719934994582883,
+          "full": 0.013781167373493277
+        }
+      }
+    },
+    {
+      "folder": "fig_qualitative/row5_rugd__park-8_00391",
+      "files": {
+        "rgb": "1_rgb.png",
+        "gt": "2_gt.png",
+        "stdc": "3_stdc.png",
+        "stdc_ours": "4_stdc_ours.png"
+      },
+      "box": [
+        540,
+        236,
+        691,
+        412
+      ],
+      "size": [
+        550,
+        688
+      ],
+      "present": [
+        0,
+        8,
+        9,
+        12,
+        14,
+        20,
+        21,
+        22
+      ],
+      "dataset": "rugd",
+      "name": "park-8_00391",
+      "rank": 1,
+      "n": 733,
+      "score": 0.3642562268335326,
+      "gains": {
+        "stdc": {
+          "band": 0.05137972080943621,
+          "thin": 0.6257530120481928,
+          "full": 0.015224630021141649
+        }
+      }
+    },
+    {
+      "folder": "fig_qualitative/row6_rugd__trail-5_00606",
+      "files": {
+        "rgb": "1_rgb.png",
+        "gt": "2_gt.png",
+        "stdc": "3_stdc.png",
+        "stdc_ours": "4_stdc_ours.png"
+      },
+      "box": [
+        540,
+        0,
+        691,
+        176
+      ],
+      "size": [
+        550,
+        688
+      ],
+      "present": [
+        9,
+        10,
+        11,
+        12,
+        16,
+        20,
+        21
+      ],
+      "dataset": "rugd",
+      "name": "trail-5_00606",
+      "rank": 57,
+      "n": 733,
+      "score": 0.19399677155704226,
+      "gains": {
+        "stdc": {
+          "band": 0.06363559774214383,
+          "thin": 0.26072234762979685,
+          "full": 0.013025898520084567
+        }
+      }
+    }
+  ],
+  "framework": {
+    "image": "lindau_000021_000019",
+    "model": "HI1",
+    "gamma_res_scale": 2.340230703353882,
+    "model_input_hw": [
+      768,
+      1536
+    ],
+    "label_hw": [
+      1024,
+      2048
+    ],
+    "Z_hw": [
+      96,
+      192
+    ],
+    "Zprime_hw": [
+      192,
+      384
+    ],
+    "bnd_radius": 3,
+    "w_bnd": 3.0,
+    "ohem_n_min": 131072,
+    "ohem_kept_bpm": 131072,
+    "ohem_kept_stock": 131072,
+    "pct_kept_in_boundary_band_bpm": 39.0655517578125,
+    "pct_kept_in_boundary_band_stock": 23.444366455078125,
+    "pct_of_valid_pixels_in_band": 3.0339202024524425,
+    "pixels_changed_by_rsr_at_stride4": 1380,
+    "zoom_box_xyxy": [
+      956,
+      216,
+      1297,
+      557
+    ]
+  }
+}

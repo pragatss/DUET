@@ -1,0 +1,36 @@
+{
+  "image": "lindau_000021_000019",
+  "model": "HI1",
+  "gamma_res_scale": 2.340230703353882,
+  "model_input_hw": [
+    768,
+    1536
+  ],
+  "label_hw": [
+    1024,
+    2048
+  ],
+  "Z_hw": [
+    96,
+    192
+  ],
+  "Zprime_hw": [
+    192,
+    384
+  ],
+  "bnd_radius": 3,
+  "w_bnd": 3.0,
+  "ohem_n_min": 131072,
+  "ohem_kept_bpm": 131072,
+  "ohem_kept_stock": 131072,
+  "pct_kept_in_boundary_band_bpm": 39.0655517578125,
+  "pct_kept_in_boundary_band_stock": 23.444366455078125,
+  "pct_of_valid_pixels_in_band": 3.0339202024524425,
+  "pixels_changed_by_rsr_at_stride4": 1380,
+  "zoom_box_xyxy": [
+    956,
+    216,
+    1297,
+    557
+  ]
+}
