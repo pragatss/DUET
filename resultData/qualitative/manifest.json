@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-29 19:27",
+  "generated": "2026-09-30 19:57",
   "strategy": "top",
   "rows": [
     {
@@ -12,12 +12,7 @@
         "hrnet": "5_hrnet.png",
         "hrnet_ours": "6_hrnet_ours.png"
       },
-      "box": [
-        500,
-        280,
-        950,
-        607
-      ],
+      "box": null,
       "size": [
         1024,
         2048
@@ -58,12 +53,7 @@
         "hrnet": "5_hrnet.png",
         "hrnet_ours": "6_hrnet_ours.png"
       },
-      "box": [
-        324,
-        272,
-        774,
-        599
-      ],
+      "box": null,
       "size": [
         1024,
         2048
@@ -106,12 +96,7 @@
         "stdc": "3_stdc.png",
         "stdc_ours": "4_stdc_ours.png"
       },
-      "box": [
-        628,
-        164,
-        909,
-        407
-      ],
+      "box": null,
       "size": [
         760,
         1280
@@ -151,12 +136,7 @@
         "stdc": "3_stdc.png",
         "stdc_ours": "4_stdc_ours.png"
       },
-      "box": [
-        516,
-        0,
-        797,
-        243
-      ],
+      "box": null,
       "size": [
         760,
         1280
@@ -198,12 +178,7 @@
         "stdc": "3_stdc.png",
         "stdc_ours": "4_stdc_ours.png"
       },
-      "box": [
-        540,
-        236,
-        691,
-        412
-      ],
+      "box": null,
       "size": [
         550,
         688
@@ -239,12 +214,7 @@
         "stdc": "3_stdc.png",
         "stdc_ours": "4_stdc_ours.png"
       },
-      "box": [
-        540,
-        0,
-        691,
-        176
-      ],
+      "box": null,
       "size": [
         550,
         688
@@ -272,40 +242,350 @@
       }
     }
   ],
-  "framework": {
-    "image": "lindau_000021_000019",
-    "model": "HI1",
-    "gamma_res_scale": 2.340230703353882,
-    "model_input_hw": [
-      768,
-      1536
-    ],
-    "label_hw": [
-      1024,
-      2048
-    ],
-    "Z_hw": [
-      96,
-      192
-    ],
-    "Zprime_hw": [
-      192,
-      384
-    ],
-    "bnd_radius": 3,
-    "w_bnd": 3.0,
-    "ohem_n_min": 131072,
-    "ohem_kept_bpm": 131072,
-    "ohem_kept_stock": 131072,
-    "pct_kept_in_boundary_band_bpm": 39.0655517578125,
-    "pct_kept_in_boundary_band_stock": 23.444366455078125,
-    "pct_of_valid_pixels_in_band": 3.0339202024524425,
-    "pixels_changed_by_rsr_at_stride4": 1380,
-    "zoom_box_xyxy": [
-      956,
-      216,
-      1297,
-      557
-    ]
-  }
+  "framework": [
+    {
+      "candidate": 1,
+      "image": "munster_000016_000019",
+      "folder": "fig_framework/cand01__munster_000016_000019",
+      "model": "HI1",
+      "gamma_res_scale": 2.340230703353882,
+      "model_input_hw": [
+        768,
+        1536
+      ],
+      "label_hw": [
+        1024,
+        2048
+      ],
+      "Z_hw": [
+        96,
+        192
+      ],
+      "Zprime_hw": [
+        192,
+        384
+      ],
+      "bnd_radius": 3,
+      "w_bnd": 3.0,
+      "ohem_n_min": 131072,
+      "pct_valid_pixels_in_band": 4.468495012979542,
+      "pct_bpm_selected_in_band": 51.98211669921875,
+      "pct_stock_selected_in_band": 33.94520610652079,
+      "rsr_changed_stride4_cells": 1995,
+      "thin_band_acc_gain_vs_baseline_pts": 36.36363636363637,
+      "band_acc_gain_vs_baseline_pts": 6.25774925242506,
+      "prediction_agreement_with_eval_cache": 1.0,
+      "zoom_origins_yx_gt_px": [
+        [
+          0,
+          992
+        ],
+        [
+          0,
+          1408
+        ]
+      ]
+    },
+    {
+      "candidate": 2,
+      "image": "frankfurt_000001_033655",
+      "folder": "fig_framework/cand02__frankfurt_000001_033655",
+      "model": "HI1",
+      "gamma_res_scale": 2.340230703353882,
+      "model_input_hw": [
+        768,
+        1536
+      ],
+      "label_hw": [
+        1024,
+        2048
+      ],
+      "Z_hw": [
+        96,
+        192
+      ],
+      "Zprime_hw": [
+        192,
+        384
+      ],
+      "bnd_radius": 3,
+      "w_bnd": 3.0,
+      "ohem_n_min": 131072,
+      "pct_valid_pixels_in_band": 5.533092031608352,
+      "pct_bpm_selected_in_band": 65.0543212890625,
+      "pct_stock_selected_in_band": 42.93714189802629,
+      "rsr_changed_stride4_cells": 2569,
+      "thin_band_acc_gain_vs_baseline_pts": 33.26803205699021,
+      "band_acc_gain_vs_baseline_pts": 6.130383336776665,
+      "prediction_agreement_with_eval_cache": 1.0,
+      "zoom_origins_yx_gt_px": [
+        [
+          0,
+          864
+        ],
+        [
+          128,
+          1216
+        ]
+      ]
+    },
+    {
+      "candidate": 3,
+      "image": "frankfurt_000000_004617",
+      "folder": "fig_framework/cand03__frankfurt_000000_004617",
+      "model": "HI1",
+      "gamma_res_scale": 2.340230703353882,
+      "model_input_hw": [
+        768,
+        1536
+      ],
+      "label_hw": [
+        1024,
+        2048
+      ],
+      "Z_hw": [
+        96,
+        192
+      ],
+      "Zprime_hw": [
+        192,
+        384
+      ],
+      "bnd_radius": 3,
+      "w_bnd": 3.0,
+      "ohem_n_min": 131072,
+      "pct_valid_pixels_in_band": 7.00242869454212,
+      "pct_bpm_selected_in_band": 45.73248590407598,
+      "pct_stock_selected_in_band": 34.02386129748712,
+      "rsr_changed_stride4_cells": 4396,
+      "thin_band_acc_gain_vs_baseline_pts": 31.246925725528772,
+      "band_acc_gain_vs_baseline_pts": 7.113731886330845,
+      "prediction_agreement_with_eval_cache": 0.9999995231628418,
+      "zoom_origins_yx_gt_px": [
+        [
+          32,
+          1152
+        ],
+        [
+          224,
+          832
+        ]
+      ]
+    },
+    {
+      "candidate": 4,
+      "image": "lindau_000021_000019",
+      "folder": "fig_framework/cand04__lindau_000021_000019",
+      "model": "HI1",
+      "gamma_res_scale": 2.340230703353882,
+      "model_input_hw": [
+        768,
+        1536
+      ],
+      "label_hw": [
+        1024,
+        2048
+      ],
+      "Z_hw": [
+        96,
+        192
+      ],
+      "Zprime_hw": [
+        192,
+        384
+      ],
+      "bnd_radius": 3,
+      "w_bnd": 3.0,
+      "ohem_n_min": 131072,
+      "pct_valid_pixels_in_band": 3.0339202024524425,
+      "pct_bpm_selected_in_band": 39.0655517578125,
+      "pct_stock_selected_in_band": 23.444366455078125,
+      "rsr_changed_stride4_cells": 1380,
+      "thin_band_acc_gain_vs_baseline_pts": 32.66679865373193,
+      "band_acc_gain_vs_baseline_pts": 3.551845772360563,
+      "prediction_agreement_with_eval_cache": 1.0,
+      "zoom_origins_yx_gt_px": [
+        [
+          128,
+          480
+        ],
+        [
+          0,
+          960
+        ]
+      ]
+    },
+    {
+      "candidate": 5,
+      "image": "frankfurt_000001_064651",
+      "folder": "fig_framework/cand05__frankfurt_000001_064651",
+      "model": "HI1",
+      "gamma_res_scale": 2.340230703353882,
+      "model_input_hw": [
+        768,
+        1536
+      ],
+      "label_hw": [
+        1024,
+        2048
+      ],
+      "Z_hw": [
+        96,
+        192
+      ],
+      "Zprime_hw": [
+        192,
+        384
+      ],
+      "bnd_radius": 3,
+      "w_bnd": 3.0,
+      "ohem_n_min": 131072,
+      "pct_valid_pixels_in_band": 6.693755449598947,
+      "pct_bpm_selected_in_band": 77.47879028320312,
+      "pct_stock_selected_in_band": 50.285714285714285,
+      "rsr_changed_stride4_cells": 2702,
+      "thin_band_acc_gain_vs_baseline_pts": 29.69413142104493,
+      "band_acc_gain_vs_baseline_pts": 5.607056936647955,
+      "prediction_agreement_with_eval_cache": 1.0,
+      "zoom_origins_yx_gt_px": [
+        [
+          0,
+          576
+        ],
+        [
+          0,
+          1088
+        ]
+      ]
+    },
+    {
+      "candidate": 6,
+      "image": "munster_000036_000019",
+      "folder": "fig_framework/cand06__munster_000036_000019",
+      "model": "HI1",
+      "gamma_res_scale": 2.340230703353882,
+      "model_input_hw": [
+        768,
+        1536
+      ],
+      "label_hw": [
+        1024,
+        2048
+      ],
+      "Z_hw": [
+        96,
+        192
+      ],
+      "Zprime_hw": [
+        192,
+        384
+      ],
+      "bnd_radius": 3,
+      "w_bnd": 3.0,
+      "ohem_n_min": 131072,
+      "pct_valid_pixels_in_band": 6.085144378980743,
+      "pct_bpm_selected_in_band": 45.38816996179609,
+      "pct_stock_selected_in_band": 30.619246861924687,
+      "rsr_changed_stride4_cells": 2430,
+      "thin_band_acc_gain_vs_baseline_pts": 26.884975233902036,
+      "band_acc_gain_vs_baseline_pts": 4.344146198224341,
+      "prediction_agreement_with_eval_cache": 0.9999995231628418,
+      "zoom_origins_yx_gt_px": [
+        [
+          96,
+          960
+        ],
+        [
+          0,
+          544
+        ]
+      ]
+    },
+    {
+      "candidate": 7,
+      "image": "munster_000035_000019",
+      "folder": "fig_framework/cand07__munster_000035_000019",
+      "model": "HI1",
+      "gamma_res_scale": 2.340230703353882,
+      "model_input_hw": [
+        768,
+        1536
+      ],
+      "label_hw": [
+        1024,
+        2048
+      ],
+      "Z_hw": [
+        96,
+        192
+      ],
+      "Zprime_hw": [
+        192,
+        384
+      ],
+      "bnd_radius": 3,
+      "w_bnd": 3.0,
+      "ohem_n_min": 131072,
+      "pct_valid_pixels_in_band": 5.457662707634312,
+      "pct_bpm_selected_in_band": 56.83190373823156,
+      "pct_stock_selected_in_band": 37.80488735284918,
+      "rsr_changed_stride4_cells": 2820,
+      "thin_band_acc_gain_vs_baseline_pts": 26.41509433962264,
+      "band_acc_gain_vs_baseline_pts": 3.2626581679937963,
+      "prediction_agreement_with_eval_cache": 1.0,
+      "zoom_origins_yx_gt_px": [
+        [
+          32,
+          288
+        ],
+        [
+          0,
+          672
+        ]
+      ]
+    },
+    {
+      "candidate": 8,
+      "image": "lindau_000057_000019",
+      "folder": "fig_framework/cand08__lindau_000057_000019",
+      "model": "HI1",
+      "gamma_res_scale": 2.340230703353882,
+      "model_input_hw": [
+        768,
+        1536
+      ],
+      "label_hw": [
+        1024,
+        2048
+      ],
+      "Z_hw": [
+        96,
+        192
+      ],
+      "Zprime_hw": [
+        192,
+        384
+      ],
+      "bnd_radius": 3,
+      "w_bnd": 3.0,
+      "ohem_n_min": 131072,
+      "pct_valid_pixels_in_band": 7.215350102830093,
+      "pct_bpm_selected_in_band": 49.61960031913681,
+      "pct_stock_selected_in_band": 37.851866172223296,
+      "rsr_changed_stride4_cells": 4226,
+      "thin_band_acc_gain_vs_baseline_pts": 25.090645395213922,
+      "band_acc_gain_vs_baseline_pts": 3.815046779556174,
+      "prediction_agreement_with_eval_cache": 1.0,
+      "zoom_origins_yx_gt_px": [
+        [
+          64,
+          1120
+        ],
+        [
+          128,
+          736
+        ]
+      ]
+    }
+  ]
 }

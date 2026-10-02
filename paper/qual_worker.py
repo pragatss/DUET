@@ -17,7 +17,7 @@ internal tensors the framework figure shows (context features, F, Z, Z~', P,
 Delta, Z', prediction, boundary set, weight map, loss map, OHEM selection) to
 resultData/qualitative/cache/framework_<key>_<name>.npz
 
-    <env python> -m paper.qual_worker --host stdc --framework frankfurt_000001_054640 --keys HI1
+    <env python> -m paper.qual_worker --host stdc --keys HI1 --framework <image> [<image> ...]
 """
 import argparse
 import json
@@ -216,12 +216,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--host', required=True, choices=('stdc', 'hrnet'))
     ap.add_argument('--keys', nargs='+', required=True)
-    ap.add_argument('--framework', default=None, help='image id for framework-mode (stdc only)')
+    ap.add_argument('--framework', nargs='+', default=None, help='image id(s) for framework mode (stdc only)')
     args = ap.parse_args()
     torch.backends.cudnn.benchmark = False
     if args.framework:
         assert args.host == 'stdc'
-        run_framework(args.keys[0], args.framework)
+        for name in args.framework:
+            run_framework(args.keys[0], name)
         return
     for key in args.keys:
         run_predictions(args.host, key)

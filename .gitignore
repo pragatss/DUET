@@ -37,3 +37,5 @@ checkpoints/*
 
 # regenerable prediction cache from gen_qualitative.py (~135 MB)
 resultData/qualitative/cache/
+# framework-figure candidate panels from gen_qualitative.py (~250 MB, regenerable)
+resultData/qualitative/fig_framework/

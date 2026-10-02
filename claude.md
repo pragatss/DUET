@@ -234,13 +234,18 @@ Qualitative (DONE: gen_qualitative.py -> resultData/qualitative/, read GUIDE.md 
     Images auto-chosen by per-image boundary-band (r=1) accuracy gain (Cityscapes: min
     of STDC and HRNet gains), one per city/sequence; dashed box = window with most
     boundary/thin-class corrections. Override: --pick dataset:image; --strategy median.
-  Fig B (duet_framework.png): real HI1 tensors on one Cityscapes image (default = row 1),
-    F01..F10 map 1:1 to the diagram's hatched boxes, extras X1..X8 for Z~', P, Delta,
-    RSR-changed pixels, B, B_r, w*l, stock-OHEM selection. Use zoom/ (square) crops.
-    The diagram's bottom-left "Output image I" box is a mislabel; fill it with F10
-    (OHEM-selected pixels S_w), ideally next to X8 (stock OHEM).
-    lindau_000021_000019: BPM keeps 39% of OHEM pixels in the boundary band vs 23% for
-    stock OHEM (band = 3% of pixels); Z at stride 8 misses the poles, Z' recovers them.
+  Fig A panels = RGB + GT + predictions only (--extras adds boxes/zooms/diagnostics).
+  Fig B (duet_framework.png): 8 candidate Cityscapes images (top per-image thin-band gain
+    HI1 vs I0, <= 3 per city) in fig_framework/candNN__<image>/{full,zoom1,zoom2}; choose via
+    INDEX_candidates.png. F01..F10 map 1:1 to the diagram's hatched boxes, extras X1..X8.
+    Zooms are 512 GT px squares on a 32-px lattice -> 1536x1536 with exact integer
+    enlargement (GT x3, stride-4 x16, stride-8 x32; verified), 300 dpi. Every candidate's
+    prediction matches the eval cache 100%. BPM puts 39-77% of OHEM picks in the boundary
+    band vs 23-50% for stock OHEM (band = 3-7% of pixels). The diagram's bottom-left
+    "Output image I" box is a mislabel; fill it with F10 (S_w), ideally next to X8.
+    F06 prediction is MASKED like the GT (black = category not among the 19 evaluated
+    classes: parking, ground, static/dynamic, ego vehicle, borders); unmasked = extras/X9.
+    Internal tensors (Z, Z', ...) are never masked.
 
 ## Out of scope — do not modify or revive
 SBG (Arms A-G, branch ARM-D-Option1) and CtxGCN (branch GCN) are archived

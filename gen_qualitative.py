@@ -117,16 +117,6 @@ def ensure_predictions(datasets, force):
             subprocess.check_call(cmd, cwd=common.STDC_ROOT)
 
 
-def ensure_framework(name, force):
-    p = osp.join(QCACHE, 'framework_%s_%s.npz' % (FRAMEWORK_KEY, name))
-    if force or not osp.isfile(p):
-        cmd = [common.ENV_PY['stdc'], '-m', 'paper.qual_worker', '--host', 'stdc', '--keys', FRAMEWORK_KEY,
-               '--framework', name]
-        print('[stdc] framework tensors for %s' % name)
-        subprocess.check_call(cmd, cwd=common.STDC_ROOT)
-    return p
-
-
 # ---------------------------------------------------------------------------
 # selection
 # ---------------------------------------------------------------------------
@@ -331,7 +321,10 @@ def rgb_index(ds):
         return json.load(fh)
 
 
-def render_row(row_i, ds, d, width, mask_ignore, outdir):
+def render_row(row_i, ds, d, width, mask_ignore, outdir, extras=False):
+    """writes 1_rgb, 2_gt, 3_stdc, 4_stdc_ours[, 5_hrnet, 6_hrnet_ours] for one row.
+    extras=True also writes boxed/ (dashed box on the boundary/thin corrections),
+    zoom/ (that box cropped) and extra/ (green fixed / red broken diagnostics)."""
     name = d['name']
     pal = PALETTE[ds]
     gt = load_label(gt_path(ds, name))
@@ -341,39 +334,39 @@ def render_row(row_i, ds, d, width, mask_ignore, outdir):
     valid = gt != 255
     panels = OrderedDict([('rgb', rgb), ('gt', colorize(gt, pal))])
     improve = np.zeros(gt.shape, np.float32)
-    extras = OrderedDict()
+    diag = OrderedDict()
     for host, b, o, col in RUNS[ds]:
         pb, po = load_label(pred_path(host, b, name)), load_label(pred_path(host, o, name))
-        okb, oko = (pb == gt) & valid, (po == gt) & valid
-        imp = oko.astype(np.float32) - okb.astype(np.float32)
+        imp = ((po == gt) & valid).astype(np.float32) - ((pb == gt) & valid).astype(np.float32)
         improve += imp
         for lbl, key in ((pb, col), (po, col + '_ours')):
             c = colorize(lbl, pal)
             if mask_ignore:
                 c[~valid] = 0
             panels[key] = c
-        # green = pixel fixed by Ours, red = pixel broken by Ours (valid pixels only)
-        extras['%s_fixed_green_broken_red' % host] = overlay(rgb, [((imp > 0).astype(np.uint8), (0, 230, 0)),
-                                                                  ((imp < 0).astype(np.uint8), (255, 40, 40))])
+        diag['%s_fixed_green_broken_red' % host] = overlay(rgb, [((imp > 0).astype(np.uint8), (0, 230, 0)),
+                                                                ((imp < 0).astype(np.uint8), (255, 40, 40))])
     H, W = gt.shape
-    # place the box on BOUNDARY / THIN-structure corrections (the paper's claim), not on
-    # large interior regions: only pixels within 3 px of a GT boundary count, thin classes x3
-    box = best_window(improve * boundary_focus(gt, THIN_OF[ds]), int(0.32 * H), int(0.22 * W))
     folder = mkdir(osp.join(outdir, 'row%d_%s__%s' % (row_i, ds, name)))
-    for sub in ('boxed', 'zoom', 'extra'):
-        mkdir(osp.join(folder, sub))
     files = OrderedDict()
     for j, (key, arr) in enumerate(panels.items(), 1):
         fn = '%d_%s.png' % (j, key)
-        nearest = key != 'rgb'
-        save(arr, osp.join(folder, fn), width, nearest)
-        save(dashed_box(arr, box), osp.join(folder, 'boxed', fn), width, nearest)
-        z = crop(arr, box)
-        save(resize(z, 512, nearest), osp.join(folder, 'zoom', fn))
+        save(arr, osp.join(folder, fn), width, key != 'rgb')
         files[key] = fn
-    for key, arr in extras.items():
-        save(arr, osp.join(folder, 'extra', key + '.png'), width, False)
-    return dict(folder=osp.relpath(folder, QROOT), files=files, box=list(box), size=[H, W],
+    box = None
+    if extras:
+        # box on BOUNDARY / THIN-structure corrections (within 3 px of a GT boundary, thin classes x3)
+        box = best_window(improve * boundary_focus(gt, THIN_OF[ds]), int(0.32 * H), int(0.22 * W))
+        for sub in ('boxed', 'zoom', 'extra'):
+            mkdir(osp.join(folder, sub))
+        for key, arr in panels.items():
+            nearest = key != 'rgb'
+            save(dashed_box(arr, box), osp.join(folder, 'boxed', files[key]), width, nearest)
+            save(resize(crop(arr, box), 512, nearest), osp.join(folder, 'zoom', files[key]))
+        for key, arr in diag.items():
+            save(arr, osp.join(folder, 'extra', key + '.png'), width, False)
+        box = list(box)
+    return dict(folder=osp.relpath(folder, QROOT), files=files, box=box, size=[H, W],
                 present=sorted(set(np.unique(gt).tolist()) - {255}))
 
 
@@ -385,33 +378,38 @@ def fit(arr, w, h, bg=(235, 235, 235)):
     return canvas
 
 
-def preview(rows, outpath, boxed=True):
-    cw, ch, pad, left, top = 320, 170, 6, 120, 40
-    cols = list(COL_TITLES)
-    W = left + len(cols) * (cw + pad)
-    Hh = top + len(rows) * (ch + pad)
-    im = Image.new('RGB', (W, Hh), (255, 255, 255))
+def preview(rows, outpath):
+    """Recommended layout: block 1 = rows that have every column (Cityscapes, 6 columns);
+    block 2 = rows without HRNet (SYNTHIA, RUGD, 4 columns), under a dashed separator,
+    with its own column titles. Reference only -- the paper figure is built in PowerPoint."""
+    cw, ch, pad, left, title_h, gap = 320, 170, 6, 120, 34, 30
+    blocks = [[r for r in rows if len(r['files']) == len(COL_TITLES)],
+              [r for r in rows if len(r['files']) < len(COL_TITLES)]]
+    blocks = [b for b in blocks if b]
+    ncol = max(len(b[0]['files']) for b in blocks)
+    Hh = sum(title_h + len(b) * (ch + pad) for b in blocks) + gap * (len(blocks) - 1)
+    im = Image.new('RGB', (left + ncol * (cw + pad), Hh), (255, 255, 255))
     d = ImageDraw.Draw(im)
-    fh, fs = font(20), font(15)
-    for j, c in enumerate(cols):
-        t = COL_TITLES[c]
-        tw, _ = d.textsize(t, font=fh)
-        d.text((left + j * (cw + pad) + (cw - tw) // 2, 8), t, fill=(0, 0, 0), font=fh)
-    for i, r in enumerate(rows):
-        y = top + i * (ch + pad)
-        d.text((8, y + ch // 2 - 10), DS_TITLE[r['dataset']], fill=(0, 0, 0), font=fh)
+    fh = font(20)
+    y = 0
+    for bi, block in enumerate(blocks):
+        if bi:
+            yy = y - gap // 2
+            for x in range(8, im.width - 8, 24):
+                d.line([(x, yy), (x + 12, yy)], fill=(120, 120, 120), width=2)
+        cols = list(block[0]['files'])
         for j, c in enumerate(cols):
-            x = left + j * (cw + pad)
-            if c in r['files']:
-                p = osp.join(QROOT, r['folder'], 'boxed' if boxed else '', r['files'][c])
-                im.paste(fit(np.array(Image.open(p)), cw, ch), (x, y))
-            else:
-                cell = Image.new('RGB', (cw, ch), (235, 235, 235))
-                cd = ImageDraw.Draw(cell)
-                t = 'not trained on %s' % DS_TITLE[r['dataset']]
-                tw, _ = cd.textsize(t, font=fs)
-                cd.text(((cw - tw) // 2, ch // 2 - 8), t, fill=(120, 120, 120), font=fs)
-                im.paste(cell, (x, y))
+            t = COL_TITLES[c]
+            tw, _ = d.textsize(t, font=fh)
+            d.text((left + j * (cw + pad) + (cw - tw) // 2, y + 6), t, fill=(0, 0, 0), font=fh)
+        y += title_h
+        for r in block:
+            d.text((8, y + ch // 2 - 10), DS_TITLE[r['dataset']], fill=(0, 0, 0), font=fh)
+            for j, c in enumerate(cols):
+                p = osp.join(QROOT, r['folder'], r['files'][c])
+                im.paste(fit(np.array(Image.open(p)), cw, ch), (left + j * (cw + pad), y))
+            y += ch + pad
+        y += gap
     im.save(outpath)
 
 
@@ -442,77 +440,292 @@ def contact_sheet(ds, ranked, outpath, k=10):
 
 
 # ---------------------------------------------------------------------------
-# figure B
+# figure B -- framework panels (several candidate images, high resolution)
 # ---------------------------------------------------------------------------
-def render_framework(npz_path, width, outdir):
-    z = np.load(npz_path)
-    pal = CITYSCAPES_PAL
-    lab = z['label']
+FW_N = 8          # candidate images
+ZOOM_LABEL = 512  # zoom side in GT px = 384 model-input px = 48 stride-8 cells = 96 stride-4 cells
+ZOOM_OUT = 1536   # zoom output side: every enlargement is an exact integer (GT x3, stride-4 x16, stride-8 x32)
+ALIGN = 32        # zoom origin on a 32-GT-px lattice = 24 input px = 3 stride-8 cells: no grid cell is ever split
+DPI = (300, 300)
+FW_LABELS = OrderedDict([
+    ('F01_input_image', 'Input image I'), ('F02_context_feat', 'context feat.'),
+    ('F03_Z_stride8_logits', 'Z (stride 8)'), ('F04_F_stride4_features', 'F (stride 4)'),
+    ('F05_Zprime_stride4_refined', "Z' (stride 4)"), ('F06_prediction', 'Prediction'),
+    ('F07_ground_truth', 'Ground truth Y'), ('F08_weight_map_w', 'w (Eq. 9)'),
+    ('F09_loss_map', 'loss map l_i'), ('F10_selected_pixels_BPM', 'S_w: BPM-selected'),
+    ('X1_Ztilde_bilinear_x2', "Z~' (bilinear x2)"), ('X2_P_projected_features', 'P'),
+    ('X3_Delta_correction_magnitude', '|gamma * Delta|'), ('X4_pixels_changed_by_RSR', 'changed by RSR'),
+    ('X5_boundary_set_B', 'B (Eq. 8)'), ('X6_boundary_band_Br', 'B_r'),
+    ('X7_weighted_loss_w_times_l', 'w * l'), ('X8_selected_pixels_stock_OHEM', 'stock OHEM-selected'),
+    ('X9_prediction_unmasked', 'Prediction (unmasked)'),
+])
+
+
+def fw_npz(name):
+    return osp.join(QCACHE, 'framework_%s_%s.npz' % (FRAMEWORK_KEY, name))
+
+
+def ensure_framework(names, force):
+    todo = [n for n in names if force or not osp.isfile(fw_npz(n))]
+    if todo:
+        cmd = [common.ENV_PY['stdc'], '-m', 'paper.qual_worker', '--host', 'stdc', '--keys', FRAMEWORK_KEY,
+               '--framework'] + todo
+        print('[stdc] framework tensors for %d image(s)' % len(todo))
+        subprocess.check_call(cmd, cwd=common.STDC_ROOT)
+
+
+def framework_candidates(n, picks):
+    """Cityscapes val images where RSR+BPM most improves thin structures at the boundary
+    (per-image thin-band accuracy gain, HI1 vs I0), at most ceil(n/3) per city."""
+    base, ours = load_stats('stdc', 'I0'), load_stats('stdc', 'HI1')
+    info, scored = {}, []
+    for nm in base:
+        b, o = base[nm], ours[nm]
+        info[nm] = dict(thin_gain=(o[5] - b[5]) / float(max(b[4], 1)), band_gain=(o[3] - b[3]) / float(max(b[2], 1)),
+                        thin_band_px=b[4])
+        if b[4] >= 3000:           # enough thin-structure boundary pixels to show something
+            scored.append((info[nm]['thin_gain'] + 0.5 * info[nm]['band_gain'], nm))
+    scored.sort(reverse=True)
+    out = [p for p in picks if p in base]
+    cap = max(1, -(-n // 3))
+    per_city = {}
+    for p in out:
+        per_city[p.split('_')[0]] = per_city.get(p.split('_')[0], 0) + 1
+    for _, nm in scored:
+        if len(out) >= n:
+            break
+        city = nm.split('_')[0]
+        if nm in out or per_city.get(city, 0) >= cap:
+            continue
+        out.append(nm)
+        per_city[city] = per_city.get(city, 0) + 1
+    return out, info
+
+
+class FwView(object):
+    """One output frame: the full image at GT resolution, or a square zoom whose origin
+    lies on the ALIGN lattice so stride-4/8 cells map to exact integer pixel blocks."""
+
+    def __init__(self, z, rgb, origin=None):
+        self.H, self.W = z['label'].shape
+        self.scale = int(z['input_hw'][0]) / float(self.H)          # 0.75
+        self.rgb_src = rgb
+        if origin is None:
+            self.box, self.out = (0, 0, self.W, self.H), (self.H, self.W)
+        else:
+            y0, x0 = origin
+            self.box, self.out = (x0, y0, x0 + ZOOM_LABEL, y0 + ZOOM_LABEL), (ZOOM_OUT, ZOOM_OUT)
+
+    def _resize(self, a, nearest):
+        return np.array(Image.fromarray(np.ascontiguousarray(a)).resize(
+            (self.out[1], self.out[0]), Image.NEAREST if nearest else Image.LANCZOS))
+
+    def lab(self, a, nearest=True):
+        """array at GT resolution"""
+        x0, y0, x1, y1 = self.box
+        return self._resize(a[y0:y1, x0:x1], nearest)
+
+    def grid(self, a):
+        """array on a stride-s grid of the model input (s inferred from its size)"""
+        s = int(round(self.H * self.scale)) // a.shape[0]
+        f = self.scale / s                                        # GT px -> grid cells
+        x0, y0, x1, y1 = [int(round(v * f)) for v in self.box]
+        return self._resize(a[y0:y1, x0:x1], True)
+
+    def rgb(self):
+        return self.lab(self.rgb_src, nearest=False)
+
+
+def fw_zoom_origins(z, k=2):
+    """k square windows (ALIGN lattice, overlap < 25%) with the most RSR-changed pixels,
+    weighted toward thin classes."""
+    lab, valid = z['label'], z['valid']
     H, W = lab.shape
-    valid = z['valid']
-    rgb = load_rgb(str(z['rgb_path']))
-    up = lambda a: to_size(a, (H, W), nearest=True)              # show true feature-map resolution
-    upf = lambda a: to_size((np.asarray(a, np.float32) * 255).astype(np.uint8), (H, W), nearest=True)
+    changed = to_size(z['rsr_changed'], (H, W), nearest=True).astype(np.float64)
+    score = changed * (0.25 + np.isin(lab, THIN_CS)) * valid
+    ii = np.zeros((H + 1, W + 1))
+    ii[1:, 1:] = score.cumsum(0).cumsum(1)
+    S = ZOOM_LABEL
+    cands = sorted(((ii[y + S, x + S] - ii[y, x + S] - ii[y + S, x] + ii[y, x], y, x)
+                    for y in range(0, H - S + 1, ALIGN) for x in range(0, W - S + 1, ALIGN)), reverse=True)
+    picked = []
+    for s, y, x in cands:
+        if all(max(0, S - abs(y - py)) * max(0, S - abs(x - px)) < 0.25 * S * S for _, py, px in picked):
+            picked.append((s, y, x))
+        if len(picked) == k:
+            break
+    return [(y, x) for _, y, x in picked]
+
+
+def fw_panels(z, v, full_maps):
+    pal = CITYSCAPES_PAL
     band = z['band']
-    sel_colors = lambda sel: overlay(rgb, [(((sel > 0) & (band == 0)).astype(np.uint8), (255, 210, 0)),
-                                           (((sel > 0) & (band > 0)).astype(np.uint8), (230, 30, 30))])
+    dim = (v.rgb().astype(np.float32) * 0.35).astype(np.uint8)
+
+    def paint(masks):
+        out = dim.copy()
+        for m, c in masks:
+            out[m > 0] = c
+        return out
+
+    def selected(sel):
+        return paint([(v.lab(((sel > 0) & (band == 0)).astype(np.uint8)), (255, 210, 0)),
+                      (v.lab(((sel > 0) & (band > 0)).astype(np.uint8)), (230, 30, 30))])
+
+    feat = lambda a: v.grid((np.clip(np.asarray(a, np.float32), 0, 1) * 255).astype(np.uint8))
+    bnd = z['boundary'] * 255
+    if v.out == (v.H, v.W):             # full frame: 1-px lines vanish when scaled down in PPT
+        bnd = np.array(Image.fromarray(bnd.astype(np.uint8)).filter(ImageFilter.MaxFilter(3)))
+    gray = lambda m: np.stack([m] * 3, -1).astype(np.uint8)
+    # final prediction masked like the GT: black where the GT category is not one of the 19
+    # evaluated classes (parking, ground, static/dynamic, ego vehicle, borders). Those pixels
+    # are ignored by the loss and every metric; internal tensors (Z, Z', ...) stay unmasked.
+    masked_pred = colorize(z['pred'], pal)
+    masked_pred[z['label'] == 255] = 0
+    main = OrderedDict([
+        ('F01_input_image', v.rgb()),
+        ('F02_context_feat', feat(z['ctx_pca'])),
+        ('F03_Z_stride8_logits', v.grid(colorize(z['Z'], pal))),
+        ('F04_F_stride4_features', feat(z['F_pca'])),
+        ('F05_Zprime_stride4_refined', v.grid(colorize(z['Z_prime'], pal))),
+        ('F06_prediction', v.lab(masked_pred)),
+        ('F07_ground_truth', v.lab(colorize(z['label'], pal))),
+        ('F08_weight_map_w', v.lab(full_maps['wmap'])),
+        ('F09_loss_map', v.lab(full_maps['loss'], nearest=False)),
+        ('F10_selected_pixels_BPM', selected(z['sel_bpm'])),
+    ])
+    extra = OrderedDict([
+        ('X1_Ztilde_bilinear_x2', v.grid(colorize(z['Z_tilde'], pal))),
+        ('X2_P_projected_features', feat(z['P_pca'])),
+        ('X3_Delta_correction_magnitude', v.grid(full_maps['delta'])),
+        ('X4_pixels_changed_by_RSR', paint([(v.grid(z['rsr_changed']), (0, 255, 255))])),
+        ('X5_boundary_set_B', v.lab(gray(bnd))),
+        ('X6_boundary_band_Br', v.lab(gray(band * 255))),
+        ('X7_weighted_loss_w_times_l', v.lab(full_maps['wloss'], nearest=False)),
+        ('X8_selected_pixels_stock_OHEM', selected(z['sel_stock'])),
+        ('X9_prediction_unmasked', v.lab(colorize(z['pred'], pal))),
+    ])
+    return main, extra
+
+
+def fw_full_maps(z):
+    """colour maps normalised over the WHOLE image, so full frame and zooms share one scale"""
+    valid = z['valid']
     w = z['weight'].astype(np.float32)
-    wmap = np.zeros((H, W, 3), np.uint8)
+    wmap = np.zeros(w.shape + (3,), np.uint8)
     wmap[w <= 1.0] = (40, 60, 110)
     wmap[w > 1.0] = (255, 200, 40)
     wmap[valid == 0] = 0
     loss = np.log1p(z['loss'].astype(np.float32))
     wl = np.log1p(z['loss'].astype(np.float32) * w)
-    vmax = np.percentile(wl[valid > 0], 99.5)
-    bnd_vis = np.array(Image.fromarray((z['boundary'] * 255).astype(np.uint8)).filter(ImageFilter.MaxFilter(3)))
-    main = OrderedDict([
-        ('F01_input_image', (rgb, False)),
-        ('F02_context_feat', (upf(z['ctx_pca']), True)),
-        ('F03_Z_stride8_logits', (up(colorize(z['Z'], pal)), True)),
-        ('F04_F_stride4_features', (upf(z['F_pca']), True)),
-        ('F05_Zprime_stride4_refined', (up(colorize(z['Z_prime'], pal)), True)),
-        ('F06_prediction', (colorize(z['pred'], pal), True)),
-        ('F07_ground_truth', (colorize(lab, pal), True)),
-        ('F08_weight_map_w', (wmap, True)),
-        ('F09_loss_map', (heat(loss, 'magma', np.percentile(loss[valid > 0], 99.5), valid), False)),
-        ('F10_selected_pixels_BPM', (sel_colors(z['sel_bpm']), True)),
+    return dict(wmap=wmap,
+                loss=heat(loss, 'magma', np.percentile(loss[valid > 0], 99.5), valid),
+                wloss=heat(wl, 'magma', np.percentile(wl[valid > 0], 99.5), valid),
+                delta=heat(z['delta_mag'], 'inferno'))
+
+
+def save_hq(arr, path):
+    Image.fromarray(arr).save(path, dpi=DPI)
+
+
+def sheet(panels, path, tile_w):
+    """labelled contact sheet of one view's panels (quick look only)"""
+    items = list(panels.items())
+    a0 = items[0][1]
+    tile_h = int(round(tile_w * a0.shape[0] / float(a0.shape[1])))
+    cols = 6
+    rows = (len(items) + cols - 1) // cols
+    cap = 26
+    im = Image.new('RGB', (cols * (tile_w + 6), rows * (tile_h + cap + 6)), (255, 255, 255))
+    d = ImageDraw.Draw(im)
+    fnt = font(17)
+    for i, (k, a) in enumerate(items):
+        x, y = (i % cols) * (tile_w + 6), (i // cols) * (tile_h + cap + 6)
+        d.text((x + 2, y + 3), '%s  %s' % (k.split('_')[0], FW_LABELS[k]), fill=(0, 0, 0), font=fnt)
+        im.paste(Image.fromarray(a).resize((tile_w, tile_h), Image.LANCZOS), (x, y + cap))
+    im.save(path)
+
+
+def render_framework_one(idx, name, info, outroot):
+    z = np.load(fw_npz(name))
+    rgb = load_rgb(str(z['rgb_path']))
+    H, W = z['label'].shape
+    # accuracy check: must match the evaluation pipeline's prediction for this image
+    ref = load_label(pred_path('stdc', FRAMEWORK_KEY, name))
+    agree = float((ref == z['pred']).mean())
+    if agree < 0.9999:
+        print('  [warn] %s: framework prediction agrees with eval cache on only %.4f%% of pixels' % (name, 100 * agree))
+    full_maps = fw_full_maps(z)
+    origins = fw_zoom_origins(z)
+    folder = mkdir(osp.join(outroot, 'cand%02d__%s' % (idx, name)))
+    views = [('full', FwView(z, rgb))] + [('zoom%d' % (i + 1), FwView(z, rgb, o)) for i, o in enumerate(origins)]
+    thumbs = {}
+    for vname, v in views:
+        main, extra = fw_panels(z, v, full_maps)
+        d = mkdir(osp.join(folder, vname))
+        dx = mkdir(osp.join(d, 'extras'))
+        for k, a in main.items():
+            save_hq(a, osp.join(d, k + '.png'))
+        for k, a in extra.items():
+            save_hq(a, osp.join(dx, k + '.png'))
+        allp = OrderedDict(list(main.items()) + list(extra.items()))
+        sheet(allp, osp.join(d, 'SHEET_%s.png' % vname), 512 if vname == 'full' else 300)
+        thumbs[vname] = allp
+    # where the zooms are
+    where = Image.fromarray(rgb.copy())
+    dr = ImageDraw.Draw(where)
+    for i, (y, x) in enumerate(origins):
+        arr = dashed_box(np.array(where), (x, y, x + ZOOM_LABEL, y + ZOOM_LABEL), (255, 255, 0))
+        where = Image.fromarray(arr)
+        dr = ImageDraw.Draw(where)
+        dr.text((x + 12, y + 8), 'zoom%d' % (i + 1), fill=(255, 255, 0), font=font(48))
+    where.save(osp.join(folder, 'where_the_zooms_are.png'), dpi=DPI)
+    band = z['band'] > 0
+    sw, su = z['sel_bpm'] > 0, z['sel_stock'] > 0
+    meta = OrderedDict([
+        ('candidate', idx), ('image', name), ('folder', osp.relpath(folder, QROOT)), ('model', str(z['key'])),
+        ('gamma_res_scale', float(z['gamma'])), ('model_input_hw', [int(v) for v in z['input_hw']]),
+        ('label_hw', [H, W]), ('Z_hw', list(z['Z'].shape)), ('Zprime_hw', list(z['Z_prime'].shape)),
+        ('bnd_radius', int(z['radius'])), ('w_bnd', float(z['w_bnd'])), ('ohem_n_min', int(z['n_min'])),
+        ('pct_valid_pixels_in_band', 100.0 * float(band.sum()) / max(int((z['valid'] > 0).sum()), 1)),
+        ('pct_bpm_selected_in_band', 100.0 * float((sw & band).sum()) / max(int(sw.sum()), 1)),
+        ('pct_stock_selected_in_band', 100.0 * float((su & band).sum()) / max(int(su.sum()), 1)),
+        ('rsr_changed_stride4_cells', int(z['rsr_changed'].sum())),
+        ('thin_band_acc_gain_vs_baseline_pts', 100.0 * info[name]['thin_gain']),
+        ('band_acc_gain_vs_baseline_pts', 100.0 * info[name]['band_gain']),
+        ('prediction_agreement_with_eval_cache', agree),
+        ('zoom_origins_yx_gt_px', [list(o) for o in origins]),
     ])
-    extra = OrderedDict([
-        ('X1_Ztilde_bilinear_x2', (up(colorize(z['Z_tilde'], pal)), True)),
-        ('X2_P_projected_features', (upf(z['P_pca']), True)),
-        ('X3_Delta_correction_magnitude', (up(heat(z['delta_mag'], 'inferno')), True)),
-        ('X4_pixels_changed_by_RSR', (overlay(rgb, [(up(z['rsr_changed']), (0, 255, 255))]), True)),
-        ('X5_boundary_set_B', (np.stack([bnd_vis] * 3, -1), True)),
-        ('X6_boundary_band_Br', (np.stack([z['band'] * 255] * 3, -1).astype(np.uint8), True)),
-        ('X7_weighted_loss_w_times_l', (heat(wl, 'magma', vmax, valid), False)),
-        ('X8_selected_pixels_stock_OHEM', (sel_colors(z['sel_stock']), True)),
-    ])
-    # zoom window: square around where RSR changed the most pixels on thin classes
-    changed = up(z['rsr_changed']).astype(np.float32)
-    thin = np.isin(lab, THIN_CS).astype(np.float32)
-    side = H // 3
-    box = best_window(changed * (0.25 + thin), side, side)
-    for sub in ('', 'zoom', 'extras', 'extras/zoom'):
-        mkdir(osp.join(outdir, sub))
-    for group, sub in ((main, ''), (extra, 'extras')):
-        for k, (arr, nearest) in group.items():
-            save(arr, osp.join(outdir, sub, k + '.png'), width, nearest)
-            save(resize(crop(arr, box), 512, nearest), osp.join(outdir, sub, 'zoom', k + '.png'))
-    save(dashed_box(rgb, box), osp.join(outdir, 'zoom', 'where_the_zoom_is.png'), width, False)
-    sel_w, sel_u = z['sel_bpm'] > 0, z['sel_stock'] > 0
-    meta = dict(image=str(z['name']), model=str(z['key']), gamma_res_scale=float(z['gamma']),
-                model_input_hw=[int(v) for v in z['input_hw']], label_hw=[H, W],
-                Z_hw=list(z['Z'].shape), Zprime_hw=list(z['Z_prime'].shape),
-                bnd_radius=int(z['radius']), w_bnd=float(z['w_bnd']), ohem_n_min=int(z['n_min']),
-                ohem_kept_bpm=int(sel_w.sum()), ohem_kept_stock=int(sel_u.sum()),
-                pct_kept_in_boundary_band_bpm=100.0 * float((sel_w & (band > 0)).sum()) / max(int(sel_w.sum()), 1),
-                pct_kept_in_boundary_band_stock=100.0 * float((sel_u & (band > 0)).sum()) / max(int(sel_u.sum()), 1),
-                pct_of_valid_pixels_in_band=100.0 * float((band > 0).sum()) / max(int(valid.sum()), 1),
-                pixels_changed_by_rsr_at_stride4=int(z['rsr_changed'].sum()),
-                zoom_box_xyxy=list(box))
-    with open(osp.join(outdir, 'framework_meta.json'), 'w') as fh:
+    with open(osp.join(folder, 'meta.json'), 'w') as fh:
         json.dump(meta, fh, indent=2)
-    return list(main), list(extra), meta
+    return meta, thumbs, np.array(where)
+
+
+def framework_index(results, path):
+    """one row per candidate: where the zooms are + key zoom1 panels + numbers"""
+    keys = ['F01_input_image', 'F03_Z_stride8_logits', 'F05_Zprime_stride4_refined', 'F06_prediction',
+            'F07_ground_truth', 'X4_pixels_changed_by_RSR', 'F10_selected_pixels_BPM']
+    t, ww, pad, cap, txt = 230, 460, 6, 24, 330
+    width = ww + len(keys) * (t + pad) + txt
+    im = Image.new('RGB', (width, cap + len(results) * (t + pad)), (255, 255, 255))
+    d = ImageDraw.Draw(im)
+    fb, fs = font(16), font(14)
+    d.text((4, 4), 'image (zoom boxes)', fill=(0, 0, 0), font=fb)
+    for j, k in enumerate(keys):
+        d.text((ww + pad + j * (t + pad), 4), 'zoom1: ' + FW_LABELS[k], fill=(0, 0, 0), font=fb)
+    for i, (m, thumbs, where) in enumerate(results):
+        y = cap + i * (t + pad)
+        im.paste(fit(where, ww, t, (255, 255, 255)), (0, y))
+        z1 = thumbs.get('zoom1', thumbs['full'])
+        for j, k in enumerate(keys):
+            im.paste(Image.fromarray(z1[k]).resize((t, t), Image.LANCZOS), (ww + pad + j * (t + pad), y))
+        d.text((ww + pad + len(keys) * (t + pad) + 6, y + 6),
+               'cand%02d  %s\nthin-band acc %+.1f pts vs baseline\nRSR changed %d stride-4 cells\n'
+               'OHEM picks in boundary band:\n  BPM %.0f%%  vs  stock %.0f%%\n(band = %.1f%% of pixels)' % (
+                   m['candidate'], m['image'], m['thin_band_acc_gain_vs_baseline_pts'], m['rsr_changed_stride4_cells'],
+                   m['pct_bpm_selected_in_band'], m['pct_stock_selected_in_band'], m['pct_valid_pixels_in_band']),
+               fill=(0, 0, 0), font=fs)
+    im.save(path)
 
 
 THIN_CS = common.THIN
@@ -523,7 +736,6 @@ THIN_OF = {ds: common.DATASETS[ds]['thin'] for ds in RUNS}
 # guide
 # ---------------------------------------------------------------------------
 def write_guide(rows, fw, strategy, mask_ignore):
-    main, extra, meta = fw if fw else ([], [], None)
     L = ['# Qualitative figures -- what every file is and how to assemble them', '',
          'Generated %s by `gen_qualitative.py`. All paths are relative to `resultData/qualitative/`.' % common.now(),
          'Models: baseline and "Ours" (= HI: RSR + BPM) only. STDC-Seg: I0 / HI1 (Cityscapes), Synthia / '
@@ -532,21 +744,16 @@ def write_guide(rows, fw, strategy, mask_ignore):
          '## Folder map', '',
          '```',
          'fig_qualitative/                  Figure A (cf. ref_images/qualitative/QualitativeData.png)',
-         '  PREVIEW_qualitative.png         auto-assembled preview of the whole figure (reference only)',
-         '  PREVIEW_qualitative_clean.png   same without the dashed boxes',
+         '  PREVIEW_qualitative.png         auto-assembled preview in the recommended two-block layout (reference only)',
          '  legend_cityscapes_synthia.png   colour legend for Cityscapes + SYNTHIA rows (same classes)',
          '  legend_rugd.png                 colour legend for RUGD rows',
          '  rowN_<dataset>__<image>/        one folder per figure row',
-         '    1_rgb.png 2_gt.png 3_stdc.png 4_stdc_ours.png [5_hrnet.png 6_hrnet_ours.png]',
-         '    boxed/   same panels with a dashed box around the region where Ours helps most',
-         '    zoom/    the boxed region cropped (512 px wide) -- for insets',
-         '    extra/   diagnostics: green = pixel fixed by Ours, red = pixel broken by Ours (not for the paper grid)',
+         '    1_rgb.png 2_gt.png 3_stdc.png 4_stdc_ours.png [5_hrnet.png 6_hrnet_ours.png]   (nothing else;',
+         '    --extras adds boxed/, zoom/ and green-fixed/red-broken diagnostics if you ever want them)',
          '  candidates/candidates_<dataset>.png   top-10 alternative images per dataset, with scores',
          'fig_framework/                    Figure B (cf. ref_images/qualitative/duet_framework.png)',
-         '  F01..F10_*.png                  one image per hatched box in the diagram (table below)',
-         '  zoom/                           the same images cropped to one square region (recommended for the boxes)',
-         '  extras/ (+ extras/zoom/)        optional panels for tensors the diagram names but has no box for',
-         '  framework_meta.json             numbers for the caption (gamma, OHEM statistics, sizes)',
+         '  INDEX_candidates.png            one row per candidate image -- choose here',
+         '  candNN__<image>/                everything for one candidate (full/, zoom1/, zoom2/; see Figure B)',
          'manifest.json                     machine-readable version of this guide',
          '```', '']
 
@@ -575,87 +782,132 @@ def write_guide(rows, fw, strategy, mask_ignore):
                                                        'like the GT' if mask_ignore else 'shown unmasked'), '',
           '### How to assemble it in PowerPoint', '',
           '1. Open `fig_qualitative/PREVIEW_qualitative.png` to see the target layout.',
-          '2. Layout choice for the missing HRNet cells on SYNTHIA/RUGD rows (HRNet exists for Cityscapes only):',
-          '   - **Recommended:** two blocks. Top block: the 2 Cityscapes rows x 6 columns. Bottom block: the 4 '
-          'SYNTHIA/RUGD rows x 4 columns (RGB, GT, STDC-Seg, STDC-Seg + Ours), separated by a dashed line like the '
-          'reference figure. No empty cells.',
-          '   - Alternative: one 6-column grid with the HRNet cells on SYNTHIA/RUGD rows left blank or marked "--".',
-          '3. Insert the row images left to right in file order 1..6. Use either the plain files or the `boxed/` '
-          'versions (the box is the same in every column of a row, placed where Ours fixes the most pixels). If you '
-          'prefer your own boxes, use the plain files and draw a dashed rectangle in PowerPoint.',
+          '2. HRNet exists for Cityscapes only, so SYNTHIA/RUGD rows have no HRNet panels. Recommended layout '
+          '(the preview): **two blocks**. Top block = the Cityscapes rows x 6 columns (RGB, GT, STDC-Seg, '
+          'STDC-Seg + Ours, HRNet-W48, HRNet-W48 + Ours). Dashed separator (like the reference figure). Bottom block '
+          '= the SYNTHIA and RUGD rows x 4 columns (RGB, GT, STDC-Seg, STDC-Seg + Ours) with their own column titles; '
+          'the 4 panels can be widened to span the full figure width. No empty cells, and the figure reads as '
+          '"two hosts on Cityscapes" + "one host across domains".',
+          '   - Alternative A: split into two figures (Cityscapes both hosts; cross-dataset STDC-Seg only).',
+          '   - Alternative B: one 6-column grid with the HRNet cells on SYNTHIA/RUGD rows marked "--" and a caption '
+          'note. Simplest, but empty cells look like missing results.',
+          '3. Insert each row\'s images left to right in file order 1..6 (1..4 for SYNTHIA/RUGD).'
           '4. Aspect ratios differ: Cityscapes 2:1, SYNTHIA 1280x760 (1.68:1), RUGD 688x550 (1.25:1). Either crop '
           'every image in a row identically (Picture Format -> Crop, then copy the crop to the other panels of the '
           'row) or let rows have different heights. Always crop all panels of a row the same way.',
           '5. Put a row label on the left (Cityscapes / SYNTHIA / RUGD), column titles on top (table above), and the '
           'legend strip(s) at the bottom: `legend_cityscapes_synthia.png` and `legend_rugd.png`.',
-          '6. Optional insets: the `zoom/` crops can go below or beside a row to magnify the boxed region.',
-          '7. Other image choices: look at `candidates/candidates_<dataset>.png`, then re-run with '
+          '6. Other image choices: look at `candidates/candidates_<dataset>.png`, then re-run with '
           '`--pick <dataset>:<image>`.', '',
-          'Caption suggestion: "Qualitative results on Cityscapes, SYNTHIA and RUGD val. Dashed boxes mark regions '
-          'where Ours corrects boundaries and thin structures. HRNet-W48 was trained on Cityscapes only." If the '
+          'Caption suggestion: "Qualitative results on Cityscapes (top: STDC-Seg and HRNet-W48, each without and '
+          'with Ours) and on SYNTHIA and RUGD (bottom: STDC-Seg; HRNet-W48 was trained on Cityscapes only)." If the '
           'rows are best-case picks (strategy `top`), say they were "selected for visible differences"; '
           '`--strategy median` gives typical images instead.', '']
 
     # figure B
-    if meta:
-        L += ['## Figure B -- framework diagram (STDC-Seg + Ours, image `%s`)' % meta['image'], '',
-              'Every image is a real intermediate tensor of the HI1 model on this Cityscapes val image. The model '
-              'sees the image at %dx%d (scale 0.75). Feature maps are drawn at their true resolution '
-              '(nearest-neighbour upsampling), so the blockiness of Z vs Z\' IS the point of RSR. For the boxes in '
-              'the diagram, use the `zoom/` versions: the full frames are 2:1, the boxes are square, and the zoom '
-              'region (see `zoom/where_the_zoom_is.png`) is where RSR changed the most thin-structure pixels.'
-              % tuple(meta['model_input_hw']), '',
+    if fw:
+        m0 = fw[0]
+        L += ['## Figure B -- framework diagram (STDC-Seg + Ours = HI1, Cityscapes val)', '',
+              '%d candidate images, each rendered completely. Pick the one you like and fill the diagram from that '
+              'folder. Start with `fig_framework/INDEX_candidates.png` (one row per candidate), then open '
+              '`candNN__<image>/zoom1/SHEET_zoom1.png` for every panel with its diagram label.' % len(fw), '']
+        L += common.md_table(
+            ['Candidate folder', 'Image', 'Thin-band acc. vs baseline', 'RSR changed (stride-4 cells)',
+             'OHEM picks in boundary band: BPM vs stock', 'Band share of pixels'],
+            [['`%s/`' % m['folder'], m['image'], '%+.1f pts' % m['thin_band_acc_gain_vs_baseline_pts'],
+              str(m['rsr_changed_stride4_cells']),
+              '%.0f%% vs %.0f%%' % (m['pct_bpm_selected_in_band'], m['pct_stock_selected_in_band']),
+              '%.1f%%' % m['pct_valid_pixels_in_band']] for m in fw]) + ['']
+        L += ['Candidates = Cityscapes val images where Ours most improves thin structures near boundaries '
+              '(per-image thin-band accuracy, HI1 vs the I0 baseline), at most %d per city.' % (-(-len(fw) // 3)), '',
+              '### Inside each candidate folder', '',
+              '```',
+              'candNN__<image>/',
+              '  where_the_zooms_are.png   the image with the zoom1 / zoom2 squares drawn in',
+              '  full/     F01..F10 + extras/X1..X8 at full GT resolution (2048x1024) + SHEET_full.png',
+              '  zoom1/    the same panels cropped to square window 1, 1536x1536   <- use these for the diagram boxes',
+              '  zoom2/    a second, non-overlapping window (alternative crop)',
+              '  meta.json numbers for the caption',
+              '```', '',
+              '**Accuracy and resolution.** Every panel is a real tensor of the trained HI1 model on that image (the '
+              'model sees %dx%d, i.e. scale 0.75, exactly as in evaluation). *Z* is a %dx%d grid (stride 8) and *Z\'* '
+              'a %dx%d grid (stride 4). In the zooms, each window is 512 GT px = 384 input px = 48 stride-8 cells = '
+              '96 stride-4 cells, placed on a lattice aligned to the grid cells. All enlargements are exact integers '
+              '(GT x3, stride-4 x16, stride-8 x32), so every block you see is one real grid cell, with no resampling '
+              'artifacts. Label maps and grids use nearest-neighbour enlargement (crisp edges); RGB and heatmaps use '
+              'Lanczos. Colour scales (loss, weight, Delta, PCA features) are computed on the whole image, so the full '
+              'frame and both zooms share one scale. Each candidate\'s prediction was checked against the evaluation '
+              'pipeline\'s cached prediction for the same image (agreement in `meta.json`).'
+              % (m0['model_input_hw'][0], m0['model_input_hw'][1], m0['Z_hw'][0], m0['Z_hw'][1], m0['Zprime_hw'][0],
+                 m0['Zprime_hw'][1]), '',
+              '**Tip:** when you scale these PNGs down in PowerPoint, set the picture\'s resampling to keep edges '
+              'sharp: File -> Options -> Advanced -> Image Size and Quality -> "Do not compress images in file", '
+              'with default resolution "High fidelity".', '',
               '### Main slots (one per hatched box in duet_framework.png)', '']
-        L += common.md_table(['Diagram box (label in the figure)', 'File', 'What it shows', 'How it was made'], [
+        L += common.md_table(['Diagram box (label in the figure)', 'File (in full/ or zoom1/)', 'What it shows',
+                              'How it was made'], [
             ['Input image *I*', 'F01_input_image.png', 'the val image', 'RGB as loaded'],
             ['context feat.', 'F02_context_feat.png', 'context-path features fed to the decoder (FFM)',
-             'feat_cp8 (128 ch, stride 8) -> first 3 PCA components as RGB'],
+             'feat_cp8 (128 ch, stride 8; built from stride-16/32 context, so it looks coarse) -> first 3 PCA '
+             'components as RGB'],
             ['*Z* (stride rho)', 'F03_Z_stride8_logits.png', 'host logits before RSR, as a label map',
-             'argmax of conv_out output, stride 8 (%dx%d grid)' % tuple(meta['Z_hw'])],
+             'argmax of conv_out output, stride 8 (rho = 8 for STDC-Seg)'],
             ['*F* (stride rho/2)', 'F04_F_stride4_features.png', 'high-res detail features RSR consumes',
-             'feat_res4 (64 ch, stride 4) -> PCA RGB'],
+             'feat_res4 (64 ch, stride 4) -> first 3 PCA components as RGB'],
             ["*Z'* (stride rho/2)", 'F05_Zprime_stride4_refined.png', 'logits after RSR, as a label map',
-             "argmax of Z' = Z~' + gamma*Delta, stride 4 (%dx%d grid)" % tuple(meta['Zprime_hw'])],
+             "argmax of Z' = Z~' + gamma*Delta (verified equal to the module's output), stride 4"],
             ['Prediction *Y^*', 'F06_prediction.png', 'final full-resolution prediction',
-             "Z' upsampled to 1024x2048, argmax (not masked)"],
+             "Z' upsampled x4 to the input then to 1024x2048, argmax; black where the GT category is not one of "
+             "the 19 evaluated classes (same black as F07; unmasked version = extras/X9)"],
             ['Ground truth *Y*', 'F07_ground_truth.png', 'GT labels', 'black = ignore'],
             ['*w* (Eq. 9) -- "weight map"', 'F08_weight_map_w.png', 'BPM boundary weights',
              'yellow = w_bnd (%.0f) within r=%d px of a GT boundary, blue = 1, black = ignore'
-             % (meta['w_bnd'], meta['bnd_radius'])],
+             % (m0['w_bnd'], m0['bnd_radius'])],
             ['*l_i* -- "loss map"', 'F09_loss_map.png', 'per-pixel cross-entropy', 'log(1+CE), magma colour map'],
             ['bottom-left box ("Output image *I*")', 'F10_selected_pixels_BPM.png',
-             'pixels BPM\'s OHEM keeps (S_w)', 'red = kept & inside boundary band, yellow = kept elsewhere, '
-             'on a darkened RGB; n_min = %d (1/16 of pixels, as in train.py)' % meta['ohem_n_min']]]) + ['']
+             'pixels BPM\'s OHEM keeps (S_w)', 'red = kept and inside the boundary band, yellow = kept elsewhere, '
+             'on a darkened RGB; OHEM rule of loss.py with n_min = 1/16 of the pixels, as in train.py']]) + ['']
         L += ['**The bottom-left box is mislabeled in the current diagram.** It reads "Output image *I*" with an '
               '"input image" placeholder, but BPM outputs a loss, not an image. Relabel it "OHEM-selected pixels '
               '*S_w*" and fill it with F10. That makes the BPM row end in a picture of what BPM does. Stronger '
               'option: put `extras/X8_selected_pixels_stock_OHEM.png` next to it as "stock OHEM" for contrast. '
               'Otherwise delete the box and let the arrow end at *L_BPM*.', '',
-              'Numbers for the caption (from `framework_meta.json`): on this image, %.0f%% of valid pixels lie in the '
-              'r=%d boundary band. Stock OHEM keeps %.0f%% of its selected pixels in that band; BPM keeps %.0f%%. '
-              'RSR changed %d stride-4 pixels; gamma (res_scale) = %+.2f.' % (
-                  meta['pct_of_valid_pixels_in_band'], meta['bnd_radius'], meta['pct_kept_in_boundary_band_stock'],
-                  meta['pct_kept_in_boundary_band_bpm'], meta['pixels_changed_by_rsr_at_stride4'],
-                  meta['gamma_res_scale']), '',
+              'Caption numbers are per candidate in the table above and in `meta.json`, e.g. "the boundary band is '
+              '%.1f%% of the pixels; stock OHEM spends %.0f%% of its selection there, BPM %.0f%%" (candidate 1).'
+              % (m0['pct_valid_pixels_in_band'], m0['pct_stock_selected_in_band'], m0['pct_bpm_selected_in_band']),
+              'Illustration caveat: the loss map and OHEM selection are computed on this val image with the trained '
+              'model (per-image selection); during training they are computed on 512x1024 crops in batches of 16.', '',
               '### Optional extras (`extras/`, tensors the diagram names but has no box for)', '']
         L += common.md_table(['Where it would go', 'File', 'What it shows'], [
             ["*Z~'* (after \"bilinear x2\")", 'X1_Ztilde_bilinear_x2.png',
              'Z upsampled x2 before correction: compare with F05 to see what RSR adds'],
             ['*P* (after ConvBNReLU)', 'X2_P_projected_features.png', 'projected F inside RSR (PCA RGB)'],
             ['*Delta* (before x gamma)', 'X3_Delta_correction_magnitude.png',
-             '|gamma*Delta| per pixel: where the correction acts (inferno)'],
+             '|gamma*Delta| per stride-4 cell: where the correction acts (inferno)'],
             ["next to *Z'*, or as an inset", 'X4_pixels_changed_by_RSR.png',
-             "cyan = pixels whose label differs between Z~' and Z' (what RSR fixes)"],
-            ['boundary set *B* (Eq. 8)', 'X5_boundary_set_B.png', 'GT boundary pixels (drawn 3 px wide for visibility)'],
+             "cyan = stride-4 cells whose label differs between Z~' and Z' (what RSR changes)"],
+            ['boundary set *B* (Eq. 8)', 'X5_boundary_set_B.png',
+             'GT boundary pixels (full/: drawn 3 px wide so it survives downscaling; zooms: true width x3)'],
             ['dilate to *B_r*', 'X6_boundary_band_Br.png', 'band of radius r (white)'],
             ['after the (x) node, *w_i l_i*', 'X7_weighted_loss_w_times_l.png', 'weighted loss map (magma)'],
-            ['contrast panel for F10', 'X8_selected_pixels_stock_OHEM.png', 'what stock OHEM (w = 1) would keep']])
-        L += ['', '### How to fill the diagram in PowerPoint', '',
-              '1. Open `ref_images/qualitative/duet_framework.pptx`.',
-              '2. For each hatched placeholder: right-click -> Change Picture (or insert the file and send the '
-              'placeholder backward), using the file in the table above. Use the `zoom/` version for square boxes.',
-              '3. Keep the label text above each box (e.g. "*Z* (stride rho)"). The images replace only the hatching.',
-              '4. Optional: add a small inset of `extras/zoom/X4_pixels_changed_by_RSR.png` beside *Z\'*, and swap the '
+            ['contrast panel for F10', 'X8_selected_pixels_stock_OHEM.png', 'what stock OHEM (w = 1) would keep'],
+            ['instead of F06, if you want it', 'X9_prediction_unmasked.png',
+             'the raw prediction everywhere, incl. regions whose category is not evaluated']])
+        L += ['', '**Black in F06/F07.** Black marks pixels whose Cityscapes category is not one of the 19 '
+              'evaluated classes: parking, ground, static and dynamic objects, the ego vehicle, image borders. They '
+              'are real, annotated image content, but excluded from training and from every metric (standard '
+              'Cityscapes protocol), and the model cannot output those categories. The prediction is masked with '
+              'exactly the GT\'s black region, so it hides nothing that is scored. Say so once in the legend or '
+              'caption, e.g. "black: not among the 19 evaluated classes" (or an "n/a" legend entry).',
+              '', '### How to fill the diagram in PowerPoint', '',
+              '1. Choose a candidate (INDEX_candidates.png), then a crop (zoom1 or zoom2; see where_the_zooms_are.png).',
+              '2. Open `ref_images/qualitative/duet_framework.pptx`. For each hatched placeholder: right-click -> '
+              'Change Picture, using the same-named file from that candidate\'s `zoom1/` (or `zoom2/`). Use the '
+              'same candidate and the same crop for every box, so the panels line up as one example.',
+              '3. Keep the label text above each box. The images replace only the hatching. For the input-image box '
+              '(a 1:1 box too), use zoom1/F01; if you want the whole scene there instead, use full/F01 and crop it in '
+              'PowerPoint.',
+              '4. Optional: add `extras/X4_pixels_changed_by_RSR.png` as a small inset beside *Z\'*, and swap the '
               'bottom-left box for F10 + X8 as described above.',
               '5. Label maps (Z, Z\', prediction, GT) use the Cityscapes palette; the legend is '
               '`fig_qualitative/legend_cityscapes_synthia.png` if the figure needs one.', '']
@@ -663,7 +915,7 @@ def write_guide(rows, fw, strategy, mask_ignore):
           '```',
           '/home/husky/anaconda3/envs/stdcseg/bin/python gen_qualitative.py                 # everything',
           '... --pick cityscapes:<image> --pick rugd:<image>                                   # choose rows',
-          '... --framework_image <cityscapes image>                                          # framework image',
+          '... --framework_image <img> [<img> ...] --framework_n 8                         # framework candidates',
           '... --strategy median                                                             # typical rows',
           '... --render_only                                                                 # no GPU, re-render',
           '```']
@@ -677,10 +929,13 @@ def main():
     ap.add_argument('--rows_per_dataset', type=int, default=2)
     ap.add_argument('--strategy', default='top', choices=('top', 'median'))
     ap.add_argument('--pick', action='append', default=[], help='<dataset>:<image id>, repeatable')
-    ap.add_argument('--framework_image', default=None,
-                    help='Cityscapes val image for the framework figure (default: first Cityscapes row)')
+    ap.add_argument('--framework_image', nargs='+', default=[],
+                    help='Cityscapes val image(s) to include as framework candidates (always kept)')
+    ap.add_argument('--framework_n', type=int, default=FW_N, help='number of framework candidates')
     ap.add_argument('--width', type=int, default=1024, help='max width of saved full-frame panels')
     ap.add_argument('--no_mask', action='store_true', help='do not black out GT-ignore pixels in predictions')
+    ap.add_argument('--extras', action='store_true',
+                    help='also write boxed/, zoom/ and extra/ diagnostics per row (off: RGB + predictions only)')
     ap.add_argument('--render_only', action='store_true', help='skip GPU work; use the cache')
     ap.add_argument('--force', action='store_true', help='recompute predictions / framework tensors')
     args = ap.parse_args()
@@ -701,12 +956,11 @@ def main():
         ranked = score_images(ds)
         contact_sheet(ds, ranked, osp.join(figA, 'candidates', 'candidates_%s.png' % ds))
         for d in choose(ds, ranked, args.rows_per_dataset, args.strategy, picks.get(ds, [])):
-            r = render_row(len(rows) + 1, ds, d, args.width, not args.no_mask, figA)
+            r = render_row(len(rows) + 1, ds, d, args.width, not args.no_mask, figA, args.extras)
             r.update(dataset=ds, name=d['name'], rank=d['rank'], n=d['n'], score=d['score'], gains=d['gains'])
             rows.append(r)
             print('  row %d  %-10s %-32s rank %d/%d' % (len(rows), ds, d['name'], d['rank'], d['n']))
-    preview(rows, osp.join(figA, 'PREVIEW_qualitative.png'), boxed=True)
-    preview(rows, osp.join(figA, 'PREVIEW_qualitative_clean.png'), boxed=False)
+    preview(rows, osp.join(figA, 'PREVIEW_qualitative.png'))
     legend(LEGEND_NAMES_CS + ['n/a'], CITYSCAPES_PAL + [(0, 0, 0)],
            osp.join(figA, 'legend_cityscapes_synthia.png'), per_row=10)
     rugd_cls = sorted(set(c for r in rows if r['dataset'] == 'rugd' for c in r['present']))
@@ -716,17 +970,23 @@ def main():
 
     fw = None
     if 'cityscapes' in args.datasets:
-        name = args.framework_image or next(r['name'] for r in rows if r['dataset'] == 'cityscapes')
-        npz = osp.join(QCACHE, 'framework_%s_%s.npz' % (FRAMEWORK_KEY, name))
-        if not args.render_only or osp.isfile(npz):
-            npz = ensure_framework(name, args.force) if not args.render_only else npz
+        names, info = framework_candidates(args.framework_n, args.framework_image)
+        if not args.render_only:
+            ensure_framework(names, args.force)
+        names = [n for n in names if osp.isfile(fw_npz(n))]
+        if names:
             figB = osp.join(QROOT, 'fig_framework')
             if osp.isdir(figB):
                 shutil.rmtree(figB)
-            fw = render_framework(npz, args.width, mkdir(figB))
+            mkdir(figB)
+            results = []
+            for i, n in enumerate(names, 1):
+                results.append(render_framework_one(i, n, info, figB))
+                print('  framework cand%02d %s' % (i, n))
+            framework_index(results, osp.join(figB, 'INDEX_candidates.png'))
+            fw = [m for m, _, _ in results]
     with open(osp.join(QROOT, 'manifest.json'), 'w') as fh:
-        json.dump(dict(generated=common.now(), strategy=args.strategy, rows=rows,
-                       framework=fw[2] if fw else None), fh, indent=2)
+        json.dump(dict(generated=common.now(), strategy=args.strategy, rows=rows, framework=fw), fh, indent=2)
     write_guide(rows, fw, args.strategy, not args.no_mask)
     print('done -> %s' % osp.relpath(QROOT, common.STDC_ROOT))
 
