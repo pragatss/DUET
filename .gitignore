@@ -39,3 +39,5 @@ checkpoints/*
 resultData/qualitative/cache/
 # framework-figure candidate panels from gen_qualitative.py (~250 MB, regenerable)
 resultData/qualitative/fig_framework/
+# framework-figure tiles from tools/make_figure_assets.py (~41 MB, regenerable)
+resultData/figure_assets/

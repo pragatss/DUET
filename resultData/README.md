@@ -10,6 +10,7 @@ and deltas are in **points**.
 | `ablation/` | `gen_ablation.py` | ablation table (STDC-Seg only, vs full model HI1) | `ref_images/quantative/Ablation.png` |
 | `runtime/` | `gen_runtime_memory.py` | training/inference throughput + GPU memory | `ref_images/quantative/RuntimeAndMemory.png` |
 | `qualitative/` | `gen_qualitative.py` | qualitative grid panels + framework-diagram panels; see `qualitative/GUIDE.md` | `ref_images/qualitative/QualitativeData.png`, `duet_framework.png` |
+| `figure_assets/` | `tools/make_figure_assets.py` | framework-figure tiles, one folder per candidate image (`candNN__<image>/`): img_{input,Z,Zprime,weight,loss,pred,gt}.{png,pdf} at 1632x1440 (full-res crop x3), ref_crop_overview.png, assets_meta.json (crop, k, res_scale, checks, metrics); INDEX.png compares candidates | `duet_framework.png` |
 | `cache/eval/` | `paper/eval_worker.py` | one JSON per evaluated checkpoint | — |
 | `digest/` | `gen_digest.py` | `eval_digest.md`, `perclass_digest.md`: compact, self-describing summaries for building the paper tables elsewhere | — |
 

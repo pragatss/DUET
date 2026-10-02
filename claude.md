@@ -188,6 +188,12 @@ Layout:
   gen_runtime_memory.py    train/infer throughput + peak memory, params, GMACs,
                            plus as-trained it/s parsed from the training logs
   gen_qualitative.py       qualitative figure + framework-diagram panels, GUIDE.md
+  tools/make_figure_assets.py  one image -> print-quality framework-figure tiles (input, Z, Z',
+                           w, CE loss, masked prediction, GT; PNG + lossless PDF). Hooks on
+                           net.conv_out / net.brh. Output = full-res crop x3, so Z cells are
+                           exactly 32 px, Z' 16 px (crop on 32-px lattice). Fixed loss range
+                           0.01..3. Candidates: resultData/figure_assets/candNN__<image>/ + INDEX.png
+                           (same 8 images as fig_framework). Reuse a crop: --crop_from <meta>.
   gen_digest.py            resultData/digest/{eval,perclass}_digest.md: compact,
                            self-describing summaries (context header, key tables,
                            caveats) to hand to another Claude session that builds
