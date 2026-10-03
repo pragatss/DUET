@@ -41,3 +41,5 @@ resultData/qualitative/cache/
 resultData/qualitative/fig_framework/
 # framework-figure tiles from tools/make_figure_assets.py (~41 MB, regenerable)
 resultData/figure_assets/
+resultData/qualitative/more_candidates_rugd/
+resultData/qualitative/more_candidates_rugd_focus/

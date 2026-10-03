@@ -440,6 +440,159 @@ def contact_sheet(ds, ranked, outpath, k=10):
 
 
 # ---------------------------------------------------------------------------
+# figure A, more candidates -- class-aware, so the shown gains match the per-class table
+# ---------------------------------------------------------------------------
+MORE_MIN_SPACING = 50   # min frame-number gap inside one sequence (val frames are 5 apart)
+MORE_ON_TABLE = 0.7     # min share of an image's band gain that comes from classes that gained in the table
+
+
+def table_classes(ds):
+    """classes whose bnd r1 AND full-image IoU went up in resultData/perclass/<ds>/perclass_delta.csv"""
+    import csv
+    with open(osp.join(common.RESULT_DIR, 'perclass', ds, 'perclass_delta.csv')) as fh:
+        rows = {r['Region']: r for r in csv.DictReader(fh) if r['Host'] == 'stdc'}
+    names = common.DATASETS[ds]['classes']
+    ok = [c for c in names if rows['bnd_r1'].get(c) and float(rows['bnd_r1'][c]) >= 1.0
+          and float(rows['full'][c]) >= 0.0]
+    return ok, rows
+
+
+def class_deltas(ds, name, b_key, o_key):
+    """per GT class inside the r=1 band: (band px, ours-minus-baseline correct px); plus full-image delta"""
+    gt = load_label(gt_path(ds, name))
+    valid = gt != 255
+    band = (boundary_focus(gt, [], radius=1) > 0) & valid
+    pb, po = load_label(pred_path('stdc', b_key, name)), load_label(pred_path('stdc', o_key, name))
+    d = (po == gt).astype(np.int32) - (pb == gt).astype(np.int32)
+    per = {}
+    for c in np.unique(gt[band]):
+        m = band & (gt == c)
+        per[int(c)] = (int(m.sum()), int(d[m].sum()))
+    return per, int(band.sum()), int(d[valid].sum()), int(valid.sum())
+
+
+def more_candidates(ds, n, outroot, focus=None):
+    """Rank every val image by band gain that comes from classes that ALSO gained in the per-class
+    table, reject images whose gain is mostly off-table (e.g. RUGD log) or whose full-image accuracy
+    drops, keep frames >= MORE_MIN_SPACING apart, balance sequences, render n candidate rows.
+    focus = subset of table classes: rank by the NET band change of those classes only (their losses
+    count against the image), e.g. to skip images carried by sky/tree canopy speckle."""
+    host, b_key, o_key, col = RUNS[ds][0]
+    ok_names, trows = table_classes(ds)
+    names_all = common.DATASETS[ds]['classes']
+    ok_ids = set(names_all.index(c) for c in ok_names)
+    if focus:
+        bad = [c for c in focus if c not in ok_names]
+        if bad:
+            raise SystemExit('--more_focus %s did not gain in the table (allowed: %s)' % (bad, ok_names))
+    focus_ids = set(names_all.index(c) for c in focus) if focus else None
+    pool = []
+    for name in sorted(load_stats(host, b_key)):
+        per, nb, dfull, nvalid = class_deltas(ds, name, b_key, o_key)
+        if nb == 0:
+            continue
+        on = sum(max(dc, 0) for c, (_, dc) in per.items() if c in ok_ids)
+        off = sum(max(dc, 0) for c, (_, dc) in per.items() if c not in ok_ids)
+        neg = sum(min(dc, 0) for _, dc in per.values())
+        share = on / float(on + off) if on + off else 0.0
+        if on + neg <= 0 or dfull < 0 or share < MORE_ON_TABLE:
+            continue
+        net = on + neg
+        if focus_ids:
+            net = sum(dc for c, (_, dc) in per.items() if c in focus_ids)
+            if net <= 0:
+                continue
+        drivers = sorted(((dc, c, nc) for c, (nc, dc) in per.items() if dc != 0), reverse=True)
+        pool.append(dict(name=name, score=net / float(nb), share=share, band_px=nb,
+                         band_gain=sum(dc for _, dc in per.values()) / float(nb), full_gain=dfull / float(nvalid),
+                         drivers=[(names_all[c], dc, nc) for dc, c, nc in drivers]))
+    pool.sort(key=lambda d: -d['score'])
+    seqs = sorted(set(group_of(ds, d['name']) for d in pool))
+    quota = {s: n // len(seqs) + (i < n % len(seqs)) for i, s in enumerate(seqs)}
+    chosen, frames = [], {s: [] for s in seqs}
+    for relax in (False, True):        # second pass fills a sequence's unused quota from the other one
+        for d in pool:
+            if len(chosen) >= n:
+                break
+            s, f = group_of(ds, d['name']), int(d['name'].rsplit('_', 1)[1])
+            if d in chosen or (not relax and len(frames[s]) >= quota[s]):
+                continue
+            if any(abs(f - g) < MORE_MIN_SPACING for g in frames[s]):
+                continue
+            chosen.append(d)
+            frames[s].append(f)
+    chosen.sort(key=lambda d: -d['score'])
+
+    if osp.isdir(outroot):
+        shutil.rmtree(outroot)
+    mkdir(outroot)
+    pal = PALETTE[ds]
+    idx = rgb_index(ds)
+    k = int(np.ceil(1600.0 / max(load_label(gt_path(ds, chosen[0]['name'])).shape)))  # integer, >= 1600 px
+    cw, ch, pad = 260, 208, 4
+    sheet_cols = ['RGB', 'GT', 'STDC-Seg', 'STDC-Seg + Ours', 'fixed (green) / broken (red)']
+    sheet = Image.new('RGB', (len(sheet_cols) * (cw + pad) + 420, 30 + len(chosen) * (ch + pad)), (255, 255, 255))
+    sd = ImageDraw.Draw(sheet)
+    for j, t in enumerate(sheet_cols):
+        sd.text((j * (cw + pad) + 6, 6), t, fill=(0, 0, 0), font=font(16))
+    md = ['# More %s candidates for Figure A' % DS_TITLE[ds], '',
+          'Generated %s by `gen_qualitative.py --more_candidates %s:%d`.' % (common.now(), ds, n), '',
+          'Unlike the default ranking, an image only qualifies if >= %d%% of its boundary-band (r=1) gain comes '
+          'from classes that gained in the per-class table (bnd r1 >= +1.0 AND full >= 0 in '
+          '`resultData/perclass/%s/perclass_delta.csv`), its net band gain is positive, and its full-image '
+          'accuracy does not drop. Frames in one sequence are >= %d apart; sequences are balanced.'
+          % (100 * MORE_ON_TABLE, ds, MORE_MIN_SPACING), '',
+          ('Ranked by the net band change of the focus classes only (their losses count against the image): %s.'
+           % ', '.join(focus) if focus else 'Ranked by net band gain (all classes) per band pixel.'), '',
+          'Table classes counted as gains: %s.' % ', '.join(
+              '%s (%s / %s)' % (c, trows['bnd_r1'][c], trows['full'][c]) for c in ok_names), '',
+          'Not counted (flat or down in the table): %s.' % ', '.join(
+              c for c in names_all if trows['bnd_r1'].get(c) and c not in ok_names), '',
+          'Panels in each `candNN__<image>/` folder use the same file names as a `fig_qualitative/rowN_*` folder, '
+          'enlarged x%d (labels nearest, RGB Lanczos). `extra/fixed_broken.png` is for choosing only.' % k, '',
+          '| Cand | Image | Band acc. gain | Full acc. gain | On-table share | Biggest per-class changes in the band '
+          '(px, of band px of that class) |', '|---|---|---|---|---|---|']
+    for i, d in enumerate(chosen, 1):
+        name = d['name']
+        gt = load_label(gt_path(ds, name))
+        valid = gt != 255
+        rgb = load_rgb(idx[name])
+        if rgb.shape[:2] != gt.shape:
+            rgb = to_size(rgb, gt.shape, nearest=False)
+        pb, po = load_label(pred_path(host, b_key, name)), load_label(pred_path(host, o_key, name))
+        panels = OrderedDict([('rgb', rgb), ('gt', colorize(gt, pal))])
+        for lbl, key in ((pb, col), (po, col + '_ours')):
+            c = colorize(lbl, pal)
+            c[~valid] = 0
+            panels[key] = c
+        imp = ((po == gt) & valid).astype(np.int8) - ((pb == gt) & valid).astype(np.int8)
+        fb = overlay(rgb, [((imp > 0).astype(np.uint8), (0, 230, 0)), ((imp < 0).astype(np.uint8), (255, 40, 40))])
+        folder = mkdir(osp.join(outroot, 'cand%02d__%s' % (i, name)))
+        mkdir(osp.join(folder, 'extra'))
+        for j, (key, arr) in enumerate(panels.items(), 1):
+            save(resize(arr, arr.shape[1] * k, key != 'rgb'), osp.join(folder, '%d_%s.png' % (j, key)))
+        save(resize(fb, fb.shape[1] * k, True), osp.join(folder, 'extra', 'fixed_broken.png'))
+        y = 30 + (i - 1) * (ch + pad)
+        for j, a in enumerate(list(panels.values()) + [fb]):
+            sheet.paste(fit(a, cw, ch), (j * (cw + pad), y))
+        drv = ['%s %+d/%d' % (c, dc, nc) for c, dc, nc in d['drivers'] if dc > 0][:3]
+        drv += ['%s %+d/%d' % (c, dc, nc) for c, dc, nc in reversed(d['drivers']) if dc < 0][:2]
+        txt = 'cand%02d  %s\nband acc %+.1f  full %+.1f\non-table share %.0f%%\n%s' % (
+            i, name, 100 * d['band_gain'], 100 * d['full_gain'], 100 * d['share'], '\n'.join(drv))
+        sd.text((len(sheet_cols) * (cw + pad) + 8, y + 6), txt, fill=(0, 0, 0), font=font(14))
+        md.append('| %02d | %s | %+.1f | %+.1f | %.0f%% | %s |' % (
+            i, name, 100 * d['band_gain'], 100 * d['full_gain'], 100 * d['share'], ', '.join(drv)))
+        print('  cand%02d %-16s band %+5.1f full %+5.1f share %3.0f%%  %s' % (
+            i, name, 100 * d['band_gain'], 100 * d['full_gain'], 100 * d['share'], ', '.join(drv)))
+    md += ['', '%d of %d val images qualified. Use one in the figure with '
+           '`--pick %s:<image>` (re-renders fig_qualitative/), or copy the candNN folder\'s panels directly.'
+           % (len(pool), len(load_stats(host, b_key)), ds)]
+    sheet.save(osp.join(outroot, 'INDEX.png'))
+    common.write_md(osp.join(outroot, 'CANDIDATES.md'), md)
+    print('done -> %s' % osp.relpath(outroot, common.STDC_ROOT))
+
+
+# ---------------------------------------------------------------------------
 # figure B -- framework panels (several candidate images, high resolution)
 # ---------------------------------------------------------------------------
 FW_N = 8          # candidate images
@@ -938,8 +1091,20 @@ def main():
                     help='also write boxed/, zoom/ and extra/ diagnostics per row (off: RGB + predictions only)')
     ap.add_argument('--render_only', action='store_true', help='skip GPU work; use the cache')
     ap.add_argument('--force', action='store_true', help='recompute predictions / framework tensors')
+    ap.add_argument('--more_focus', default=None,
+                    help='comma-separated table-gain classes to rank --more_candidates by (output folder gets _focus)')
+    ap.add_argument('--more_candidates', default=None, metavar='DATASET:N',
+                    help='only render N class-aware candidate rows to qualitative/more_candidates_<dataset>/ '
+                         '(fig_qualitative/ is left untouched)')
     args = ap.parse_args()
 
+    if args.more_candidates:
+        ds, n = args.more_candidates.split(':')
+        if not args.render_only:
+            ensure_predictions([ds], args.force)
+        focus = args.more_focus.split(',') if args.more_focus else None
+        more_candidates(ds, int(n), osp.join(QROOT, 'more_candidates_%s%s' % (ds, '_focus' if focus else '')), focus)
+        return
     if not args.render_only:
         ensure_predictions(args.datasets, args.force)
     figA = osp.join(QROOT, 'fig_qualitative')

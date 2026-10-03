@@ -241,6 +241,12 @@ Qualitative (DONE: gen_qualitative.py -> resultData/qualitative/, read GUIDE.md 
     of STDC and HRNet gains), one per city/sequence; dashed box = window with most
     boundary/thin-class corrections. Override: --pick dataset:image; --strategy median.
   Fig A panels = RGB + GT + predictions only (--extras adds boxes/zooms/diagnostics).
+  RUGD row choice (2026-10-02): the default score's thin term is fence+log, and a log row
+    contradicted Table III (log flat in band, -2.2 full). --more_candidates rugd:16 [--more_focus
+    fence,grass,pole,...] writes resultData/qualitative/more_candidates_rugd[_focus]/ (INDEX.png,
+    CANDIDATES.md, candNN folders at x3 = 2064x1650) and leaves fig_qualitative/ untouched. Qualify:
+    >=70% of band gain from classes with bnd r1 >= +1 AND full >= 0 in perclass_delta.csv, full acc not
+    down. RUGD colours: purple 6600CC = fence, dark maroon 660000 = log.
   Fig B (duet_framework.png): 8 candidate Cityscapes images (top per-image thin-band gain
     HI1 vs I0, <= 3 per city) in fig_framework/candNN__<image>/{full,zoom1,zoom2}; choose via
     INDEX_candidates.png. F01..F10 map 1:1 to the diagram's hatched boxes, extras X1..X8.
