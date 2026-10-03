@@ -16,7 +16,7 @@ their own training runs.
 
 Caveat: this is a T4 without clock locking, so absolute it/s and img/s move a
 few percent with thermal state. The interleaved rounds protect the RELATIVE
-numbers; params/GMACs are exact and are the primary cost claim (claude.md).
+numbers; params/GMACs are exact and are the primary cost claim.
 
 USAGE (any python)
     python gen_runtime_memory.py                  # measure both hosts, ~25 min

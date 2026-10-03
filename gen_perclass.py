@@ -246,7 +246,7 @@ def main():
     ap.add_argument('--hosts', nargs='+', default=['stdc', 'hrnet'], choices=('stdc', 'hrnet'),
                     help='Cityscapes only; other datasets have STDC runs only')
     ap.add_argument('--stdc_baseline', default='mean', choices=('mean', 'I0'),
-                    help="Cityscapes: 'mean' = mean of I0/Baseline2/Baseline (claude.md); 'I0' = single run")
+                    help="Cityscapes: 'mean' = mean of I0/Baseline2/Baseline; 'I0' = single run")
     ap.add_argument('--no_scale_check', action='store_true', help='skip the 32-divisible re-evaluation')
     ap.add_argument('--force', action='store_true', help='re-evaluate cached checkpoints')
     args = ap.parse_args()

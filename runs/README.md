@@ -15,7 +15,7 @@ pasted terminal output. To re-run anything, use `scripts/train.sh <RUN>`
 | `rugd_commands.txt` | RUGD baseline / Ours commands. It mentions `eval_rugd.py`; that script is now `eval_checkpoint.py --dataset rugd` (identical numbers). |
 | `RESULTS_early.md` | Early Cityscapes write-up (n=2 noise floor, stacking analysis, `res_scale` sign flip). The current numbers are in `resultData/`. |
 
-Known irregularities in these records (also listed in `../claude.md`):
+Known irregularities in these records:
 - `train_STDC2-Seg-Baseline` predates the cutoff and its command was not recorded. It was saved
   in torch >= 1.6 zip format, so it has to be evaluated with a torch >= 1.6 env.
 - `train_STDC2-Seg-Synthia/pths/model_maxmIOU75.pth` was overwritten by an aborted restart. The

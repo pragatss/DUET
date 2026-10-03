@@ -336,14 +336,10 @@ resultData/              generated numbers and figure panels (the paper's data)
 ref_images/              reference layouts of the paper tables/figures, framework diagram (.pptx)
 runs/                    exact commands and logs of every run, checkpoint map (runs/README.md)
 envs/                    conda environment exports
-claude.md                detailed research notes: design, protocol, decisions, known pitfalls
 ```
 
 ## Continuing this work
 
-* Start with **`claude.md`**. It records every design decision, the metric protocol, the
-  checkpoint quirks, and pitfalls that have each cost real time. Despite the name, it is meant
-  for human readers too.
 * `runs/CHECKPOINTS.txt` maps every checkpoint to its paper run and lists what is still
   **pending**: ablations M3–M5, L2b, L3, L4, the bnd_weight/bnd_radius sweeps, and replicates of
   HI1. Each one is a training command from the Training section (or `scripts/train.sh <name>`),

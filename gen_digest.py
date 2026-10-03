@@ -2,7 +2,7 @@
 # -*- encoding: utf-8 -*-
 """
 Compact, self-describing digests of the evaluation results, meant to be
-handed to someone (or another Claude session) that builds the paper tables
+handed to whoever builds the paper tables
 without access to this repo. Keeps only the numbers that carry the paper's
 argument, plus the context and caveats needed to read them correctly.
 

@@ -165,8 +165,9 @@ DATASET_RUNS = OrderedDict([
     ('rugd',    dict(baseline='RUGD', ours='RUGD-HI1', extra=[])),
 ])
 
-# HRNetV2-W48, Cityscapes, 120 epochs, OHEM on in BOTH arms (see claude.md
-# trap 5). best.pth = best val mIoU during training, the analogue of STDC's
+# HRNetV2-W48, Cityscapes, 120 epochs, OHEM on in BOTH arms (the stock HRNet
+# YAML has USE_OHEM false, so the baseline enables it explicitly; otherwise the
+# comparison would change two variables). best.pth = best val mIoU during training, the analogue of STDC's
 # model_maxmIOU75.pth. log_best is what the training log reported, used as a
 # sanity check on the re-evaluation.
 HRNET_RUNS = OrderedDict([

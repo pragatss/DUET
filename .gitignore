@@ -6,7 +6,6 @@ checkpoints/*
 __pycache__/
 *.pyc
 .DS_Store
-.claude/
 
 # regenerable outputs (re-run the generator to rebuild)
 # prediction cache from gen_qualitative.py (~135 MB)

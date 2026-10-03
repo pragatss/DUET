@@ -90,7 +90,7 @@ def main():
         noise = {m: max(ev[k][m] for k in reps) - min(ev[k][m] for k in reps) for m in common.METRICS}
         noise_src = 'range across %s' % ', '.join(reps)
     else:
-        noise, noise_src = dict(common.NOISE_FLOOR), 'claude.md constants (fewer than 2 replicates on disk)'
+        noise, noise_src = dict(common.NOISE_FLOOR), 'paper/common.py NOISE_FLOOR (fewer than 2 replicates on disk)'
     ref = ev[REF]
 
     def desc(key):
