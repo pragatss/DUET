@@ -1,0 +1,88 @@
+================================================================================
+CHECKPOINTS FOR THE PAPER
+cutoff: train_STDC2-Seg-I0 (2026-08-09 21:05) and newer
+all paths are <repo>/checkpoints/<dir>/pths/model_maxmIOU75.pth
+all runs: STDCNet1446, 60000 iter, use_boundary_8 True, pretrain STDCNet1446_76.47.tar
+================================================================================
+
+--- CITYSCAPES: main result ------------------------------------------- mIOU75 --
+checkpoints/train_STDC2-Seg-I0/pths/model_maxmIOU75.pth                  0.7635
+    baseline / lambda=1 control  (--bnd_weight 1.0)
+checkpoints/train_STDC2-Seg-I1/pths/model_maxmIOU75.pth                  0.7704
+    loss only, lambda=3          (--bnd_weight 3.0)
+checkpoints/train_STDC2-Seg-H1/pths/model_maxmIOU75.pth                  0.7660
+    BRH only                     (--use_brh True)
+checkpoints/train_STDC2-Seg-HI1/pths/model_maxmIOU75.pth                 0.7725
+    BRH + lambda=3  <-- headline (--use_brh True --bnd_weight 3.0)
+
+--- CITYSCAPES: seed replicate of the baseline config -------------------------
+checkpoints/train_STDC2-Seg-Baseline2/pths/model_maxmIOU75.pth           0.7512
+    same config as I0, different seed. see NOTE ON BASELINES below.
+
+--- CITYSCAPES: module ablations (all vs HI1) ---------------------------------
+checkpoints/train_STDC2-Seg-ABL-M1-noHR/pths/model_maxmIOU75.pth         0.7734
+    no high-res features         (--brh_variant no_hr)
+checkpoints/train_STDC2-Seg-ABL-M2-s8/pths/model_maxmIOU75.pth           0.7655
+    refine at stride 8           (--brh_variant s8)
+
+--- CITYSCAPES: loss ablations (all vs HI1) -----------------------------------
+checkpoints/train_STDC2-Seg-ABL-L1-unwRank/pths/model_maxmIOU75.pth      0.7683
+    unweighted OHEM rank         (--ohem_mode unweighted_rank)
+checkpoints/train_STDC2-Seg-ABL-L2-noOHEM/pths/model_maxmIOU75.pth       0.7674
+    no OHEM, w=3                 (--ohem_mode none)
+
+--- SYNTHIA (baseline + HI only) ----------------------------------------------
+checkpoints/train_STDC2-Seg-Synthia/pths/model_maxmIOU75.pth             0.7256
+    baseline
+checkpoints/train_STDC2-Seg-Synthia-HI1/pths/model_maxmIOU75.pth         0.7719
+    BRH + lambda=3               (+0.0463)
+
+--- RUGD (baseline + HI only) -------------------------------------------------
+checkpoints/train_STDC2-Seg-RUGD/pths/model_maxmIOU75.pth                0.4156
+    baseline
+checkpoints/train_STDC2-Seg-RUGD-HI1/pths/model_maxmIOU75.pth            0.4375
+    BRH + lambda=3               (+0.0219)
+    NB: RUGD mIoU averages 20 of 24 classes; 6 are <0.15% of val pixels.
+        support-filtered mIoU (eval_checkpoint.py --dataset rugd) is the more honest number.
+
+================================================================================
+NOTE ON BASELINES -- you asked which Cityscapes baseline to use
+================================================================================
+You have three runs of what is effectively the SAME baseline config
+(use_boundary_8, bnd_weight=1.0, no BRH), differing only by seed:
+
+    train_STDC2-Seg-Baseline    0.7600   2026-07-30  (pre-cutoff, not in runs/cityscapes_commands.txt)
+    train_STDC2-Seg-Baseline2   0.7512   2026-08-11  (no --bnd_weight, so default 1.0)
+    train_STDC2-Seg-I0          0.7635   2026-08-09  (--bnd_weight 1.0, explicit)
+
+USE I0 as the single baseline in the paper:
+  - it is inside your cutoff,
+  - its command is recorded verbatim in runs/cityscapes_commands.txt (Baseline's is not),
+  - it is the explicit lambda=1 control, so I0 -> I1 is a true one-variable change.
+
+BUT report Baseline2 as a seed replicate rather than dropping it, because:
+  spread across identical configs = 0.7512 .. 0.7635 = 0.0123 mIoU
+  your headline effect  I0 -> HI1 = 0.7635 -> 0.7725 = 0.0090 mIoU
+  => on FULL mIoU the headline gain is SMALLER than seed noise.
+  This is fine for your argument only because full mIoU is your guard metric,
+  not your primary one. The boundary/thin-class deltas are 2-4x larger
+  (bnd r=1 -0.0198, thin r=1 -0.0319 for I1 vs HI1). Say this explicitly in
+  the paper before a reviewer says it for you.
+
+================================================================================
+EXCLUDED
+================================================================================
+older than the I0 cutoff (early arm exploration):
+    train_STDC2-Seg_ARMB, -ARM-C, -ARM-D, -ARM-E, -ARM-G, -GCN,
+    train_STDC2-Seg-Baseline   (except as the seed note above)
+
+inside the date range but undocumented -- not in runs/cityscapes_commands.txt or runs/ablation_commands.txt,
+and their logs predate flag logging, so I cannot tell you what config they were.
+Identify or drop:
+    train_STDC2-Seg/pths/model_maxmIOU75.pth        0.7522   2026-08-15
+    train_STDC2-Seg-J1/pths/model_maxmIOU75.pth     0.7569   2026-08-24
+
+still pending (no checkpoint yet; train with scripts/train.sh <name>, names in paper/common.py STDC_RUNS):
+    M3 no residual, M4 no logit input, M5 no gate, L2b no OHEM w1,
+    L3 no detail loss, L4 no aux heads, w=2, w=5, w=8, r=1, r=2, r=5
+================================================================================

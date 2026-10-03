@@ -34,13 +34,20 @@ HRNET_ROOT = osp.normpath(os.environ.get(
 RESULT_DIR = osp.join(STDC_ROOT, 'resultData')
 EVAL_CACHE = osp.join(RESULT_DIR, 'cache', 'eval')
 
+def _env_py(var, default):
+    """interpreter for a host's GPU work: $var, else the original machine's
+    conda env, else the python running this script"""
+    p = os.environ.get(var, default)
+    return p if osp.isfile(p) else sys.executable
+
+
 ENV_PY = {
-    'stdc': os.environ.get('STDC_PY', '/home/husky/anaconda3/envs/stdcseg/bin/python'),
-    'hrnet': os.environ.get('HRNET_PY', '/home/husky/anaconda3/envs/hrnet/bin/python'),
+    'stdc': _env_py('STDC_PY', '/home/husky/anaconda3/envs/stdcseg/bin/python'),
+    'hrnet': _env_py('HRNET_PY', '/home/husky/anaconda3/envs/hrnet/bin/python'),
 }
 # checkpoints written by torch >= 1.6 (zip format, e.g. train_STDC2-Seg-Baseline)
 # cannot be read by torch 1.1; those are evaluated under this env instead.
-ZIP_PY = os.environ.get('STDC18_PY', '/home/husky/anaconda3/envs/stdcseg18/bin/python')
+ZIP_PY = _env_py('STDC18_PY', '/home/husky/anaconda3/envs/stdcseg18/bin/python')
 
 # ---------------------------------------------------------------------------
 # Cityscapes classes / metric constants
@@ -76,7 +83,7 @@ DATASETS = OrderedDict([
                      min_support=None, root='./data/SYNTHIA', size32=(576, 960))),
     # RUGD val is two videos: several classes are < 0.1% of val pixels, so
     # every mean (full, boundary, thin) uses only classes with >= 0.1% of val
-    # GT pixels -- eval_rugd.py's support-filtered convention. mIoU over every
+    # GT pixels -- the support-filtered convention (eval_checkpoint.py). mIoU over every
     # present class is reported alongside (== what train.py logs).
     ('rugd', dict(classes=RUGD_CLASSES, paper_classes=RUGD_CLASSES,
                   thin=[RUGD_CLASSES.index(c) for c in ('pole', 'sign', 'fence', 'bicycle', 'log')],
@@ -129,18 +136,18 @@ STDC_RUNS = OrderedDict([
     ('SENS-r1', _S('SENS-r1', True, 'bnd_radius=1')),
     ('SENS-r2', _S('SENS-r2', True, 'bnd_radius=2')),
     ('SENS-r5', _S('SENS-r5', True, 'bnd_radius=5')),
-    # other datasets (n=1 each; synthiaruns.txt / rugdruns.txt)
+    # other datasets (n=1 each; runs/synthia_commands.txt / runs/rugd_commands.txt)
     # model_maxmIOU75.pth in this folder was OVERWRITTEN on 2026-08-30 by an
     # aborted restart in the same respath (its first val, 0.2063, became the new
     # "max"). The real run (log 2026-08-28, 60k iters) peaked at iter 58000 with
-    # mIOU75 0.7256 -- that is the checkpoint the 0.7256 in models_i_care_about refers to.
+    # mIOU75 0.7256 -- that is the checkpoint the 0.7256 in runs/CHECKPOINTS.txt refers to.
     ('Synthia',     dict(_S('Synthia', False, 'SYNTHIA baseline (iter 58000; maxmIOU75 file was overwritten)',
                             dataset='synthia'),
                          ckpt=osp.join('checkpoints', 'train_STDC2-Seg-Synthia', 'pths',
                                        'model_iter58000_mIOU50_0.6888_mIOU75_0.7256.pth'))),
     # train_STDC2-Seg-Synthia-HI1/ holds TWO 60k runs. The 2026-08-30 one has
     # no brh.* weights (64,565,680-byte files, == baseline arch), so it is not
-    # HI1; it is almost certainly the I1 command in synthiaruns.txt launched
+    # HI1; it is almost certainly the I1 command in runs/synthia_commands.txt launched
     # into the wrong respath (no Synthia-I1 folder exists). Its flags were not
     # logged, so "BPM only" is inferred, not recorded. Best val: iter 50000.
     ('Synthia-I1',  dict(_S('Synthia-HI1', False, 'SYNTHIA BPM only (inferred: no-BRH run in the HI1 folder)',

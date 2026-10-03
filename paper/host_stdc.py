@@ -11,7 +11,7 @@ from paper.common import DATASETS, PROTOCOL, STDC_RUNS, ckpt_path
 
 BACKBONE = 'STDCNet1446'
 N_CLASSES = 19
-TRAIN_BATCH = 16            # train.py --n_img_per_gpu default; never overridden in commands.txt
+TRAIN_BATCH = 16            # train.py --n_img_per_gpu default; never overridden in runs/*_commands.txt
 TRAIN_CROP = [1024, 512]    # train.py dscfg['cityscapes']['cropsize'] (W, H)
 RANDOMSCALE = (0.125, 0.25, 0.375, 0.5, 0.625, 0.75, 0.875, 1.0, 1.125, 1.25, 1.375, 1.5)
 

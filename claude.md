@@ -43,7 +43,8 @@ the network can physically draw. Orthogonal levers -> they compose.
 
 ## Host architectures
 - STDC-Seg (primary host): this repo, fork of MichaelFan01/STDC-Seg.
-  Branch RUGD-ARMIANDH is the most up-to-date H+I code.
+  Branch 10-3-Cleanup (2026-10-03) is the cleaned, current tree; it contains
+  RUGD-ARMIANDH (the earlier most up-to-date H+I code).
   Key locations (verify, line numbers may have drifted):
     models/model_stages.py : BoundaryRefine (~L41), res_scale (~L50),
                              get_params() appends res_scale (~L74)
@@ -59,7 +60,7 @@ the network can physically draw. Orthogonal levers -> they compose.
   is separate from Arm H.
 
 - HRNet (second host, generalizability): github.com/HRNet/HRNet-Semantic-
-  Segmentation, master branch, **HRNetV2-W48** (NOT w18-small-v2 -- verified
+  Segmentation, HRNet-OCR branch (base commit 0bbb288; NOT master), **HRNetV2-W48** (NOT w18-small-v2 -- verified
   from the yamls/pretrained path), Cityscapes only, 120 epochs, batch 3,
   crop 512x1024, OHEM on in both arms. HRNet keeps
   high-resolution branches in parallel through the whole network and fuses
@@ -168,7 +169,7 @@ Reference layouts (what the outputs must be able to fill):
   ref_images/quantative/RuntimeAndMemory.png  -> gen_runtime_memory.py
   ref_images/qualitative/QualitativeData.png  -> gen_qualitative.py (TODO)
 
-Checkpoints: models_i_care_about.txt is the source of truth (cutoff: I0 and
+Checkpoints: runs/CHECKPOINTS.txt is the source of truth (cutoff: I0 and
 newer). The registry in paper/common.py (STDC_RUNS, HRNET_RUNS) holds the
 paper keys. Add new runs there, not in the scripts.
 
@@ -194,6 +195,14 @@ Layout:
                            exactly 32 px, Z' 16 px (crop on 32-px lattice). Fixed loss range
                            0.01..3. Candidates: resultData/figure_assets/candNN__<image>/ + INDEX.png
                            (same 8 images as fig_framework). Reuse a crop: --crop_from <meta>.
+  eval_checkpoint.py       any checkpoint(s) on cityscapes/synthia/rugd by path, RSR auto-detected from
+                           the weights; same code path as gen_perclass (verified identical numbers)
+  scripts/train.sh <RUN>   portable training by registry name (flags == runs/*_commands.txt)
+  prepare_synthia.py       raw SYNTHIA-RAND-CITYSCAPES -> data/SYNTHIA split via splits/synthia/*.txt
+  splits/                  SYNTHIA (our own random split) and RUGD frame lists
+  runs/                    original command logs + CHECKPOINTS.txt (was models_i_care_about.txt)
+  envs/                    conda exports (stdcseg = torch 1.1 main env; stdcseg18 = torch 2.4,
+                           zip checkpoints + ninja)
   gen_digest.py            resultData/digest/{eval,perclass}_digest.md: compact,
                            self-describing summaries (context header, key tables,
                            caveats) to hand to another Claude session that builds
@@ -223,11 +232,11 @@ Decisions:
   (coarse 5-round blocks) read STDC "BPM only" as 8.6% slower at inference,
   even though it is architecturally identical to the baseline: clock
   wandered 825-1545 MHz between blocks. GMACs = conv+linear hook counter
-  for both hosts. thop (pareto_flops.csv) counts ~1.5x higher and exists for STDC only.
+  for both hosts. thop counts ~1.5x higher and exists for STDC only.
 - checkpoints/train_STDC2-Seg-Baseline is in torch>=1.6 zip format, which
   torch 1.1 can't load. ensure_evaluated() routes zip checkpoints to
-  envs/stdcseg18 (torch 2.4) automatically. It reproduces RESULTS.md exactly.
-- The I0 cutoff date "2026-08-09 21:05" in models_i_care_about.txt is the
+  envs/stdcseg18 (torch 2.4) automatically. It reproduces runs/RESULTS_early.md exactly.
+- The I0 cutoff date "2026-08-09 21:05" in runs/CHECKPOINTS.txt is the
   name of an EMPTY log. I0's actual 60k-iter log is BiSeNet-2026-08-07-18-59-32.log.
 
 Qualitative (DONE: gen_qualitative.py -> resultData/qualitative/, read GUIDE.md there):
@@ -258,6 +267,14 @@ Qualitative (DONE: gen_qualitative.py -> resultData/qualitative/, read GUIDE.md 
     F06 prediction is MASKED like the GT (black = category not among the 19 evaluated
     classes: parking, ground, static/dynamic, ego vehicle, borders); unmasked = extras/X9.
     Internal tensors (Z, Z', ...) are never masked.
+
+## Repo cleanup (2026-10-03, branch 10-3-Cleanup)
+Removed (all still in git history): upstream TensorRT latency tools (latency/, model_stages_trt.py),
+upstream scripts/*.sh and images/, the equal-cost Pareto analysis (pareto_*.py/csv/png, plot_pareto.py;
+superseded by gen_runtime_memory.py), eval_ablations.py + ablation_results.txt (-> gen_ablation.py),
+eval_rugd.py (-> eval_checkpoint.py --dataset rugd), tracked .pyc/.DS_Store, tracked data/ symlinks.
+HRNet code is NOT in this repo for now (user decision: push STDC only); paper/host_hrnet.py still
+reads ../../hrnet by path. README.md is the public entry point.
 
 ## Out of scope — do not modify or revive
 SBG (Arms A-G, branch ARM-D-Option1) and CtxGCN (branch GCN) are archived

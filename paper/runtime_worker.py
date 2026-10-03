@@ -6,7 +6,7 @@ ONE host. Launched by gen_runtime_memory.py with the host's conda env:
 
     <env python> -m paper.runtime_worker --host stdc --out resultData/runtime/raw/stdc.json
 
-Protocol (same spirit as latency/measure_pareto_latency.py):
+Protocol:
   * Timing: inference nets are built once and kept resident; training
     configs are rebuilt per block (they don't fit together). The GPU is
     heat-soaked for --soak_s so it reaches its throttled steady state (the

@@ -15,8 +15,8 @@ to Cityscapes); the thin set and rare-class handling per dataset live in
 paper/common.py DATASETS:
   * SYNTHIA uses Cityscapes trainIds; terrain/truck/train never occur in val
     and drop out of every mean.
-  * RUGD means use only classes with >= 0.1% of val GT pixels (eval_rugd.py's
-    support filter); 'mIoU (all classes)' is the unfiltered number train.py logs.
+  * RUGD means use only classes with >= 0.1% of val GT pixels (the support
+    filter, as in eval_checkpoint.py); 'mIoU (all classes)' is the unfiltered number train.py logs.
 For SYNTHIA and RUGD, scale 0.75 is not 32-divisible, so each checkpoint is
 also scored at a nearby 32-divisible size (scale_check.csv) to confirm the
 conclusions don't depend on that resize.

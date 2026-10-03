@@ -1,13 +1,12 @@
-easydict==1.9
-matplotlib==3.0.0
-numpy==1.16.1
-onnx==1.5.0
-opencv-python==3.4.4.19
-Pillow==6.2.0
-protobuf==3.8.0
-scipy==1.1.0
-thop==0.0.31.post2001170342
+# Versions of the env every paper result was trained and evaluated in
+# (python 3.6.13, CUDA 10.0 / cuDNN 7.6.5). Full conda export: envs/stdcseg.yml
 torch==1.1.0
 torchvision==0.3.0
+numpy==1.16.1
+opencv-python==3.4.4.19
+Pillow==8.4.0
+imageio==2.15.0        # SYNTHIA 16-bit labels; also run: python -c "import imageio; imageio.plugins.freeimage.download()"
+matplotlib==3.0.0      # figures (gen_qualitative.py, tools/)
 tqdm==4.25.0
-
+thop==0.0.31.post2001170342   # optional: second FLOP counter in gen_runtime_memory.py
+ninja                  # builds the InPlace-ABN CUDA extension (modules/) on first import

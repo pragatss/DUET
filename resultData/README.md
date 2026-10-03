@@ -29,11 +29,10 @@ with the `STDC_PY` / `HRNET_PY` env vars).
   wherever the GT label changes, so the metric works for any label set.
 - **RUGD support filter**: RUGD val is two videos, and several classes are nearly absent. Every
   RUGD mean (full, boundary, thin) uses only classes with >= 0.1% of val GT pixels, the same as
-  `eval_rugd.py`. `mIoU (all classes)` is the unfiltered mean over present classes, which is
+  `eval_checkpoint.py --dataset rugd`. `mIoU (all classes)` is the unfiltered mean over present classes, which is
   what train.py logs. Classes absent from a val set (SYNTHIA: terrain, truck, train) are blank
   and excluded.
-- The math is a copy of `evaluation.py` (`paper/common.py` `SegMeter`). The new evaluator reproduces the HI1 row
-  of `ablation_results.txt` to 4 decimals.
+- The math is a copy of `evaluation.py` (`paper/common.py` `SegMeter`). It reproduces `evaluation.py`'s HI1 numbers to 4 decimals.
 - Each host is evaluated with its own native protocol (`paper/common.py` `PROTOCOL`):
   STDC-Seg input resized to scale 0.75; HRNet at full resolution. Compare only within a host.
 - SYNTHIA and RUGD at scale 0.75 (570x960, 412x516) are not 32-divisible, and non-32-divisible
@@ -83,7 +82,7 @@ its entry is re-evaluated automatically. `--force` re-evaluates everything.
     Use this for the overhead claim, not the difference of the absolute columns.
   - `As-trained it/s`: median from the real training log, which includes data loading and periodic validation.
   - `GMACs` = Conv2d+Linear multiply-accumulates, the same counter for both hosts. `thop GFLOPs`
-    matches pareto_flops.csv but is STDC-only (thop isn't installed in the hrnet env). The two
+    is STDC-only (thop isn't installed in the hrnet env). The two
     counters differ, so never mix them in one table.
 - `raw/<host>.json`: every per-round sample, the GPU temperature/clock/power per round, and the memory pass.
 
