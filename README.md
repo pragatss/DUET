@@ -131,27 +131,86 @@ alongside.
 
 ## Training
 
-`scripts/train.sh <RUN>` trains one paper configuration. It writes to
-`checkpoints/train_STDC2-Seg-<RUN>/`, the name the evaluation scripts expect.
+Training uses STDC-Seg's `train.py` and launcher unchanged. Our two components are switched on
+with flags: `--use_brh True` adds RSR, and `--bnd_weight 3.0` turns on BPM. Every paper run uses
+the STDC2 backbone (`STDCNet1446`), 60k iterations, batch 16 on **one GPU**, and the stride-8
+detail head. Keep `--respath` as `checkpoints/train_STDC2-Seg-<RUN>/`, because the evaluation
+scripts look checkpoints up by that name (`paper/common.py`).
+
+Note: Backbone STDCNet813 denotes STDC1, STDCNet1446 denotes STDC2. All results use STDC2.
+
+* Train the STDC2-Seg baseline (Cityscapes):
 
 ```bash
 export CUDA_VISIBLE_DEVICES=0
-scripts/train.sh I0            # Cityscapes baseline (stock loss; I0 = BPM with w=1, identical to stock)
-scripts/train.sh I1            # + BPM only
-scripts/train.sh H1            # + RSR only
-scripts/train.sh HI1           # + RSR + BPM  (Ours)
-scripts/train.sh HI1-rep2      # a seed replicate (any suffix; train.py sets no seed)
-
-scripts/train.sh Synthia       # SYNTHIA baseline        scripts/train.sh Synthia-HI1   # SYNTHIA Ours
-scripts/train.sh RUGD          # RUGD baseline           scripts/train.sh RUGD-HI1      # RUGD Ours
-
-scripts/train.sh ABL-M3-noRes  # ablations / sweeps: see the list at the top of scripts/train.sh
+python -m torch.distributed.launch \
+--nproc_per_node=1 train.py \
+--respath checkpoints/train_STDC2-Seg-I0/ \
+--backbone STDCNet1446 \
+--mode train \
+--n_workers_train 12 \
+--n_workers_val 1 \
+--max_iter 60000 \
+--use_boundary_8 True \
+--pretrain_path checkpoints/STDCNet1446_76.47.tar \
+--bnd_weight 1.0
 ```
 
-Every run uses the STDC2 backbone, 60k iterations, batch 16 on **one GPU**
-(`--nproc_per_node=1`), and the stride-8 detail head (`--use_boundary_8 True`), as in the paper.
-`GPUS=N` launches N processes, which multiplies the effective batch size. The script prints the
-full `train.py` command. The relevant flags are:
+* Train STDC2-Seg + Ours (RSR + BPM, Cityscapes):
+
+```bash
+export CUDA_VISIBLE_DEVICES=0
+python -m torch.distributed.launch \
+--nproc_per_node=1 train.py \
+--respath checkpoints/train_STDC2-Seg-HI1/ \
+--backbone STDCNet1446 \
+--mode train \
+--n_workers_train 12 \
+--n_workers_val 1 \
+--max_iter 60000 \
+--use_boundary_8 True \
+--pretrain_path checkpoints/STDCNet1446_76.47.tar \
+--use_brh True \
+--bnd_weight 3.0
+```
+
+* Train on SYNTHIA or RUGD: run the same commands with `--dataset synthia` or `--dataset rugd`
+  added. The paper's run names are `Synthia` / `Synthia-HI1` and `RUGD` / `RUGD-HI1`, e.g.:
+
+```bash
+export CUDA_VISIBLE_DEVICES=0
+python -m torch.distributed.launch \
+--nproc_per_node=1 train.py \
+--respath checkpoints/train_STDC2-Seg-RUGD-HI1/ \
+--backbone STDCNet1446 \
+--mode train \
+--dataset rugd \
+--n_workers_train 12 \
+--n_workers_val 1 \
+--max_iter 60000 \
+--use_boundary_8 True \
+--pretrain_path checkpoints/STDCNet1446_76.47.tar \
+--use_brh True \
+--bnd_weight 3.0
+```
+
+* Single components and ablations change only the last lines of the "Ours" command:
+
+| Run (`--respath checkpoints/train_STDC2-Seg-<RUN>/`) | Flags after `--pretrain_path ...` |
+|---|---|
+| `I0` (baseline; `Baseline`, `Baseline2` are seed replicates) | `--bnd_weight 1.0` (= stock OHEM) |
+| `I1` (BPM only) | `--bnd_weight 3.0` |
+| `H1` (RSR only) | `--use_brh True` |
+| `HI1` (Ours) | `--use_brh True --bnd_weight 3.0` |
+| `ABL-M1-noHR`, `ABL-M2-s8`, `ABL-M3-noRes`, `ABL-M4-noLogit`, `ABL-M5-noGate` | Ours + `--brh_variant no_hr` / `s8` / `no_residual` / `no_logit` / `no_gate` |
+| `ABL-L1-unwRank`, `ABL-L2-noOHEM` | Ours + `--ohem_mode unweighted_rank` / `none` |
+| `ABL-L2b-noOHEM-w1` | `--use_brh True --bnd_weight 1.0 --ohem_mode none` |
+| `ABL-L3-noDetail` | Ours + `--use_detail_bce False --use_detail_dice False` |
+| `ABL-L4-noAux` | Ours + `--use_aux False` |
+| `SENS-w2`, `SENS-w5`, `SENS-w8` | `--use_brh True --bnd_weight 2` / `5` / `8` |
+| `SENS-r1`, `SENS-r2`, `SENS-r5` | Ours + `--bnd_radius 1` / `2` / `5` |
+
+The full flag reference:
 
 | Flag | Default | Meaning |
 |---|---|---|
@@ -163,8 +222,21 @@ full `train.py` command. The relevant flags are:
 | `--use_aux`, `--use_detail_bce`, `--use_detail_dice` | True | loss-term ablations |
 | `--dataset` | `cityscapes` | `synthia`, `rugd` |
 
-`train.py` saves `model_maxmIOU75.pth` (best val mIoU at scale 0.75). Every paper number uses
-this file.
+We will save the model's params in `model_maxmIOU50.pth` for input resolution 512x1024 and
+`model_maxmIOU75.pth` for input resolution 768x1536 (on SYNTHIA/RUGD: scale 0.5 / 0.75 of the
+image). Every paper number uses `model_maxmIOU75.pth`.
+
+Notes:
+* The paper used `--nproc_per_node=1` (one T4). Upstream STDC-Seg trains on 3 GPUs; the batch
+  size is per GPU (`--n_img_per_gpu 16`), so N GPUs multiply the effective batch by N and the
+  results are not directly comparable.
+* `train.py` sets no seed. For a replicate, train again into a new `--respath`
+  (e.g. `train_STDC2-Seg-HI1-rep2/`).
+* `ninja` and `nvcc` must be on `PATH` (InPlace-ABN is compiled on first import; see Setup).
+* Shortcut: `scripts/train.sh <RUN>` runs the commands above by run name
+  (e.g. `scripts/train.sh HI1`, `scripts/train.sh RUGD-HI1`, `scripts/train.sh ABL-M3-noRes`)
+  and prints the full command. The exact commands used for the paper, with their logs, are in
+  `runs/`.
 
 ## Evaluation
 
@@ -252,10 +324,11 @@ claude.md                detailed research notes: design, protocol, decisions, k
   for human readers too.
 * `runs/CHECKPOINTS.txt` maps every checkpoint to its paper run and lists what is still
   **pending**: ablations M3–M5, L2b, L3, L4, the bnd_weight/bnd_radius sweeps, and replicates of
-  HI1. Each one is `scripts/train.sh <name>` followed by `python gen_ablation.py`.
+  HI1. Each one is a training command from the Training section (or `scripts/train.sh <name>`),
+  followed by `python gen_ablation.py`.
 * Trained checkpoints are **not** in git (~100 GB). Put them under `checkpoints/` with the
   folder names in `paper/common.py`.
-* To add a run: train it with `scripts/train.sh`, register it in `paper/common.py` `STDC_RUNS`,
+* To add a run: train it (Training section), register it in `paper/common.py` `STDC_RUNS`,
   and re-run the relevant `gen_*.py`.
 * Never change `--use_brh` / `--brh_variant` between training and evaluation. `load_net()`
   raises on a mismatch instead of silently building the wrong model.
