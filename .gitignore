@@ -7,6 +7,10 @@ __pycache__/
 *.pyc
 .DS_Store
 
+# local assistant notes and settings (not part of the project)
+claude.md
+.claude/
+
 # regenerable outputs (re-run the generator to rebuild)
 # prediction cache from gen_qualitative.py (~135 MB)
 resultData/qualitative/cache/
