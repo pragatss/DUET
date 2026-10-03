@@ -39,6 +39,55 @@ boundary gain is about 12x that noise. Ablations: `resultData/ablation/ablation.
 Cost: `resultData/runtime/runtime_memory.md`. The paper also applies the method to HRNetV2-W48
 on Cityscapes; that code is not part of this repository yet.
 
+## Experiments
+
+All runs share the STDC2 backbone, data, augmentation, 60k-iteration schedule and checkpoint
+selection. They differ only in the flags listed. Run names are the checkpoint folder names
+(`checkpoints/train_STDC2-Seg-<RUN>/`) and the keys in `paper/common.py`.
+
+### Main runs (component study, Cityscapes)
+
+| Run | RSR | BPM | Flags | What it measures |
+|---|:-:|:-:|---|---|
+| `I0`, `Baseline`, `Baseline2` | | | `--bnd_weight 1.0` (default) | Stock STDC2-Seg, trained three times. The mean is the reference for every comparison, and the range across the three is the noise floor. `I0` routes training through the BPM loss with w = 1, which is algebraically identical to stock OHEM, so it also checks that the new loss code changes nothing by itself. |
+| `I1` | | ✓ | `--bnd_weight 3.0` | BPM alone: the effect of the training objective. Architecture and inference cost are identical to the baseline. |
+| `H1` | ✓ | | `--use_brh True` | RSR alone: the effect of output resolution, trained with the stock loss. |
+| `HI1` | ✓ | ✓ | `--use_brh True --bnd_weight 3.0` | The full method ("Ours"). |
+
+Cityscapes val, IoU (%). In parentheses: difference from the 3-run baseline mean.
+
+| Run | Full mIoU | Bnd r=1 | Bnd r=3 | Thin r=1 | Thin r=3 |
+|---|---|---|---|---|---|
+| Baseline (mean of 3) | 75.82 | 35.80 | 44.91 | 33.16 | 41.84 |
+| `I1` BPM only | 77.04 (+1.22) | 37.78 (+1.98) | 47.68 (+2.77) | 35.43 (+2.27) | 45.03 (+3.19) |
+| `H1` RSR only | 76.60 (+0.78) | 37.57 (+1.76) | 47.08 (+2.16) | 35.40 (+2.24) | 44.53 (+2.69) |
+| `HI1` RSR + BPM | 77.25 (+1.43) | 39.77 (+3.96) | 49.82 (+4.91) | 38.62 (+5.46) | 48.39 (+6.55) |
+| Noise floor (range of 3 baselines) | 1.23 | 0.32 | 0.47 | 0.42 | 0.55 |
+
+* Each component on its own raises every boundary metric by 4.6–6.2x the noise floor.
+* Combined, the thin-class gains exceed the sum of the separate gains (Thin r=1: +5.46 vs
+  +4.52; r=3: +6.55 vs +5.88). Whole-band gains are approximately additive (Bnd r=1: +3.96 vs
+  +3.74; r=3: +4.91 vs +4.93).
+* Full-image mIoU differences are within the noise floor. Full mIoU is reported as a check that
+  nothing regresses, not as evidence of improvement.
+* `I1`, `H1` and `HI1` are single runs. Replicates of `HI1` are pending.
+
+### Ablations
+
+The paper also ablates each part of RSR and BPM, and sweeps the boundary weight and band
+radius, on Cityscapes against `HI1`. The run names and flags are listed at the top of
+`scripts/train.sh`, and the results are in `resultData/ablation/ablation.md`.
+
+### Cross-dataset runs
+
+| Run | Dataset | Flags | Notes |
+|---|---|---|---|
+| `Synthia`, `Synthia-HI1` | SYNTHIA | `--dataset synthia` (+ `--use_brh True --bnd_weight 3.0`) | Baseline and Ours |
+| `Synthia-I1` | SYNTHIA | `--dataset synthia --bnd_weight 3.0` | BPM only. Its checkpoint is stored in the `Synthia-HI1/` folder (see `runs/README.md`). |
+| `RUGD`, `RUGD-HI1` | RUGD | `--dataset rugd` (+ `--use_brh True --bnd_weight 3.0`) | Baseline and Ours |
+
+Results are in the Results table above and in `resultData/perclass/`. These are single runs.
+
 ---
 
 ## Setup
@@ -194,7 +243,7 @@ python -m torch.distributed.launch \
 --bnd_weight 3.0
 ```
 
-* Single components and ablations change only the last lines of the "Ours" command:
+* The single-component runs change only the last lines of the command:
 
 | Run (`--respath checkpoints/train_STDC2-Seg-<RUN>/`) | Flags after `--pretrain_path ...` |
 |---|---|
@@ -202,13 +251,6 @@ python -m torch.distributed.launch \
 | `I1` (BPM only) | `--bnd_weight 3.0` |
 | `H1` (RSR only) | `--use_brh True` |
 | `HI1` (Ours) | `--use_brh True --bnd_weight 3.0` |
-| `ABL-M1-noHR`, `ABL-M2-s8`, `ABL-M3-noRes`, `ABL-M4-noLogit`, `ABL-M5-noGate` | Ours + `--brh_variant no_hr` / `s8` / `no_residual` / `no_logit` / `no_gate` |
-| `ABL-L1-unwRank`, `ABL-L2-noOHEM` | Ours + `--ohem_mode unweighted_rank` / `none` |
-| `ABL-L2b-noOHEM-w1` | `--use_brh True --bnd_weight 1.0 --ohem_mode none` |
-| `ABL-L3-noDetail` | Ours + `--use_detail_bce False --use_detail_dice False` |
-| `ABL-L4-noAux` | Ours + `--use_aux False` |
-| `SENS-w2`, `SENS-w5`, `SENS-w8` | `--use_brh True --bnd_weight 2` / `5` / `8` |
-| `SENS-r1`, `SENS-r2`, `SENS-r5` | Ours + `--bnd_radius 1` / `2` / `5` |
 
 The full flag reference:
 
@@ -251,47 +293,26 @@ python eval_checkpoint.py --dataset rugd    --ckpt checkpoints/train_STDC2-Seg-R
 
 The script prints full mIoU, Bnd r=1/r=3 and Thin r=1/r=3, plus deltas against the first
 checkpoint. Options: `--per_class` (per-class IoU and pixel support), `--out results.json`
-(everything), `--size32` (a 32-divisible input instead of scale 0.75; see Protocol).
-It uses the same model build, inference and metric code as the paper tables. These commands
+(everything), `--size32` (evaluate at a 32-divisible input size, 576×960 for SYNTHIA and 416×512 for RUGD, instead of scale 0.75).
+It uses the same model build, inference and metric code as the paper tables. The results files are described in `resultData/README.md`. These commands
 reproduce the cached numbers in `resultData/cache/eval/` exactly (checked for Cityscapes
 I0/HI1/M2, SYNTHIA HI1 and RUGD HI1).
 
-### The paper tables and figures
+### Evaluation protocol
 
-The generators score every registered run, cache the results, and write plain CSV/MD/JSON to
-`resultData/` (see `resultData/README.md` for every file and column). Checkpoints are named in
-one place: `paper/common.py` (`STDC_RUNS`).
-
-| Command | Output |
-|---|---|
-| `python gen_perclass.py --hosts stdc` | per-class tables per dataset + cross-dataset summary (`resultData/perclass/`) |
-| `python gen_ablation.py` | ablation table vs the full model, with deltas in noise-floor units (`resultData/ablation/`) |
-| `python gen_runtime_memory.py --hosts stdc` | params, GMACs, train/infer throughput, peak memory (`resultData/runtime/`) |
-| `python gen_qualitative.py --datasets synthia rugd` | qualitative panels (`resultData/qualitative/`, read `GUIDE.md` there). The Cityscapes rows and the framework-figure panels also need the HRNet checkpoints. `--more_candidates rugd:16` renders more candidate images. |
-| `python tools/make_figure_assets.py --ckpt <HI1 pth> --use_brh --image <leftImg8bit png> --label <labelIds png>` | print-quality framework-figure tiles for one image (`resultData/figure_assets/`) |
-| `python gen_digest.py` | compact summaries of all results (`resultData/digest/`) |
-
-Runs whose checkpoint is missing are skipped and marked `pending`. `python check_ablation.py`
-is a quick sanity check of every RSR variant and BPM mode. It prints output shapes, parameter
-counts, whether each variant starts identical to the baseline, and the BPM loss next to stock
-OHEM (w = 1 must match). Run it after changing `models/` or `loss/`.
-
-### Protocol (read before comparing numbers)
-
-* **Input**: val images bilinearly resized to scale 0.75 (Cityscapes 768x1536). The prediction
-  is upsampled back and scored against the **full-resolution** ground truth.
-* **Boundary band**: pixels within r px (r = 1, 3; max-pool dilation) of a pixel whose
-  ground-truth neighbour has a different class, ignoring void. It works for any label set, so
-  each dataset is scored in its own classes.
-* **Thin classes**: Cityscapes/SYNTHIA: pole, traffic light, traffic sign, rider, motorcycle,
-  bicycle. RUGD: pole, sign, fence, bicycle, log (after the support filter, only fence and log
-  remain).
-* **Noise**: `train.py` sets no seed. Compare against the 3-run baseline mean and report effects
-  relative to the noise floor. Full-image mIoU noise (1.2 pt) is larger than every single
-  component's effect, so full mIoU is only a guard.
-* **32-divisible inputs**: scale 0.75 gives 570x960 on SYNTHIA and 412x516 on RUGD. These are
-  not multiples of the backbone's stride 32, which costs every model accuracy. `--size32`
-  re-scores at 576x960 / 416x512. The Ours-vs-baseline deltas hold (`resultData/perclass/*/scale_check.csv`).
+* **Inference**: single scale, no test-time augmentation. Each val image is resized by 0.75
+  (Cityscapes 768×1536), and the prediction is upsampled back and scored at full ground-truth
+  resolution. The checkpoint is `model_maxmIOU75.pth`, the best val mIoU during training, as
+  in STDC-Seg.
+* **Boundary metric (Bnd r)**: mIoU restricted to pixels within r px (r = 1, 3) of a
+  ground-truth class boundary. **Thin r** is the same, averaged over thin classes only
+  (Cityscapes/SYNTHIA: pole, traffic light, traffic sign, rider, motorcycle, bicycle; RUGD:
+  fence, log). Full-image mIoU is reported as a regression check.
+* **RUGD**: val is two video sequences, so means use the 14 classes with ≥ 0.1% of val
+  pixels.
+* **Variance**: the Cityscapes baseline was trained three times; we report the mean and use
+  the range across the three as the noise floor (Bnd r=1 0.32, full 1.23 points). Other runs
+  are single runs.
 
 ---
 
@@ -301,6 +322,7 @@ OHEM (w = 1 must match). Run it after changing `models/` or `loss/`.
 train.py                 training (STDC-Seg + RSR/BPM flags)
 evaluation.py            boundary metric reference implementation; load_net() checks RSR flags vs weights
 eval_checkpoint.py       evaluate any checkpoint on cityscapes / synthia / rugd
+check_ablation.py        sanity check of every RSR variant / BPM mode (run after editing models/ or loss/)
 models/model_stages.py   STDC-Seg network + BoundaryRefine (RSR) and its ablation variants
 loss/loss.py             OhemCELoss + BoundaryOhemCELoss (BPM), boundary_weight_map()
 loss/detail_loss.py      STDC-Seg's detail-head loss (unchanged)
@@ -335,25 +357,21 @@ claude.md                detailed research notes: design, protocol, decisions, k
 
 ## Citation
 
-If you use this code, please cite STDC-Seg, which this repository builds on (the paper above
-is in preparation):
-
 ```
-@InProceedings{Fan_2021_CVPR,
-    author    = {Fan, Mingyuan and Lai, Shenqi and Huang, Junshi and Wei, Xiaoming and Chai, Zhenhua and Luo, Junfeng and Wei, Xiaolin},
-    title     = {Rethinking BiSeNet for Real-Time Semantic Segmentation},
-    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
-    year      = {2021},
-    pages     = {9716-9725}
+@article{wagle2026duet,
+    author  = {Wagle, Pragat},
+    title   = {DUET: Coupling Boundary Supervision with Decision Resolution for Real-Time Semantic Segmentation},
+    journal = {IEEE Robotics and Automation Letters},
+    year    = {2026},
+    note    = {Under review}
 }
 ```
-
-Datasets: Cityscapes (Cordts et al., CVPR 2016), SYNTHIA (Ros et al., CVPR 2016), RUGD
-(Wigness et al., IROS 2019).
 
 ## Acknowledgements and license
 
 Built on [STDC-Seg](https://github.com/MichaelFan01/STDC-Seg) by Mingyuan Fan et al., whose
 training and evaluation code derives from [BiSeNet](https://github.com/CoinCheung/BiSeNet).
 InPlace-ABN is from [mapillary/inplace_abn](https://github.com/mapillary/inplace_abn).
-Released under the MIT License (see `LICENSE`; the original STDC-Seg copyright is retained).
+Datasets: Cityscapes (Cordts et al., CVPR 2016), SYNTHIA (Ros et al., CVPR 2016), RUGD
+(Wigness et al., IROS 2019). Released under the MIT License (see `LICENSE`; the original
+STDC-Seg copyright is retained).
