@@ -6,9 +6,10 @@ Panels for the two image figures, to be assembled in PowerPoint:
   A. Qualitative comparison (cf. ref_images/qualitative/QualitativeData.png)
      rows    : 2 Cityscapes, 2 SYNTHIA, 2 RUGD (val images)
      columns : RGB | GT | STDC-Seg | STDC-Seg + Ours | HRNet-W48 | HRNet-W48 + Ours
-               (HRNet was trained on Cityscapes only -> its columns exist for Cityscapes rows only)
+               (every row, every dataset)
      models  : baseline and HI (RSR + BPM) only: STDC I0/HI1, Synthia/Synthia-HI1,
-               RUGD/RUGD-HI1, HRNet baseline/HI1.
+               RUGD/RUGD-HI1; HRNet baseline/HI1, Synthia-baseline/Synthia-HI1,
+               RUGD-baseline/RUGD-HI1.
 
   B. Framework diagram (cf. ref_images/qualitative/duet_framework.png)
      every hatched placeholder of the diagram, filled with the REAL tensors of
@@ -17,8 +18,8 @@ Panels for the two image figures, to be assembled in PowerPoint:
      pixels, plus optional extras (Z~', P, Delta, pixels changed by RSR, ...).
 
 Images are chosen automatically by the per-image boundary-band (r=1) accuracy
-gain of Ours over the baseline (for Cityscapes, the smaller of the STDC and
-HRNet gains, so both pairs show a visible difference), one per city / sequence.
+gain of Ours over the baseline (the smaller of the STDC and HRNet gains, so
+both pairs show a visible difference), one per city / sequence.
 Override with --pick; browse alternatives in fig_qualitative/candidates/.
 The GUIDE.md written next to the panels explains every file and how to assemble
 both figures.
@@ -64,8 +65,8 @@ PALETTE = dict(cityscapes=CITYSCAPES_PAL, synthia=CITYSCAPES_PAL, rugd=RUGD_PAL)
 # (host, baseline key, ours key, column labels) per dataset -- baseline and HI only
 RUNS = OrderedDict([
     ('cityscapes', [('stdc', 'I0', 'HI1', 'stdc'), ('hrnet', 'baseline', 'HI1', 'hrnet')]),
-    ('synthia',    [('stdc', 'Synthia', 'Synthia-HI1', 'stdc')]),
-    ('rugd',       [('stdc', 'RUGD', 'RUGD-HI1', 'stdc')]),
+    ('synthia',    [('stdc', 'Synthia', 'Synthia-HI1', 'stdc'), ('hrnet', 'Synthia-baseline', 'Synthia-HI1', 'hrnet')]),
+    ('rugd',       [('stdc', 'RUGD', 'RUGD-HI1', 'stdc'), ('hrnet', 'RUGD-baseline', 'RUGD-HI1', 'hrnet')]),
 ])
 COL_TITLES = OrderedDict([('rgb', 'RGB'), ('gt', 'GT'), ('stdc', 'STDC-Seg'), ('stdc_ours', 'STDC-Seg + Ours'),
                           ('hrnet', 'HRNet-W48'), ('hrnet_ours', 'HRNet-W48 + Ours')])
@@ -379,9 +380,10 @@ def fit(arr, w, h, bg=(235, 235, 235)):
 
 
 def preview(rows, outpath):
-    """Recommended layout: block 1 = rows that have every column (Cityscapes, 6 columns);
-    block 2 = rows without HRNet (SYNTHIA, RUGD, 4 columns), under a dashed separator,
-    with its own column titles. Reference only -- the paper figure is built in PowerPoint."""
+    """Recommended layout: block 1 = rows that have every column; block 2 (only if some rows
+    lack a host, e.g. after --datasets with a missing checkpoint) = the shorter rows, under a
+    dashed separator, with their own column titles. Reference only -- the paper figure is built
+    in PowerPoint."""
     cw, ch, pad, left, title_h, gap = 320, 170, 6, 120, 34, 30
     blocks = [[r for r in rows if len(r['files']) == len(COL_TITLES)],
               [r for r in rows if len(r['files']) < len(COL_TITLES)]]
@@ -892,16 +894,16 @@ def write_guide(rows, fw, strategy, mask_ignore):
     L = ['# Qualitative figures -- what every file is and how to assemble them', '',
          'Generated %s by `gen_qualitative.py`. All paths are relative to `resultData/qualitative/`.' % common.now(),
          'Models: baseline and "Ours" (= HI: RSR + BPM) only. STDC-Seg: I0 / HI1 (Cityscapes), Synthia / '
-         'Synthia-HI1, RUGD / RUGD-HI1. HRNet-W48: baseline / HI1 (Cityscapes only -- the only dataset HRNet was '
-         'trained on).', '',
+         'Synthia-HI1, RUGD / RUGD-HI1. HRNet-W48: baseline / HI1 (Cityscapes), Synthia-baseline / Synthia-HI1, '
+         'RUGD-baseline / RUGD-HI1.', '',
          '## Folder map', '',
          '```',
          'fig_qualitative/                  Figure A (cf. ref_images/qualitative/QualitativeData.png)',
-         '  PREVIEW_qualitative.png         auto-assembled preview in the recommended two-block layout (reference only)',
+         '  PREVIEW_qualitative.png         auto-assembled preview of the recommended layout (reference only)',
          '  legend_cityscapes_synthia.png   colour legend for Cityscapes + SYNTHIA rows (same classes)',
          '  legend_rugd.png                 colour legend for RUGD rows',
          '  rowN_<dataset>__<image>/        one folder per figure row',
-         '    1_rgb.png 2_gt.png 3_stdc.png 4_stdc_ours.png [5_hrnet.png 6_hrnet_ours.png]   (nothing else;',
+         '    1_rgb.png 2_gt.png 3_stdc.png 4_stdc_ours.png 5_hrnet.png 6_hrnet_ours.png   (nothing else;',
          '    --extras adds boxed/, zoom/ and green-fixed/red-broken diagnostics if you ever want them)',
          '  candidates/candidates_<dataset>.png   top-10 alternative images per dataset, with scores',
          'fig_framework/                    Figure B (cf. ref_images/qualitative/duet_framework.png)',
@@ -919,8 +921,8 @@ def write_guide(rows, fw, strategy, mask_ignore):
           ', '.join('%s %+.1f' % ('STDC' if h == 'stdc' else 'HRNet', 100 * g['band']) for h, g in r['gains'].items())]
          for i, r in enumerate(rows)]) + ['']
     L += ['"Boundary-band acc. gain" = change in the fraction of correctly labelled pixels within 1 px of a GT '
-          'boundary in that image (Ours minus baseline). Rank 1 = the largest gain in the val set. For Cityscapes '
-          'the score is the smaller of the STDC and HRNet gains, so both model pairs show a visible difference. '
+          'boundary in that image (Ours minus baseline). Rank 1 = the largest gain in the val set. The score is '
+          'the smaller of the STDC and HRNet gains, so both model pairs show a visible difference. '
           'One image per city (Cityscapes), video sequence (RUGD) or frame range (SYNTHIA).', '',
           '### Columns (same file names in every row folder)', '']
     L += common.md_table(['#', 'File', 'Column title in the figure', 'What it is'], [
@@ -928,23 +930,17 @@ def write_guide(rows, fw, strategy, mask_ignore):
         ['2', '2_gt.png', 'GT', 'ground truth; black = ignore / unlabeled'],
         ['3', '3_stdc.png', 'STDC-Seg', 'baseline prediction'],
         ['4', '4_stdc_ours.png', 'STDC-Seg + Ours', 'RSR + BPM prediction'],
-        ['5', '5_hrnet.png', 'HRNet-W48', 'baseline prediction (Cityscapes rows only)'],
-        ['6', '6_hrnet_ours.png', 'HRNet-W48 + Ours', 'RSR + BPM prediction (Cityscapes rows only)']]) + ['']
+        ['5', '5_hrnet.png', 'HRNet-W48', 'baseline prediction'],
+        ['6', '6_hrnet_ours.png', 'HRNet-W48 + Ours', 'RSR + BPM prediction']]) + ['']
     L += ['Predictions are %s. Colours: Cityscapes palette for Cityscapes and SYNTHIA (SYNTHIA uses Cityscapes '
           'classes), RUGD\'s own palette for RUGD.' % ('masked to black wherever the GT is ignore, so they read '
                                                        'like the GT' if mask_ignore else 'shown unmasked'), '',
           '### How to assemble it in PowerPoint', '',
           '1. Open `fig_qualitative/PREVIEW_qualitative.png` to see the target layout.',
-          '2. HRNet exists for Cityscapes only, so SYNTHIA/RUGD rows have no HRNet panels. Recommended layout '
-          '(the preview): **two blocks**. Top block = the Cityscapes rows x 6 columns (RGB, GT, STDC-Seg, '
-          'STDC-Seg + Ours, HRNet-W48, HRNet-W48 + Ours). Dashed separator (like the reference figure). Bottom block '
-          '= the SYNTHIA and RUGD rows x 4 columns (RGB, GT, STDC-Seg, STDC-Seg + Ours) with their own column titles; '
-          'the 4 panels can be widened to span the full figure width. No empty cells, and the figure reads as '
-          '"two hosts on Cityscapes" + "one host across domains".',
-          '   - Alternative A: split into two figures (Cityscapes both hosts; cross-dataset STDC-Seg only).',
-          '   - Alternative B: one 6-column grid with the HRNet cells on SYNTHIA/RUGD rows marked "--" and a caption '
-          'note. Simplest, but empty cells look like missing results.',
-          '3. Insert each row\'s images left to right in file order 1..6 (1..4 for SYNTHIA/RUGD).'
+          '2. Every row has all 6 columns (RGB, GT, STDC-Seg, STDC-Seg + Ours, HRNet-W48, HRNet-W48 + Ours), so '
+          'the figure is one grid: 2 Cityscapes, 2 SYNTHIA, 2 RUGD rows. Optionally put a thin separator between '
+          'datasets.',
+          '3. Insert each row\'s images left to right in file order 1..6. '
           '4. Aspect ratios differ: Cityscapes 2:1, SYNTHIA 1280x760 (1.68:1), RUGD 688x550 (1.25:1). Either crop '
           'every image in a row identically (Picture Format -> Crop, then copy the crop to the other panels of the '
           'row) or let rows have different heights. Always crop all panels of a row the same way.',
@@ -952,8 +948,8 @@ def write_guide(rows, fw, strategy, mask_ignore):
           'legend strip(s) at the bottom: `legend_cityscapes_synthia.png` and `legend_rugd.png`.',
           '6. Other image choices: look at `candidates/candidates_<dataset>.png`, then re-run with '
           '`--pick <dataset>:<image>`.', '',
-          'Caption suggestion: "Qualitative results on Cityscapes (top: STDC-Seg and HRNet-W48, each without and '
-          'with Ours) and on SYNTHIA and RUGD (bottom: STDC-Seg; HRNet-W48 was trained on Cityscapes only)." If the '
+          'Caption suggestion: "Qualitative results on Cityscapes, SYNTHIA and RUGD for STDC-Seg and HRNet-W48, '
+          'each without and with Ours." If the '
           'rows are best-case picks (strategy `top`), say they were "selected for visible differences"; '
           '`--strategy median` gives typical images instead.', '']
 

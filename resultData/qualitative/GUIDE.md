@@ -1,17 +1,17 @@
 # Qualitative figures -- what every file is and how to assemble them
 
-Generated 2026-09-30 19:57 by `gen_qualitative.py`. All paths are relative to `resultData/qualitative/`.
-Models: baseline and "Ours" (= HI: RSR + BPM) only. STDC-Seg: I0 / HI1 (Cityscapes), Synthia / Synthia-HI1, RUGD / RUGD-HI1. HRNet-W48: baseline / HI1 (Cityscapes only -- the only dataset HRNet was trained on).
+Generated 2026-11-02 16:25 by `gen_qualitative.py`. All paths are relative to `resultData/qualitative/`.
+Models: baseline and "Ours" (= HI: RSR + BPM) only. STDC-Seg: I0 / HI1 (Cityscapes), Synthia / Synthia-HI1, RUGD / RUGD-HI1. HRNet-W48: baseline / HI1 (Cityscapes), Synthia-baseline / Synthia-HI1, RUGD-baseline / RUGD-HI1.
 
 ## Folder map
 
 ```
 fig_qualitative/                  Figure A (cf. ref_images/qualitative/QualitativeData.png)
-  PREVIEW_qualitative.png         auto-assembled preview in the recommended two-block layout (reference only)
+  PREVIEW_qualitative.png         auto-assembled preview of the recommended layout (reference only)
   legend_cityscapes_synthia.png   colour legend for Cityscapes + SYNTHIA rows (same classes)
   legend_rugd.png                 colour legend for RUGD rows
   rowN_<dataset>__<image>/        one folder per figure row
-    1_rgb.png 2_gt.png 3_stdc.png 4_stdc_ours.png [5_hrnet.png 6_hrnet_ours.png]   (nothing else;
+    1_rgb.png 2_gt.png 3_stdc.png 4_stdc_ours.png 5_hrnet.png 6_hrnet_ours.png   (nothing else;
     --extras adds boxed/, zoom/ and green-fixed/red-broken diagnostics if you ever want them)
   candidates/candidates_<dataset>.png   top-10 alternative images per dataset, with scores
 fig_framework/                    Figure B (cf. ref_images/qualitative/duet_framework.png)
@@ -28,12 +28,12 @@ manifest.json                     machine-readable version of this guide
 |---|---|---|---|---|---|
 | 1 | Cityscapes | lindau_000021_000019 | `fig_qualitative/row1_cityscapes__lindau_000021_000019/` | 1 / 500 | STDC +3.6, HRNet +1.3 |
 | 2 | Cityscapes | munster_000164_000019 | `fig_qualitative/row2_cityscapes__munster_000164_000019/` | 3 / 500 | STDC +4.6, HRNet +2.4 |
-| 3 | SYNTHIA | 0003112 | `fig_qualitative/row3_synthia__0003112/` | 1 / 940 | STDC +6.5 |
-| 4 | SYNTHIA | 0007665 | `fig_qualitative/row4_synthia__0007665/` | 2 / 940 | STDC +7.1 |
-| 5 | RUGD | park-8_00391 | `fig_qualitative/row5_rugd__park-8_00391/` | 1 / 733 | STDC +5.1 |
-| 6 | RUGD | trail-5_00606 | `fig_qualitative/row6_rugd__trail-5_00606/` | 57 / 733 | STDC +6.4 |
+| 3 | SYNTHIA | 0003112 | `fig_qualitative/row3_synthia__0003112/` | 40 / 940 | STDC +6.5, HRNet +3.5 |
+| 4 | SYNTHIA | 0007665 | `fig_qualitative/row4_synthia__0007665/` | 44 / 940 | STDC +7.1, HRNet +4.6 |
+| 5 | RUGD | park-8_00391 | `fig_qualitative/row5_rugd__park-8_00391/` | 434 / 733 | STDC +5.1, HRNet +3.4 |
+| 6 | RUGD | trail-5_00606 | `fig_qualitative/row6_rugd__trail-5_00606/` | 10 / 733 | STDC +6.4, HRNet +4.3 |
 
-"Boundary-band acc. gain" = change in the fraction of correctly labelled pixels within 1 px of a GT boundary in that image (Ours minus baseline). Rank 1 = the largest gain in the val set. For Cityscapes the score is the smaller of the STDC and HRNet gains, so both model pairs show a visible difference. One image per city (Cityscapes), video sequence (RUGD) or frame range (SYNTHIA).
+"Boundary-band acc. gain" = change in the fraction of correctly labelled pixels within 1 px of a GT boundary in that image (Ours minus baseline). Rank 1 = the largest gain in the val set. The score is the smaller of the STDC and HRNet gains, so both model pairs show a visible difference. One image per city (Cityscapes), video sequence (RUGD) or frame range (SYNTHIA).
 
 ### Columns (same file names in every row folder)
 
@@ -43,22 +43,20 @@ manifest.json                     machine-readable version of this guide
 | 2 | 2_gt.png | GT | ground truth; black = ignore / unlabeled |
 | 3 | 3_stdc.png | STDC-Seg | baseline prediction |
 | 4 | 4_stdc_ours.png | STDC-Seg + Ours | RSR + BPM prediction |
-| 5 | 5_hrnet.png | HRNet-W48 | baseline prediction (Cityscapes rows only) |
-| 6 | 6_hrnet_ours.png | HRNet-W48 + Ours | RSR + BPM prediction (Cityscapes rows only) |
+| 5 | 5_hrnet.png | HRNet-W48 | baseline prediction |
+| 6 | 6_hrnet_ours.png | HRNet-W48 + Ours | RSR + BPM prediction |
 
 Predictions are masked to black wherever the GT is ignore, so they read like the GT. Colours: Cityscapes palette for Cityscapes and SYNTHIA (SYNTHIA uses Cityscapes classes), RUGD's own palette for RUGD.
 
 ### How to assemble it in PowerPoint
 
 1. Open `fig_qualitative/PREVIEW_qualitative.png` to see the target layout.
-2. HRNet exists for Cityscapes only, so SYNTHIA/RUGD rows have no HRNet panels. Recommended layout (the preview): **two blocks**. Top block = the Cityscapes rows x 6 columns (RGB, GT, STDC-Seg, STDC-Seg + Ours, HRNet-W48, HRNet-W48 + Ours). Dashed separator (like the reference figure). Bottom block = the SYNTHIA and RUGD rows x 4 columns (RGB, GT, STDC-Seg, STDC-Seg + Ours) with their own column titles; the 4 panels can be widened to span the full figure width. No empty cells, and the figure reads as "two hosts on Cityscapes" + "one host across domains".
-   - Alternative A: split into two figures (Cityscapes both hosts; cross-dataset STDC-Seg only).
-   - Alternative B: one 6-column grid with the HRNet cells on SYNTHIA/RUGD rows marked "--" and a caption note. Simplest, but empty cells look like missing results.
-3. Insert each row's images left to right in file order 1..6 (1..4 for SYNTHIA/RUGD).4. Aspect ratios differ: Cityscapes 2:1, SYNTHIA 1280x760 (1.68:1), RUGD 688x550 (1.25:1). Either crop every image in a row identically (Picture Format -> Crop, then copy the crop to the other panels of the row) or let rows have different heights. Always crop all panels of a row the same way.
+2. Every row has all 6 columns (RGB, GT, STDC-Seg, STDC-Seg + Ours, HRNet-W48, HRNet-W48 + Ours), so the figure is one grid: 2 Cityscapes, 2 SYNTHIA, 2 RUGD rows. Optionally put a thin separator between datasets.
+3. Insert each row's images left to right in file order 1..6. 4. Aspect ratios differ: Cityscapes 2:1, SYNTHIA 1280x760 (1.68:1), RUGD 688x550 (1.25:1). Either crop every image in a row identically (Picture Format -> Crop, then copy the crop to the other panels of the row) or let rows have different heights. Always crop all panels of a row the same way.
 5. Put a row label on the left (Cityscapes / SYNTHIA / RUGD), column titles on top (table above), and the legend strip(s) at the bottom: `legend_cityscapes_synthia.png` and `legend_rugd.png`.
 6. Other image choices: look at `candidates/candidates_<dataset>.png`, then re-run with `--pick <dataset>:<image>`.
 
-Caption suggestion: "Qualitative results on Cityscapes (top: STDC-Seg and HRNet-W48, each without and with Ours) and on SYNTHIA and RUGD (bottom: STDC-Seg; HRNet-W48 was trained on Cityscapes only)." If the rows are best-case picks (strategy `top`), say they were "selected for visible differences"; `--strategy median` gives typical images instead.
+Caption suggestion: "Qualitative results on Cityscapes, SYNTHIA and RUGD for STDC-Seg and HRNet-W48, each without and with Ours." If the rows are best-case picks (strategy `top`), say they were "selected for visible differences"; `--strategy median` gives typical images instead.
 
 ## Figure B -- framework diagram (STDC-Seg + Ours = HI1, Cityscapes val)
 

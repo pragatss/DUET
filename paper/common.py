@@ -165,7 +165,7 @@ DATASET_RUNS = OrderedDict([
     ('rugd',    dict(baseline='RUGD', ours='RUGD-HI1', extra=[])),
 ])
 
-# HRNetV2-W48, Cityscapes, 120 epochs, OHEM on in BOTH arms (the stock HRNet
+# HRNetV2-W48, 120 epochs, OHEM on in BOTH arms (the stock HRNet
 # YAML has USE_OHEM false, so the baseline enables it explicitly; otherwise the
 # comparison would change two variables). best.pth = best val mIoU during training, the analogue of STDC's
 # model_maxmIOU75.pth. log_best is what the training log reported, used as a
@@ -179,6 +179,33 @@ HRNET_RUNS = OrderedDict([
                       ckpt='output/hrnet_HI1/cityscapes/arm_HI1_w48/best.pth',
                       logdir='output/hrnet_HI1/cityscapes/arm_HI1_w48',
                       log_best=0.7722, desc='HRNetV2-W48 + RSR + BPM')),
+    # SYNTHIA / RUGD: same recipe as Cityscapes (120 epochs, crop 1024x512,
+    # batch 3, OHEM in both arms); only dataset-dictated fields differ
+    # (lists, NUM_CLASSES, BASE_SIZE / TEST size = native long side, no class
+    # weights). log_best is the train.py val mIoU over classes with GT pixels,
+    # i.e. 'full_all' here (RUGD's support-filtered 'full' is lower).
+    ('Synthia-baseline', dict(cfg='experiments/synthia/arm_baseline_w48.yaml',
+                              ckpt='output/hrnet_synthia_baseline/synthia/arm_baseline_w48/best.pth',
+                              logdir='output/hrnet_synthia_baseline/synthia/arm_baseline_w48',
+                              log_best=0.8582, desc='SYNTHIA HRNetV2-W48 + OHEM', dataset='synthia')),
+    ('Synthia-HI1',      dict(cfg='experiments/synthia/arm_HI1_w48.yaml',
+                              ckpt='output/hrnet_synthia_HI1/synthia/arm_HI1_w48/best.pth',
+                              logdir='output/hrnet_synthia_HI1/synthia/arm_HI1_w48',
+                              log_best=0.8846, desc='SYNTHIA HRNetV2-W48 + RSR + BPM', dataset='synthia')),
+    ('RUGD-baseline',    dict(cfg='experiments/rugd/arm_baseline_w48.yaml',
+                              ckpt='output/hrnet_rugd_baseline/rugd/arm_baseline_w48/best.pth',
+                              logdir='output/hrnet_rugd_baseline/rugd/arm_baseline_w48',
+                              log_best=0.4852, desc='RUGD HRNetV2-W48 + OHEM', dataset='rugd')),
+    ('RUGD-HI1',         dict(cfg='experiments/rugd/arm_HI1_w48.yaml',
+                              ckpt='output/hrnet_rugd_HI1/rugd/arm_HI1_w48/best.pth',
+                              logdir='output/hrnet_rugd_HI1/rugd/arm_HI1_w48',
+                              log_best=0.5015, desc='RUGD HRNetV2-W48 + RSR + BPM', dataset='rugd')),
+])
+# per-dataset (baseline key, ours key) for HRNet, same shape as DATASET_RUNS
+HRNET_DATASET_RUNS = OrderedDict([
+    ('cityscapes', dict(baseline='baseline', ours='HI1')),
+    ('synthia',    dict(baseline='Synthia-baseline', ours='Synthia-HI1')),
+    ('rugd',       dict(baseline='RUGD-baseline', ours='RUGD-HI1')),
 ])
 
 HOST_RUNS = {'stdc': STDC_RUNS, 'hrnet': HRNET_RUNS}
@@ -274,7 +301,9 @@ class SegMeter(object):
         Class set for every mean: classes present in the region (union > 0),
         and, when min_support is set, with >= min_support of all valid val GT
         pixels (decided once from the full image, so all regions average the
-        same classes). 'miou_all' is the unfiltered mean over present classes.
+        same classes). 'miou_all' is the unfiltered mean over classes with GT
+        pixels in the region (what both training scripts log; a class that is
+        only ever predicted, never in the GT, would otherwise add a 0).
         With min_support=None and every thin class present (Cityscapes) this
         is exactly evaluation.py's numbers."""
         import torch
@@ -295,7 +324,7 @@ class SegMeter(object):
             thin_used = [c for c in self.thin if bool(used[c])]
             regions[key] = OrderedDict([
                 ('miou', float(iou[used].mean())),
-                ('miou_all', float(iou[present].mean())),
+                ('miou_all', float(iou[gt > 0].mean())),
                 ('thin', float(iou[thin_used].mean()) if thin_used else None),
                 ('iou', [float(x) for x in iou]),
                 ('present', [bool(x) for x in present]),
@@ -320,6 +349,14 @@ class SegMeter(object):
 # ---------------------------------------------------------------------------
 # eval cache + worker dispatch
 # ---------------------------------------------------------------------------
+def miou_all(res, region='full'):
+    """mean IoU over classes with GT pixels in the region, from the per-class
+    counts, so caches written before miou_all used this definition agree."""
+    R = res['regions'][region]
+    idx = [c for c, g in enumerate(R['gt_pixels']) if g > 0]
+    return sum(R['iou'][c] for c in idx) / float(len(idx))
+
+
 def run_dataset(host, key):
     return HOST_RUNS[host][key].get('dataset', 'cityscapes')
 
@@ -331,6 +368,8 @@ def protocol_for(host, key, size32=False):
     p = dict(PROTOCOL[host])
     p['dataset'] = ds
     p['min_support'] = DATASETS[ds]['min_support']
+    if host == 'hrnet':
+        p['input'] = 'full resolution (native image size), align_corners=False'
     if size32:
         p['input_hw'] = list(DATASETS[ds]['size32'])
         p['input'] = 'bilinear resize to %dx%d (32-divisible check), align_corners=True' % \

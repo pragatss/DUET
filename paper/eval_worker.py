@@ -44,7 +44,7 @@ def main():
                                 class_names=ds['classes'], min_support=ds['min_support'])
         with torch.no_grad():
             if args.host == 'hrnet':
-                assert dsname == 'cityscapes' and not args.size32
+                assert not args.size32, 'HRNet is scored at native resolution only'
                 net, cfg = H.load_eval_net(key)
                 it = H.iterate_val(net, cfg)
             else:
@@ -63,10 +63,11 @@ def main():
               % (res['full'], res['full_all'], res['bnd_r1'], res['bnd_r3'],
                  res['thin_r1'] and '%.4f' % res['thin_r1'], res['thin_r3'] and '%.4f' % res['thin_r3']))
         if args.host == 'hrnet':
+            # train.py logs the mean over classes with GT pixels == full_all
             lb = common.HRNET_RUNS[key]['log_best']
             res['log_best_miou'] = lb
-            if abs(res['full'] - lb) > 0.002:
-                print('  [warn] full mIoU %.4f differs from training-log best %.4f' % (res['full'], lb))
+            if abs(res['full_all'] - lb) > 0.002:
+                print('  [warn] full mIoU (all cls) %.4f differs from training-log best %.4f' % (res['full_all'], lb))
         with open(common.cache_file(args.host, key, args.size32), 'w') as f:
             json.dump(res, f, indent=2)
         del net

@@ -6,7 +6,7 @@ and deltas are in **points**.
 
 | folder | generator | paper artifact | reference layout |
 |---|---|---|---|
-| `perclass/` | `gen_perclass.py` | per-class IoU tables per dataset (Cityscapes: STDC-Seg and HRNet; SYNTHIA, RUGD: STDC-Seg; each ± Ours) and a cross-dataset summary | `ref_images/quantative/PerClass.png` |
+| `perclass/` | `gen_perclass.py` | per-class IoU tables per dataset (Cityscapes, SYNTHIA, RUGD: STDC-Seg and HRNet, each ± Ours) and a cross-dataset summary | `ref_images/quantative/PerClass.png` |
 | `ablation/` | `gen_ablation.py` | ablation table (STDC-Seg only, vs full model HI1) | `ref_images/quantative/Ablation.png` |
 | `runtime/` | `gen_runtime_memory.py` | training/inference throughput + GPU memory | `ref_images/quantative/RuntimeAndMemory.png` |
 | `qualitative/` | `gen_qualitative.py` | qualitative grid panels + framework-diagram panels; see `qualitative/GUIDE.md` | `ref_images/qualitative/QualitativeData.png`, `duet_framework.png` |
@@ -29,12 +29,12 @@ with the `STDC_PY` / `HRNET_PY` env vars).
   wherever the GT label changes, so the metric works for any label set.
 - **RUGD support filter**: RUGD val is two videos, and several classes are nearly absent. Every
   RUGD mean (full, boundary, thin) uses only classes with >= 0.1% of val GT pixels, the same as
-  `eval_checkpoint.py --dataset rugd`. `mIoU (all classes)` is the unfiltered mean over present classes, which is
+  `eval_checkpoint.py --dataset rugd`. `mIoU (all classes)` is the unfiltered mean over classes with GT pixels in val, which is
   what train.py logs. Classes absent from a val set (SYNTHIA: terrain, truck, train) are blank
   and excluded.
 - The math is a copy of `evaluation.py` (`paper/common.py` `SegMeter`). It reproduces `evaluation.py`'s HI1 numbers to 4 decimals.
 - Each host is evaluated with its own native protocol (`paper/common.py` `PROTOCOL`):
-  STDC-Seg input resized to scale 0.75; HRNet at full resolution. Compare only within a host.
+  STDC-Seg input resized to scale 0.75; HRNet at native full resolution (Cityscapes 1024x2048, SYNTHIA 760x1280, RUGD 550x688). Compare only within a host.
 - SYNTHIA and RUGD at scale 0.75 (570x960, 412x516) are not 32-divisible, and non-32-divisible
   inputs caused boundary artifacts before. Each checkpoint is therefore also scored at a nearby
   32-divisible size (576x960, 416x512), in `<dataset>/scale_check.csv`. The Ours-minus-baseline

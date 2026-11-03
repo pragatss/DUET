@@ -1,6 +1,6 @@
 # All datasets -- full mIoU and boundary metrics (%, deltas in points vs host baseline)
 
-generated 2026-09-27 21:26 by gen_perclass.py. Full mIoU = regression guard; boundary/thin = primary. RUGD means are support-filtered (>= 0.1% of val px); "all classes" is what train.py logs.
+generated 2026-11-02 11:56 by gen_perclass.py. Full mIoU = regression guard; boundary/thin = primary. RUGD means are support-filtered (>= 0.1% of val px); "all classes" is what train.py logs.
 
 | Dataset | Method | Full mIoU | Full mIoU (all classes) | Bnd r=1 | Bnd r=3 | Thin r=1 | Thin r=3 |
 |---|---|---|---|---|---|---|---|
@@ -11,8 +11,12 @@ generated 2026-09-27 21:26 by gen_perclass.py. Full mIoU = regression guard; bou
 | synthia | STDC-Seg | 72.56 | 72.56 | 37.41 | 47.64 | 31.40 | 40.45 |
 | synthia | STDC-Seg + Ours | 77.19 (+4.63) | 77.19 (+4.63) | 43.67 (+6.26) | 55.31 (+7.67) | 38.56 (+7.16) | 48.93 (+8.48) |
 | synthia | STDC-Seg [Synthia-I1] | 72.90 (+0.34) | 72.90 (+0.34) | 38.17 (+0.76) | 48.53 (+0.89) | 31.81 (+0.41) | 41.20 (+0.75) |
+| synthia | HRNet-W48 | 85.82 | 85.82 | 60.90 | 71.50 | 55.05 | 65.10 |
+| synthia | HRNet-W48 + Ours | 88.46 (+2.65) | 88.46 (+2.65) | 66.80 (+5.90) | 76.25 (+4.75) | 62.55 (+7.50) | 71.50 (+6.40) |
 | rugd | STDC-Seg | 53.14 | 41.56 | 25.22 | 30.51 | 17.16 | 20.28 |
 | rugd | STDC-Seg + Ours | 54.62 (+1.48) | 43.75 (+2.19) | 26.65 (+1.43) | 33.13 (+2.62) | 19.23 (+2.07) | 23.21 (+2.92) |
+| rugd | HRNet-W48 | 58.82 | 48.52 | 31.95 | 38.90 | 19.09 | 24.03 |
+| rugd | HRNet-W48 + Ours | 60.00 (+1.18) | 50.15 (+1.64) | 35.65 (+3.70) | 42.56 (+3.66) | 24.58 (+5.49) | 30.03 (+6.00) |
 
 ## synthia: scale 0.75 vs 32-divisible input
 
@@ -32,6 +36,6 @@ generated 2026-09-27 21:26 by gen_perclass.py. Full mIoU = regression guard; bou
 | scale 0.75 | STDC-Seg | 53.14 | 41.56 | 25.22 | 30.51 | 17.16 | 20.28 |
 | scale 0.75 | STDC-Seg + Ours | 54.62 | 43.75 | 26.65 | 33.13 | 19.23 | 23.21 |
 | scale 0.75 | delta (Ours - baseline) | +1.48 | +2.19 | +1.43 | +2.62 | +2.07 | +2.92 |
-| 32-div 416x512 | STDC-Seg | 54.77 | 38.86 | 26.36 | 32.46 | 18.54 | 22.70 |
+| 32-div 416x512 | STDC-Seg | 54.77 | 42.74 | 26.36 | 32.46 | 18.54 | 22.70 |
 | 32-div 416x512 | STDC-Seg + Ours | 55.99 | 44.77 | 27.37 | 34.29 | 20.65 | 24.95 |
-| 32-div 416x512 | delta (Ours - baseline) | +1.22 | +5.91 | +1.02 | +1.83 | +2.11 | +2.26 |
+| 32-div 416x512 | delta (Ours - baseline) | +1.22 | +2.03 | +1.02 | +1.83 | +2.11 | +2.26 |

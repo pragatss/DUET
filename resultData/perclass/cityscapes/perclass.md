@@ -1,6 +1,6 @@
 # Per-class IoU (%) -- cityscapes val
 
-generated 2026-09-27 21:26 by gen_perclass.py
+generated 2026-11-02 11:56 by gen_perclass.py
 
 ## Full image
 

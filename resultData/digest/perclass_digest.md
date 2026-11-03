@@ -1,6 +1,6 @@
 # Per-class digest -- per-class IoU (%) for the paper tables
 
-generated 2026-09-29 18:19 from resultData/cache/eval by gen_digest.py
+generated 2026-11-02 11:56 from resultData/cache/eval by gen_digest.py
 
 Paper: "DUET" -- two plug-and-play additions for real-time semantic segmentation that improve
 BOUNDARY and THIN-STRUCTURE accuracy: RSR (Residual Sub-grid Refinement: a stride-4 refinement head,
@@ -15,9 +15,12 @@ How to read the numbers:
   PRIMARY metric. Thin r=N = mean IoU of thin classes inside that band.
 - Thin classes: Cityscapes/SYNTHIA = pole, traffic light, traffic sign, rider, motorcycle, bicycle.
   RUGD = pole, sign, fence, bicycle, log (same rule: structures thinner than one stride-8 cell).
-- STDC-Seg = STDC2 backbone, scale 0.75 eval. HRNet = HRNetV2-W48, full-res eval (reduced 120-epoch
-  schedule, identical for both arms). Compare within a host/dataset only.
+- STDC-Seg = STDC2 backbone, scale 0.75 eval. HRNet = HRNetV2-W48, eval at native full resolution
+  (Cityscapes 1024x2048, SYNTHIA 760x1280, RUGD 550x688). HRNet uses one recipe on all three datasets
+  and both arms (reduced 120-epoch schedule, crop 512x1024, batch 3, OHEM); only dataset-dictated fields
+  differ (class count, base size, no Cityscapes class weights). Compare within a host/dataset only.
 - Cityscapes STDC baseline = mean of 3 identical-config seeds; every other row is a single run (n=1).
+- Both hosts are scored on the same SYNTHIA (940) and RUGD (733) val images.
 
 Per-class table layout follows a standard "Method x class + mIoU" table. "Delta" rows are Ours minus baseline. For Cityscapes STDC, the "seed range" row is the spread of that class across 3 identical baseline seeds; a delta marked * exceeds it (i.e. is larger than seed noise). Classes absent from a val set are omitted.
 
@@ -67,7 +70,7 @@ Per-class table layout follows a standard "Method x class + mIoU" table. "Delta"
 
 Summary: STDC-Seg + Ours improves 19/19 classes at boundary r=1 (largest: Pole +11.7, Sign +7.2, Tr.Light +6.3). HRNet-W48 + Ours improves 17/19 classes at boundary r=1 (largest: Wall +4.5, M.bike +4.1, Rider +3.9); decreases: Truck -0.1, Train -2.5. Rare classes (truck, bus, train, motorcycle) swing several points between identical seeds; make no per-class claims about them.
 
-## SYNTHIA (STDC-Seg, n=1)
+## SYNTHIA (STDC-Seg and HRNet-W48, n=1)
 
 SYNTHIA labels use Cityscapes classes; terrain, truck and train do not occur in val.
 
@@ -77,7 +80,10 @@ SYNTHIA labels use Cityscapes classes; terrain, truck and train do not occur in 
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | STDC-Seg | 89.60 | 88.69 | 94.06 | 78.63 | 56.70 | 59.47 | 61.64 | 61.25 | 83.63 | 95.58 | 71.75 | 58.04 | 80.04 | 88.54 | 63.97 | 29.34 | 72.56 |
 | STDC-Seg + Ours | 91.54 | 90.43 | 94.84 | 81.47 | 67.15 | 68.26 | 69.27 | 67.54 | 84.92 | 96.69 | 78.32 | 63.59 | 85.66 | 90.87 | 68.69 | 35.80 | 77.19 |
-| Ours - base | +1.93 | +1.75 | +0.78 | +2.84 | +10.46 | +8.79 | +7.62 | +6.29 | +1.29 | +1.11 | +6.57 | +5.55 | +5.62 | +2.32 | +4.72 | +6.46 | +4.63 |
+| HRNet-W48 | 96.95 | 95.92 | 96.37 | 90.22 | 86.33 | 78.87 | 76.66 | 78.54 | 86.27 | 96.90 | 88.24 | 77.70 | 95.37 | 94.83 | 82.56 | 51.37 | 85.82 |
+| HRNet-W48 + Ours | 97.58 | 96.75 | 96.81 | 93.35 | 89.35 | 83.48 | 82.40 | 84.01 | 87.37 | 97.18 | 90.94 | 81.40 | 95.93 | 95.18 | 85.50 | 58.20 | 88.46 |
+| STDC-Seg: Ours - base | +1.93 | +1.75 | +0.78 | +2.84 | +10.46 | +8.79 | +7.62 | +6.29 | +1.29 | +1.11 | +6.57 | +5.55 | +5.62 | +2.32 | +4.72 | +6.46 | +4.63 |
+| HRNet-W48: Ours - base | +0.63 | +0.84 | +0.44 | +3.14 | +3.03 | +4.61 | +5.74 | +5.47 | +1.10 | +0.28 | +2.70 | +3.70 | +0.56 | +0.35 | +2.94 | +6.84 | +2.65 |
 
 ### Boundary band r=1
 
@@ -85,9 +91,12 @@ SYNTHIA labels use Cityscapes classes; terrain, truck and train do not occur in 
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | STDC-Seg | 40.02 | 41.43 | 43.53 | 36.23 | 37.66 | 31.22 | 32.50 | 26.16 | 45.25 | 47.75 | 41.90 | 34.65 | 37.93 | 38.50 | 39.25 | 24.59 | 37.41 |
 | STDC-Seg + Ours | 45.29 | 47.21 | 47.94 | 41.01 | 41.90 | 43.83 | 41.45 | 33.29 | 46.70 | 60.90 | 51.17 | 39.13 | 41.83 | 43.49 | 43.57 | 30.07 | 43.67 |
-| Ours - base | +5.27 | +5.78 | +4.40 | +4.78 | +4.25 | +12.61 | +8.95 | +7.13 | +1.45 | +13.16 | +9.27 | +4.48 | +3.90 | +4.99 | +4.31 | +5.48 | +6.26 |
+| HRNet-W48 | 67.58 | 68.08 | 59.08 | 63.64 | 67.56 | 61.87 | 53.22 | 53.14 | 50.77 | 69.26 | 68.98 | 56.63 | 66.62 | 62.49 | 60.88 | 44.59 | 60.90 |
+| HRNet-W48 + Ours | 72.62 | 73.38 | 63.02 | 70.31 | 74.08 | 70.33 | 62.03 | 60.78 | 53.25 | 72.69 | 75.57 | 63.16 | 71.15 | 67.47 | 66.82 | 52.19 | 66.80 |
+| STDC-Seg: Ours - base | +5.27 | +5.78 | +4.40 | +4.78 | +4.25 | +12.61 | +8.95 | +7.13 | +1.45 | +13.16 | +9.27 | +4.48 | +3.90 | +4.99 | +4.31 | +5.48 | +6.26 |
+| HRNet-W48: Ours - base | +5.05 | +5.30 | +3.94 | +6.67 | +6.52 | +8.47 | +8.81 | +7.64 | +2.47 | +3.43 | +6.59 | +6.53 | +4.52 | +4.98 | +5.94 | +7.60 | +5.90 |
 
-## RUGD (STDC-Seg, n=1)
+## RUGD (STDC-Seg and HRNet-W48, n=1)
 
 Only classes with >= 0.1% of val pixels are shown/averaged: asphalt, building, bush, dirt, fence, grass, gravel, log, mulch, picnic-table, rock, sky, tree, vehicle. Excluded rare classes: concrete (0.079%), container (0.015%), person (0.001%), pole (0.083%), sign (0.003%), water (0.064%).
 
@@ -97,7 +106,10 @@ Only classes with >= 0.1% of val pixels are shown/averaged: asphalt, building, b
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | STDC-Seg | 84.24 | 34.56 | 38.97 | 0.00 | 25.59 | 85.16 | 77.13 | 29.57 | 80.22 | 54.16 | 39.56 | 53.99 | 88.74 | 52.14 | 53.14 |
 | STDC-Seg + Ours | 93.21 | 35.70 | 25.53 | 0.00 | 28.56 | 85.33 | 82.36 | 27.36 | 81.01 | 59.25 | 37.17 | 58.99 | 89.25 | 60.96 | 54.62 |
-| Ours - base | +8.97 | +1.14 | -13.44 | +0.00 | +2.97 | +0.17 | +5.23 | -2.21 | +0.79 | +5.09 | -2.39 | +5.00 | +0.51 | +8.82 | +1.48 |
+| HRNet-W48 | 90.23 | 38.23 | 29.83 | 0.00 | 25.10 | 85.18 | 80.60 | 37.92 | 82.46 | 69.47 | 55.53 | 71.88 | 91.67 | 65.32 | 58.82 |
+| HRNet-W48 + Ours | 91.68 | 36.39 | 33.12 | 0.00 | 26.58 | 85.44 | 82.49 | 37.17 | 81.37 | 72.41 | 54.38 | 76.58 | 92.23 | 70.10 | 60.00 |
+| STDC-Seg: Ours - base | +8.97 | +1.14 | -13.44 | +0.00 | +2.97 | +0.17 | +5.23 | -2.21 | +0.79 | +5.09 | -2.39 | +5.00 | +0.51 | +8.82 | +1.48 |
+| HRNet-W48: Ours - base | +1.45 | -1.83 | +3.29 | +0.00 | +1.47 | +0.25 | +1.89 | -0.75 | -1.09 | +2.93 | -1.15 | +4.71 | +0.56 | +4.78 | +1.18 |
 
 ### Boundary band r=1
 
@@ -105,7 +117,12 @@ Only classes with >= 0.1% of val pixels are shown/averaged: asphalt, building, b
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | STDC-Seg | 29.02 | 17.11 | 21.28 | 0.00 | 17.89 | 37.46 | 36.54 | 16.43 | 36.00 | 28.89 | 20.61 | 16.71 | 50.54 | 24.62 | 25.22 |
 | STDC-Seg + Ours | 30.11 | 16.02 | 21.30 | 0.00 | 22.06 | 41.76 | 35.65 | 16.40 | 35.78 | 34.24 | 13.61 | 21.43 | 53.42 | 31.29 | 26.65 |
-| Ours - base | +1.09 | -1.09 | +0.02 | +0.00 | +4.17 | +4.30 | -0.89 | -0.03 | -0.23 | +5.35 | -7.00 | +4.72 | +2.88 | +6.67 | +1.43 |
+| HRNet-W48 | 31.92 | 22.63 | 21.60 | 0.00 | 18.28 | 43.68 | 38.40 | 19.90 | 35.28 | 44.66 | 27.62 | 48.90 | 59.33 | 35.13 | 31.95 |
+| HRNet-W48 + Ours | 32.32 | 21.94 | 23.93 | 0.00 | 22.08 | 44.38 | 38.62 | 27.08 | 37.88 | 49.30 | 29.44 | 64.22 | 66.16 | 41.78 | 35.65 |
+| STDC-Seg: Ours - base | +1.09 | -1.09 | +0.02 | +0.00 | +4.17 | +4.30 | -0.89 | -0.03 | -0.23 | +5.35 | -7.00 | +4.72 | +2.88 | +6.67 | +1.43 |
+| HRNet-W48: Ours - base | +0.40 | -0.69 | +2.32 | +0.00 | +3.80 | +0.70 | +0.22 | +7.18 | +2.61 | +4.64 | +1.82 | +15.32 | +6.83 | +6.65 | +3.70 |
 
-Excluded but notable -- pole (0.083% of val px): full 20.09 -> 28.10, boundary r=1 15.67 -> 27.62.
+Excluded but notable, STDC-Seg -- pole (0.083% of val px): full 20.09 -> 28.10, boundary r=1 15.67 -> 27.62.
+
+Excluded but notable, HRNet-W48 -- pole (0.083% of val px): full 39.21 -> 43.55, boundary r=1 34.61 -> 43.28.
 

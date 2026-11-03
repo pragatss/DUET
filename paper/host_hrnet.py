@@ -22,8 +22,6 @@ from config import update_config               # noqa: E402
 import datasets                                # noqa: E402  (HRNet's lib/datasets)
 import models.seg_hrnet as seg_hrnet           # noqa: E402  (HRNet's lib/models)
 
-N_CLASSES = 19
-
 
 def load_cfg(key):
     cfg = _base_cfg.clone()
@@ -57,22 +55,24 @@ def load_eval_net(key):
 
 
 def _dataset(cfg, train):
+    """the yaml's dataset class (cityscapes / synthia / rugd), built as tools/train.py does"""
+    ds_cls = getattr(datasets, cfg.DATASET.DATASET)
     if train:
         crop = (cfg.TRAIN.IMAGE_SIZE[1], cfg.TRAIN.IMAGE_SIZE[0])
-        return datasets.cityscapes(root=cfg.DATASET.ROOT, list_path=cfg.DATASET.TRAIN_SET,
-                                   num_samples=None, num_classes=N_CLASSES,
-                                   multi_scale=cfg.TRAIN.MULTI_SCALE, flip=cfg.TRAIN.FLIP,
-                                   ignore_label=cfg.TRAIN.IGNORE_LABEL,
-                                   base_size=cfg.TRAIN.BASE_SIZE, crop_size=crop,
-                                   downsample_rate=cfg.TRAIN.DOWNSAMPLERATE,
-                                   scale_factor=cfg.TRAIN.SCALE_FACTOR)
+        return ds_cls(root=cfg.DATASET.ROOT, list_path=cfg.DATASET.TRAIN_SET,
+                      num_samples=None, num_classes=cfg.DATASET.NUM_CLASSES,
+                      multi_scale=cfg.TRAIN.MULTI_SCALE, flip=cfg.TRAIN.FLIP,
+                      ignore_label=cfg.TRAIN.IGNORE_LABEL,
+                      base_size=cfg.TRAIN.BASE_SIZE, crop_size=crop,
+                      downsample_rate=cfg.TRAIN.DOWNSAMPLERATE,
+                      scale_factor=cfg.TRAIN.SCALE_FACTOR)
     crop = (cfg.TEST.IMAGE_SIZE[1], cfg.TEST.IMAGE_SIZE[0])
-    return datasets.cityscapes(root=cfg.DATASET.ROOT, list_path=cfg.DATASET.TEST_SET,
-                               num_samples=None, num_classes=N_CLASSES,
-                               multi_scale=False, flip=False,
-                               ignore_label=cfg.TRAIN.IGNORE_LABEL,
-                               base_size=cfg.TEST.BASE_SIZE, crop_size=crop,
-                               downsample_rate=1)
+    return ds_cls(root=cfg.DATASET.ROOT, list_path=cfg.DATASET.TEST_SET,
+                  num_samples=None, num_classes=cfg.DATASET.NUM_CLASSES,
+                  multi_scale=False, flip=False,
+                  ignore_label=cfg.TRAIN.IGNORE_LABEL,
+                  base_size=cfg.TEST.BASE_SIZE, crop_size=crop,
+                  downsample_rate=1)
 
 
 def predict(net, cfg, image, out_size):

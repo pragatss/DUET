@@ -6,8 +6,9 @@ cross-dataset summary, full-image mIoU and boundary metrics side by side.
 
     cityscapes : STDC-Seg (baseline = mean of 3 seed replicates), STDC-Seg + Ours,
                  HRNet-W48, HRNet-W48 + Ours
-    synthia    : STDC-Seg, STDC-Seg + Ours (+ BPM-only if its checkpoint exists)
-    rugd       : STDC-Seg, STDC-Seg + Ours
+    synthia    : STDC-Seg, STDC-Seg + Ours (+ BPM-only if its checkpoint exists),
+                 HRNet-W48, HRNet-W48 + Ours
+    rugd       : STDC-Seg, STDC-Seg + Ours, HRNet-W48, HRNet-W48 + Ours
 
 Regions: full image (mIoU = regression guard) and the boundary band at r=1 and
 r=3 (the primary metric). Each dataset is scored in its OWN classes (no mapping
@@ -26,7 +27,7 @@ Checkpoints are evaluated once and cached in resultData/cache/eval/.
 USAGE (any python; GPU work runs in each host's conda env)
     python gen_perclass.py                              # all datasets
     python gen_perclass.py --datasets synthia rugd
-    python gen_perclass.py --hosts stdc                 # Cityscapes: skip HRNet
+    python gen_perclass.py --hosts stdc                 # skip HRNet
     python gen_perclass.py --stdc_baseline I0           # Cityscapes: single-run baseline
     python gen_perclass.py --force                      # re-evaluate even if cached
 
@@ -73,15 +74,23 @@ def rows_cityscapes(hosts, stdc_baseline, force):
             rows.append(_row('stdc', 'STDC-Seg [%s]' % k, 'replicate', [k], ev[k],
                              common.STDC_RUNS[k]['desc']))
     if 'hrnet' in hosts:
-        ev = common.ensure_evaluated('hrnet', list(common.HRNET_RUNS), force)
-        if 'baseline' in ev:
-            rows.append(_row('hrnet', 'HRNet-W48', 'main', ['baseline'], ev['baseline'], 'single run'))
-        if 'HI1' in ev:
-            rows.append(_row('hrnet', 'HRNet-W48 + Ours', 'main', ['HI1'], ev['HI1'], 'RSR + BPM, single run'))
+        rows += rows_hrnet('cityscapes', force)
     return rows
 
 
-def rows_other(dataset, force, size32=False):
+def rows_hrnet(dataset, force):
+    spec = common.HRNET_DATASET_RUNS[dataset]
+    ev = common.ensure_evaluated('hrnet', [spec['baseline'], spec['ours']], force)
+    rows = []
+    if spec['baseline'] in ev:
+        rows.append(_row('hrnet', 'HRNet-W48', 'main', [spec['baseline']], ev[spec['baseline']], 'single run'))
+    if spec['ours'] in ev:
+        rows.append(_row('hrnet', 'HRNet-W48 + Ours', 'main', [spec['ours']], ev[spec['ours']],
+                         'RSR + BPM, single run'))
+    return rows
+
+
+def rows_other(dataset, force, size32=False, hosts=('stdc',)):
     spec = common.DATASET_RUNS[dataset]
     keys = [spec['baseline'], spec['ours']] + spec['extra']
     ev = common.ensure_evaluated('stdc', keys, force, size32=size32)
@@ -97,6 +106,8 @@ def rows_other(dataset, force, size32=False):
     missing = [k for k in keys if k not in ev]
     if missing:
         print('[%s] no checkpoint for: %s' % (dataset, ', '.join(missing)))
+    if 'hrnet' in hosts and not size32:      # HRNet is scored at native resolution only
+        rows += rows_hrnet(dataset, force)
     return rows
 
 
@@ -115,8 +126,8 @@ def host_ours(rows, host):
 
 
 def metric(res, m):
-    if m == 'full_all':       # old Cityscapes caches predate full_all; every class is present there
-        return res.get('full_all', res['regions']['full'].get('miou_all', res['full']))
+    if m == 'full_all':
+        return common.miou_all(res)
     return res[m]
 
 
@@ -151,7 +162,7 @@ def write_dataset(dataset, rows, od):
             d = '' if base is None or base is r else fmt_d(R['miou'], base['res']['regions'][reg]['miou'])
             iou = [pct(x) if p else '' for x, p in zip(R['iou'], present)]
             out.append([r['method'], r['host'], r['row_type'], '+'.join(r['keys'])] + iou +
-                       [pct(R['miou']), pct(R.get('miou_all', R['miou'])), pct(R['thin']), d])
+                       [pct(R['miou']), pct(common.miou_all(r['res'], reg)), pct(R['thin']), d])
         common.write_csv(osp.join(od, 'perclass_%s.csv' % reg), header, out)
         md += ['## %s' % title, ''] + common.md_table(
             ['Method'] + names + ['mIoU', 'Thin', 'd'],
@@ -244,7 +255,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--datasets', nargs='+', default=list(DATASETS), choices=list(DATASETS))
     ap.add_argument('--hosts', nargs='+', default=['stdc', 'hrnet'], choices=('stdc', 'hrnet'),
-                    help='Cityscapes only; other datasets have STDC runs only')
+                    help='hosts to include (the 32-divisible scale check is STDC only)')
     ap.add_argument('--stdc_baseline', default='mean', choices=('mean', 'I0'),
                     help="Cityscapes: 'mean' = mean of I0/Baseline2/Baseline; 'I0' = single run")
     ap.add_argument('--no_scale_check', action='store_true', help='skip the 32-divisible re-evaluation')
@@ -259,7 +270,7 @@ def main():
         if dataset == 'cityscapes':
             rows = rows_cityscapes(args.hosts, args.stdc_baseline, args.force)
         else:
-            rows = rows_other(dataset, args.force)
+            rows = rows_other(dataset, args.force, hosts=args.hosts)
         if not rows:
             print('[%s] nothing evaluated' % dataset)
             continue

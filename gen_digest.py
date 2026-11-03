@@ -16,7 +16,7 @@ OUTPUT  resultData/digest/
     eval_digest.md       headline results for every dataset/host, noise floor,
                          component analysis, ablations, thin classes, robustness checks
     perclass_digest.md   per-class IoU tables (full image and boundary band) for
-                         Cityscapes (STDC + HRNet), SYNTHIA and RUGD, with seed-noise marks
+                         Cityscapes, SYNTHIA and RUGD (STDC + HRNet), with seed-noise marks
 """
 import json
 import os.path as osp
@@ -43,10 +43,15 @@ HEADER = [
     '  PRIMARY metric. Thin r=N = mean IoU of thin classes inside that band.',
     '- Thin classes: Cityscapes/SYNTHIA = pole, traffic light, traffic sign, rider, motorcycle, bicycle.',
     '  RUGD = pole, sign, fence, bicycle, log (same rule: structures thinner than one stride-8 cell).',
-    '- STDC-Seg = STDC2 backbone, scale 0.75 eval. HRNet = HRNetV2-W48, full-res eval (reduced 120-epoch',
-    '  schedule, identical for both arms). Compare within a host/dataset only.',
+    '- STDC-Seg = STDC2 backbone, scale 0.75 eval. HRNet = HRNetV2-W48, eval at native full resolution',
+    '  (Cityscapes 1024x2048, SYNTHIA 760x1280, RUGD 550x688). HRNet uses one recipe on all three datasets',
+    '  and both arms (reduced 120-epoch schedule, crop 512x1024, batch 3, OHEM); only dataset-dictated fields',
+    '  differ (class count, base size, no Cityscapes class weights). Compare within a host/dataset only.',
     '- Cityscapes STDC baseline = mean of 3 identical-config seeds; every other row is a single run (n=1).',
+    '- Both hosts are scored on the same SYNTHIA (940) and RUGD (733) val images.',
 ]
+
+DS_NAME = OrderedDict([('cityscapes', 'Cityscapes'), ('synthia', 'SYNTHIA'), ('rugd', 'RUGD')])
 
 
 def load(host, key, size32=False):
@@ -57,7 +62,7 @@ def v(res, m):
     if res is None:
         return None
     if m == 'full_all':
-        return res.get('full_all', res['full'])
+        return common.miou_all(res)
     return res.get(m)
 
 
@@ -86,6 +91,20 @@ def stdc_baseline():
     return reps, (common.mean_result([r for _, r in reps]) if len(reps) > 1 else None)
 
 
+def host_pairs(S, Hr, base, reps):
+    """dataset -> (stdc base, stdc ours, hrnet base, hrnet ours, stdc base n); None where missing"""
+    out = OrderedDict()
+    for ds in DS_NAME:
+        if ds == 'cityscapes':
+            sb, so, n = base, S.get('HI1'), str(len(reps))
+        else:
+            spec = common.DATASET_RUNS[ds]
+            sb, so, n = S.get(spec['baseline']), S.get(spec['ours']), '1'
+        hspec = common.HRNET_DATASET_RUNS[ds]
+        out[ds] = (sb, so, Hr.get(hspec['baseline']), Hr.get(hspec['ours']), n)
+    return out
+
+
 def noise_floor(reps):
     return {m: max(r[m] for _, r in reps) - min(r[m] for _, r in reps) for m in M5} if len(reps) > 1 \
         else dict(common.NOISE_FLOOR)
@@ -102,7 +121,8 @@ def eval_digest():
 
     # 1 -- headline
     out += ['## 1. Main results: baseline vs Ours on every dataset and host', '',
-            'Scale 0.75 for STDC (the protocol the training logs use). RUGD means use only classes with >= 0.1% '
+            'Scale 0.75 for STDC, native full resolution for HRNet (each host\'s training-time val protocol). '
+            'RUGD means use only classes with >= 0.1% '
             'of val pixels (RUGD val is two videos; rarer classes give meaningless IoU); "all cls" is the '
             'unfiltered mean that the training log reports.', '']
     rows = []
@@ -110,15 +130,21 @@ def eval_digest():
     def pair(ds, host, bname, b, oname, o, n):
         rows.append([ds, bname, n] + [cell(v(b, m)) for m in ('full', 'full_all') + M5[1:]])
         rows.append([ds, oname, '1'] + [cell(v(o, m), v(b, m)) for m in ('full', 'full_all') + M5[1:]])
-    if base and S.get('HI1'):
-        pair('Cityscapes', 'stdc', 'STDC-Seg', base, 'STDC-Seg + Ours', S['HI1'], str(len(reps)))
-    if Hr.get('baseline') and Hr.get('HI1'):
-        pair('Cityscapes', 'hrnet', 'HRNet-W48', Hr['baseline'], 'HRNet-W48 + Ours', Hr['HI1'], '1')
-    for ds, spec in common.DATASET_RUNS.items():
-        if S.get(spec['baseline']) and S.get(spec['ours']):
-            pair(ds.upper() if ds == 'rugd' else ds.capitalize(), 'stdc', 'STDC-Seg', S[spec['baseline']],
-                 'STDC-Seg + Ours', S[spec['ours']], '1')
+    for ds, (sb, so, hb, ho, n) in host_pairs(S, Hr, base, reps).items():
+        if sb and so:
+            pair(DS_NAME[ds], 'stdc', 'STDC-Seg', sb, 'STDC-Seg + Ours', so, n)
+        if hb and ho:
+            pair(DS_NAME[ds], 'hrnet', 'HRNet-W48', hb, 'HRNet-W48 + Ours', ho, '1')
     out += table(['Dataset', 'Method', 'n'] + [MNAME[m] for m in ('full', 'full_all') + M5[1:]], rows)
+
+    out += ['Gain of Ours over its own baseline, every host x dataset (points; the column a cross-host '
+            '"consistent improvement" claim rests on):', '']
+    rows = []
+    for ds, (sb, so, hb, ho, n) in host_pairs(S, Hr, base, reps).items():
+        for host, b, o in (('STDC-Seg', sb, so), ('HRNet-W48', hb, ho)):
+            if b and o:
+                rows.append([DS_NAME[ds], host] + [fd(v(o, m), v(b, m)) for m in ('full', 'full_all') + M5[1:]])
+    out += table(['Dataset', 'Host'] + ['d ' + MNAME[m] for m in ('full', 'full_all') + M5[1:]], rows)
 
     if base and S.get('HI1'):
         out += ['Cityscapes STDC-Seg effect size as a multiple of seed noise (|delta| / range across the 3 '
@@ -189,7 +215,7 @@ def eval_digest():
             out += ['Not yet trained (no checkpoint): %s.' % ', '.join(pending), '']
 
     # 5 -- thin classes
-    out += ['## 5. Thin classes, boundary band r=1 (Cityscapes)', '']
+    out += ['## 5. Thin classes, boundary band r=1', '', 'Cityscapes:', '']
     thin_rows = []
     for lab, r in (('STDC-Seg (3-seed mean)', base), ('STDC-Seg + BPM only', S.get('I1')),
                    ('STDC-Seg + RSR only', S.get('H1')), ('STDC-Seg + Ours', S.get('HI1')),
@@ -198,6 +224,21 @@ def eval_digest():
             thin_rows.append([lab] + [f(r['regions']['bnd_r1']['iou'][c]) for c in THIN] +
                              [f(r['thin_r1'])])
     out += table(['Method'] + [PAPER_CLASS_NAMES[c] for c in THIN] + ['Thin mean'], thin_rows)
+    for ds, (sb, so, hb, ho, _) in list(host_pairs(S, Hr, base, reps).items())[1:]:
+        meths = [(lab, r) for lab, r in (('STDC-Seg', sb), ('STDC-Seg + Ours', so),
+                                         ('HRNet-W48', hb), ('HRNet-W48 + Ours', ho)) if r]
+        if not meths:
+            continue
+        ref = meths[0][1]['regions']['full']
+        names = DATASETS[ds]['paper_classes']
+        cls = [c for c in DATASETS[ds]['thin'] if ref['present'][c]]
+        excl = [c for c in cls if not ref['used'][c]]
+        out += ['Thin classes, boundary band r=1 (%s)%s:' % (
+            DS_NAME[ds], '' if not excl else '; classes marked (excl.) are below the 0.1% support filter and '
+            'are not in the thin mean' ), '']
+        out += table(['Method'] + [names[c] + (' (excl.)' if c in excl else '') for c in cls] + ['Thin mean'],
+                     [[lab] + [f(r['regions']['bnd_r1']['iou'][c]) for c in cls] + [f(r['thin_r1'])]
+                      for lab, r in meths])
 
     # 6 -- robustness
     out += ['## 6. Robustness checks', '']
@@ -252,15 +293,20 @@ def eval_digest():
     # 8 -- caveats
     out += ['## 8. Caveats to state in the paper (so reviewers do not find them first)', '',
             '- All "Ours" rows and all non-Cityscapes/HRNet rows are single runs (n=1); HI1 seed replicates '
-            'are pending. HRNet has no seed-noise estimate of its own.',
+            'are pending. HRNet has no seed-noise estimate of its own (one run per arm per dataset, ~4-8 GPU-days '
+            'each), so treat HRNet full-mIoU gains under ~1.2 pts (the STDC Cityscapes seed range) as noise-level.',
             '- Full-mIoU gains: Cityscapes STDC +1.43 is only ~1.2x seed noise; claim "no regression", not '
             '"improves mIoU".',
             '- Checkpoints are the best-val-mIoU checkpoint for every arm (same rule for all), evaluated on val.',
-            '- HRNet-W48 baseline (75.6) is below the published number because of the reduced 120-epoch '
-            'schedule; both arms share it.',
+            '- HRNet-W48 Cityscapes baseline (75.6) is below the published number because of the reduced '
+            '120-epoch schedule; both arms share it. SYNTHIA/RUGD use the same recipe unchanged (no per-dataset '
+            'tuning). On RUGD the 512x1024 training crop is wider than the 550x688 images and is padded with '
+            'ignore, identically in both arms.',
+            '- HRNet full mIoU on SYNTHIA is much higher than STDC-Seg\'s (different backbone, native-resolution '
+            'input vs scale 0.75); compare hosts only through their deltas.',
             '- RUGD: several classes are rare in val; means are support-filtered (>= 0.1% of val pixels). '
             'RUGD thin mean covers only fence and log (bicycle absent; pole, sign below threshold -- pole '
-            'still shows the largest RUGD boundary gain, 15.7 -> 27.6, but is excluded from the mean).',
+            'still shows the largest STDC-Seg RUGD boundary gain, 15.7 -> 27.6, but is excluded from the mean).',
             '- Cost is not zero for a real-time method (section 7). The strongest defence is an equal-latency '
             'comparison (baseline at a larger input scale vs Ours); not in this digest yet.', '']
     return out
@@ -339,12 +385,15 @@ def perclass_digest():
     # SYNTHIA / RUGD
     for ds, spec in common.DATASET_RUNS.items():
         b, o = S.get(spec['baseline']), S.get(spec['ours'])
+        hspec = common.HRNET_DATASET_RUNS[ds]
+        hb, ho = Hr.get(hspec['baseline']), Hr.get(hspec['ours'])
         if not (b and o):
             continue
         names = DATASETS[ds]['paper_classes']
         present = b['regions']['full'].get('present', [True] * len(names))
         used = b['regions']['full'].get('used') if DATASETS[ds]['min_support'] else None
-        out += ['## %s (STDC-Seg, n=1)' % ('RUGD' if ds == 'rugd' else 'SYNTHIA'), '']
+        out += ['## %s (STDC-Seg%s, n=1)' % ('RUGD' if ds == 'rugd' else 'SYNTHIA',
+                                            ' and HRNet-W48' if hb and ho else ''), '']
         if ds == 'rugd':
             sup = b['support']
             out += ['Only classes with >= 0.1%% of val pixels are shown/averaged: %s. Excluded rare classes: %s.'
@@ -355,14 +404,25 @@ def perclass_digest():
             out += ['SYNTHIA labels use Cityscapes classes; terrain, truck and train do not occur in val.', '']
         for reg, title in (('full', 'Full image'), ('bnd_r1', 'Boundary band r=1')):
             B, O = b['regions'][reg], o['regions'][reg]
-            rows = [('STDC-Seg', B['iou'], B['miou'], False), ('STDC-Seg + Ours', O['iou'], O['miou'], False),
-                    ('Ours - base', [x - y for x, y in zip(O['iou'], B['iou'])], O['miou'] - B['miou'], True)]
+            rows = [('STDC-Seg', B['iou'], B['miou'], False), ('STDC-Seg + Ours', O['iou'], O['miou'], False)]
+            if hb and ho:
+                HB, HO = hb['regions'][reg], ho['regions'][reg]
+                rows += [('HRNet-W48', HB['iou'], HB['miou'], False),
+                         ('HRNet-W48 + Ours', HO['iou'], HO['miou'], False)]
+            rows.append(('STDC-Seg: Ours - base', [x - y for x, y in zip(O['iou'], B['iou'])],
+                         O['miou'] - B['miou'], True))
+            if hb and ho:
+                rows.append(('HRNet-W48: Ours - base', [x - y for x, y in zip(HO['iou'], HB['iou'])],
+                             HO['miou'] - HB['miou'], True))
             out += perclass_block(title, names, present, rows, used=used)
         if ds == 'rugd':
             pi = names.index('pole')
-            out += ['Excluded but notable -- pole (0.083%% of val px): full %s -> %s, boundary r=1 %s -> %s.' % (
-                f(b['regions']['full']['iou'][pi]), f(o['regions']['full']['iou'][pi]),
-                f(b['regions']['bnd_r1']['iou'][pi]), f(o['regions']['bnd_r1']['iou'][pi])), '']
+            for lab, bb, oo in (('STDC-Seg', b, o), ('HRNet-W48', hb, ho)):
+                if bb and oo:
+                    out += ['Excluded but notable, %s -- pole (0.083%% of val px): full %s -> %s, boundary r=1 '
+                            '%s -> %s.' % (lab, f(bb['regions']['full']['iou'][pi]), f(oo['regions']['full']['iou'][pi]),
+                                           f(bb['regions']['bnd_r1']['iou'][pi]), f(oo['regions']['bnd_r1']['iou'][pi])),
+                            '']
     return out
 
 

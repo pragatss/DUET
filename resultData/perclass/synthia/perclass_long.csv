@@ -170,3 +170,117 @@ synthia,stdc,STDC-Seg [Synthia-I1],arm,Synthia-I1,bnd_r3,bus,0.527522,1,1998328
 synthia,stdc,STDC-Seg [Synthia-I1],arm,Synthia-I1,bnd_r3,train,,0,0
 synthia,stdc,STDC-Seg [Synthia-I1],arm,Synthia-I1,bnd_r3,moto,0.480522,1,1147861
 synthia,stdc,STDC-Seg [Synthia-I1],arm,Synthia-I1,bnd_r3,bicycle,0.272437,1,1864712
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,full,road,0.969478,1,172011355
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,full,sidewalk,0.959157,1,170010080
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,full,building,0.963697,1,263721212
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,full,wall,0.902166,1,2573076
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,full,fence,0.863269,1,2742658
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,full,pole,0.788679,1,9739142
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,full,tlight,0.766566,1,363038
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,full,tsign,0.785386,1,953743
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,full,veg,0.862701,1,99380899
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,full,terrain,,0,0
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,full,sky,0.968962,1,63218219
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,full,person,0.882416,1,37914614
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,full,rider,0.777029,1,4230005
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,full,car,0.953715,1,38689147
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,full,truck,,0,0
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,full,bus,0.948273,1,12832125
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,full,train,,0,0
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,full,moto,0.825551,1,2022934
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,full,bicycle,0.513683,1,1975805
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r1,road,0.675755,1,10410069
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r1,sidewalk,0.680764,1,14376094
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r1,building,0.590805,1,13255189
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r1,wall,0.636414,1,438895
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r1,fence,0.675595,1,978051
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r1,pole,0.618658,1,4247624
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r1,tlight,0.532190,1,130258
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r1,tsign,0.531385,1,308170
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r1,veg,0.507730,1,13210234
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r1,terrain,,0,0
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r1,sky,0.692627,1,3335687
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r1,person,0.689778,1,11612773
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r1,rider,0.566306,1,1712934
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r1,car,0.666241,1,3450822
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r1,truck,,0,0
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r1,bus,0.624882,1,1053700
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r1,train,,0,0
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r1,moto,0.608804,1,691283
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r1,bicycle,0.445898,1,1608757
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r3,road,0.786921,1,19081749
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r3,sidewalk,0.789329,1,26243375
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r3,building,0.706806,1,24361431
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r3,wall,0.757798,1,779773
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r3,fence,0.776272,1,1562442
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r3,pole,0.710805,1,6103000
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r3,tlight,0.652160,1,207836
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r3,tsign,0.648659,1,482710
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r3,veg,0.616659,1,24456185
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r3,terrain,,0,0
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r3,sky,0.778449,1,6306206
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r3,person,0.788101,1,19104917
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r3,rider,0.675852,1,2613336
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r3,car,0.787383,1,6665733
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r3,truck,,0,0
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r3,bus,0.746425,1,1998328
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r3,train,,0,0
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r3,moto,0.722721,1,1147861
+synthia,hrnet,HRNet-W48,main,Synthia-baseline,bnd_r3,bicycle,0.495906,1,1864712
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,full,road,0.975760,1,172011355
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,full,sidewalk,0.967530,1,170010080
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,full,building,0.968093,1,263721212
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,full,wall,0.933524,1,2573076
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,full,fence,0.893549,1,2742658
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,full,pole,0.834760,1,9739142
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,full,tlight,0.823962,1,363038
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,full,tsign,0.840101,1,953743
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,full,veg,0.873698,1,99380899
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,full,terrain,,0,0
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,full,sky,0.971801,1,63218219
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,full,person,0.909376,1,37914614
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,full,rider,0.814041,1,4230005
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,full,car,0.959338,1,38689147
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,full,truck,,0,0
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,full,bus,0.951796,1,12832125
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,full,train,,0,0
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,full,moto,0.854957,1,2022934
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,full,bicycle,0.582049,1,1975805
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r1,road,0.726242,1,10410069
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r1,sidewalk,0.733775,1,14376094
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r1,building,0.630206,1,13255189
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r1,wall,0.703143,1,438895
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r1,fence,0.740841,1,978051
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r1,pole,0.703339,1,4247624
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r1,tlight,0.620256,1,130258
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r1,tsign,0.607789,1,308170
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r1,veg,0.532472,1,13210234
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r1,terrain,,0,0
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r1,sky,0.726927,1,3335687
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r1,person,0.755688,1,11612773
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r1,rider,0.631633,1,1712934
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r1,car,0.711477,1,3450822
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r1,truck,,0,0
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r1,bus,0.674720,1,1053700
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r1,train,,0,0
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r1,moto,0.668201,1,691283
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r1,bicycle,0.521857,1,1608757
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r3,road,0.822641,1,19081749
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r3,sidewalk,0.826508,1,26243375
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r3,building,0.739343,1,24361431
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r3,wall,0.809342,1,779773
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r3,fence,0.824764,1,1562442
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r3,pole,0.777445,1,6103000
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r3,tlight,0.728356,1,207836
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r3,tsign,0.716450,1,482710
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r3,veg,0.643056,1,24456185
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r3,terrain,,0,0
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r3,sky,0.802820,1,6306206
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r3,person,0.835380,1,19104917
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r3,rider,0.730284,1,2613336
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r3,car,0.820828,1,6665733
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r3,truck,,0,0
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r3,bus,0.785611,1,1998328
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r3,train,,0,0
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r3,moto,0.770147,1,1147861
+synthia,hrnet,HRNet-W48 + Ours,main,Synthia-HI1,bnd_r3,bicycle,0.567136,1,1864712

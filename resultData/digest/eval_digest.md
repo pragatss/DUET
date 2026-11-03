@@ -1,6 +1,6 @@
 # Evaluation digest -- key results for the paper
 
-generated 2026-09-29 18:19 from resultData/cache/eval by gen_digest.py
+generated 2026-11-02 11:56 from resultData/cache/eval by gen_digest.py
 
 Paper: "DUET" -- two plug-and-play additions for real-time semantic segmentation that improve
 BOUNDARY and THIN-STRUCTURE accuracy: RSR (Residual Sub-grid Refinement: a stride-4 refinement head,
@@ -15,13 +15,16 @@ How to read the numbers:
   PRIMARY metric. Thin r=N = mean IoU of thin classes inside that band.
 - Thin classes: Cityscapes/SYNTHIA = pole, traffic light, traffic sign, rider, motorcycle, bicycle.
   RUGD = pole, sign, fence, bicycle, log (same rule: structures thinner than one stride-8 cell).
-- STDC-Seg = STDC2 backbone, scale 0.75 eval. HRNet = HRNetV2-W48, full-res eval (reduced 120-epoch
-  schedule, identical for both arms). Compare within a host/dataset only.
+- STDC-Seg = STDC2 backbone, scale 0.75 eval. HRNet = HRNetV2-W48, eval at native full resolution
+  (Cityscapes 1024x2048, SYNTHIA 760x1280, RUGD 550x688). HRNet uses one recipe on all three datasets
+  and both arms (reduced 120-epoch schedule, crop 512x1024, batch 3, OHEM); only dataset-dictated fields
+  differ (class count, base size, no Cityscapes class weights). Compare within a host/dataset only.
 - Cityscapes STDC baseline = mean of 3 identical-config seeds; every other row is a single run (n=1).
+- Both hosts are scored on the same SYNTHIA (940) and RUGD (733) val images.
 
 ## 1. Main results: baseline vs Ours on every dataset and host
 
-Scale 0.75 for STDC (the protocol the training logs use). RUGD means use only classes with >= 0.1% of val pixels (RUGD val is two videos; rarer classes give meaningless IoU); "all cls" is the unfiltered mean that the training log reports.
+Scale 0.75 for STDC, native full resolution for HRNet (each host's training-time val protocol). RUGD means use only classes with >= 0.1% of val pixels (RUGD val is two videos; rarer classes give meaningless IoU); "all cls" is the unfiltered mean that the training log reports.
 
 | Dataset | Method | n | Full mIoU | Full mIoU (all cls) | Bnd r=1 | Bnd r=3 | Thin r=1 | Thin r=3 |
 |---|---|---|---|---|---|---|---|---|
@@ -29,10 +32,25 @@ Scale 0.75 for STDC (the protocol the training logs use). RUGD means use only cl
 | Cityscapes | STDC-Seg + Ours | 1 | 77.25 (+1.43) | 77.25 (+1.43) | 39.77 (+3.96) | 49.82 (+4.91) | 38.62 (+5.46) | 48.39 (+6.55) |
 | Cityscapes | HRNet-W48 | 1 | 75.62 | 75.62 | 40.88 | 50.89 | 41.70 | 51.60 |
 | Cityscapes | HRNet-W48 + Ours | 1 | 77.22 (+1.60) | 77.22 (+1.60) | 43.24 (+2.36) | 53.75 (+2.85) | 45.28 (+3.58) | 55.81 (+4.21) |
-| Synthia | STDC-Seg | 1 | 72.56 | 72.56 | 37.41 | 47.64 | 31.40 | 40.45 |
-| Synthia | STDC-Seg + Ours | 1 | 77.19 (+4.63) | 77.19 (+4.63) | 43.67 (+6.26) | 55.31 (+7.67) | 38.56 (+7.16) | 48.93 (+8.48) |
+| SYNTHIA | STDC-Seg | 1 | 72.56 | 72.56 | 37.41 | 47.64 | 31.40 | 40.45 |
+| SYNTHIA | STDC-Seg + Ours | 1 | 77.19 (+4.63) | 77.19 (+4.63) | 43.67 (+6.26) | 55.31 (+7.67) | 38.56 (+7.16) | 48.93 (+8.48) |
+| SYNTHIA | HRNet-W48 | 1 | 85.82 | 85.82 | 60.90 | 71.50 | 55.05 | 65.10 |
+| SYNTHIA | HRNet-W48 + Ours | 1 | 88.46 (+2.65) | 88.46 (+2.65) | 66.80 (+5.90) | 76.25 (+4.75) | 62.55 (+7.50) | 71.50 (+6.40) |
 | RUGD | STDC-Seg | 1 | 53.14 | 41.56 | 25.22 | 30.51 | 17.16 | 20.28 |
 | RUGD | STDC-Seg + Ours | 1 | 54.62 (+1.48) | 43.75 (+2.19) | 26.65 (+1.43) | 33.13 (+2.62) | 19.23 (+2.07) | 23.21 (+2.92) |
+| RUGD | HRNet-W48 | 1 | 58.82 | 48.52 | 31.95 | 38.90 | 19.09 | 24.03 |
+| RUGD | HRNet-W48 + Ours | 1 | 60.00 (+1.18) | 50.15 (+1.64) | 35.65 (+3.70) | 42.56 (+3.66) | 24.58 (+5.49) | 30.03 (+6.00) |
+
+Gain of Ours over its own baseline, every host x dataset (points; the column a cross-host "consistent improvement" claim rests on):
+
+| Dataset | Host | d Full mIoU | d Full mIoU (all cls) | d Bnd r=1 | d Bnd r=3 | d Thin r=1 | d Thin r=3 |
+|---|---|---|---|---|---|---|---|
+| Cityscapes | STDC-Seg | +1.43 | +1.43 | +3.96 | +4.91 | +5.46 | +6.55 |
+| Cityscapes | HRNet-W48 | +1.60 | +1.60 | +2.36 | +2.85 | +3.58 | +4.21 |
+| SYNTHIA | STDC-Seg | +4.63 | +4.63 | +6.26 | +7.67 | +7.16 | +8.48 |
+| SYNTHIA | HRNet-W48 | +2.65 | +2.65 | +5.90 | +4.75 | +7.50 | +6.40 |
+| RUGD | STDC-Seg | +1.48 | +2.19 | +1.43 | +2.62 | +2.07 | +2.92 |
+| RUGD | HRNet-W48 | +1.18 | +1.64 | +3.70 | +3.66 | +5.49 | +6.00 |
 
 Cityscapes STDC-Seg effect size as a multiple of seed noise (|delta| / range across the 3 baseline seeds):
 
@@ -83,7 +101,9 @@ Primary columns are boundary/thin. Full-mIoU ablation deltas are all below its 1
 
 Not yet trained (no checkpoint): RSR w/o residual, RSR w/o logit input, RSR w/o gate, w/o OHEM, w=1, w/o detail-head loss, w/o auxiliary heads, w=2, w=5, w=8, r=1, r=2, r=5.
 
-## 5. Thin classes, boundary band r=1 (Cityscapes)
+## 5. Thin classes, boundary band r=1
+
+Cityscapes:
 
 | Method | Pole | Tr.Light | Sign | Rider | M.bike | Bike | Thin mean |
 |---|---|---|---|---|---|---|---|
@@ -93,6 +113,24 @@ Not yet trained (no checkpoint): RSR w/o residual, RSR w/o logit input, RSR w/o 
 | STDC-Seg + Ours | 44.83 | 39.21 | 43.89 | 34.27 | 28.66 | 40.88 | 38.62 |
 | HRNet-W48 | 49.00 | 42.77 | 48.12 | 37.87 | 30.41 | 42.02 | 41.70 |
 | HRNet-W48 + Ours | 52.85 | 46.38 | 51.63 | 41.74 | 34.54 | 44.53 | 45.28 |
+
+Thin classes, boundary band r=1 (SYNTHIA):
+
+| Method | Pole | Tr.Light | Sign | Rider | M.bike | Bike | Thin mean |
+|---|---|---|---|---|---|---|---|
+| STDC-Seg | 31.22 | 32.50 | 26.16 | 34.65 | 39.25 | 24.59 | 31.40 |
+| STDC-Seg + Ours | 43.83 | 41.45 | 33.29 | 39.13 | 43.57 | 30.07 | 38.56 |
+| HRNet-W48 | 61.87 | 53.22 | 53.14 | 56.63 | 60.88 | 44.59 | 55.05 |
+| HRNet-W48 + Ours | 70.33 | 62.03 | 60.78 | 63.16 | 66.82 | 52.19 | 62.55 |
+
+Thin classes, boundary band r=1 (RUGD); classes marked (excl.) are below the 0.1% support filter and are not in the thin mean:
+
+| Method | pole (excl.) | sign (excl.) | fence | log | Thin mean |
+|---|---|---|---|---|---|
+| STDC-Seg | 15.67 | 0.00 | 17.89 | 16.43 | 17.16 |
+| STDC-Seg + Ours | 27.62 | 0.00 | 22.06 | 16.40 | 19.23 |
+| HRNet-W48 | 34.61 | 0.91 | 18.28 | 19.90 | 19.09 |
+| HRNet-W48 + Ours | 43.28 | 0.00 | 22.08 | 27.08 | 24.58 |
 
 ## 6. Robustness checks
 
@@ -126,10 +164,11 @@ Params/GMACs are exact and are the primary cost claim. Throughput is pooled over
 
 ## 8. Caveats to state in the paper (so reviewers do not find them first)
 
-- All "Ours" rows and all non-Cityscapes/HRNet rows are single runs (n=1); HI1 seed replicates are pending. HRNet has no seed-noise estimate of its own.
+- All "Ours" rows and all non-Cityscapes/HRNet rows are single runs (n=1); HI1 seed replicates are pending. HRNet has no seed-noise estimate of its own (one run per arm per dataset, ~4-8 GPU-days each), so treat HRNet full-mIoU gains under ~1.2 pts (the STDC Cityscapes seed range) as noise-level.
 - Full-mIoU gains: Cityscapes STDC +1.43 is only ~1.2x seed noise; claim "no regression", not "improves mIoU".
 - Checkpoints are the best-val-mIoU checkpoint for every arm (same rule for all), evaluated on val.
-- HRNet-W48 baseline (75.6) is below the published number because of the reduced 120-epoch schedule; both arms share it.
-- RUGD: several classes are rare in val; means are support-filtered (>= 0.1% of val pixels). RUGD thin mean covers only fence and log (bicycle absent; pole, sign below threshold -- pole still shows the largest RUGD boundary gain, 15.7 -> 27.6, but is excluded from the mean).
+- HRNet-W48 Cityscapes baseline (75.6) is below the published number because of the reduced 120-epoch schedule; both arms share it. SYNTHIA/RUGD use the same recipe unchanged (no per-dataset tuning). On RUGD the 512x1024 training crop is wider than the 550x688 images and is padded with ignore, identically in both arms.
+- HRNet full mIoU on SYNTHIA is much higher than STDC-Seg's (different backbone, native-resolution input vs scale 0.75); compare hosts only through their deltas.
+- RUGD: several classes are rare in val; means are support-filtered (>= 0.1% of val pixels). RUGD thin mean covers only fence and log (bicycle absent; pole, sign below threshold -- pole still shows the largest STDC-Seg RUGD boundary gain, 15.7 -> 27.6, but is excluded from the mean).
 - Cost is not zero for a real-time method (section 7). The strongest defence is an equal-latency comparison (baseline at a larger input scale vs Ours); not in this digest yet.
 

@@ -1,5 +1,5 @@
 {
-  "generated": "2026-09-30 19:57",
+  "generated": "2026-11-02 16:25",
   "strategy": "top",
   "rows": [
     {
@@ -94,7 +94,9 @@
         "rgb": "1_rgb.png",
         "gt": "2_gt.png",
         "stdc": "3_stdc.png",
-        "stdc_ours": "4_stdc_ours.png"
+        "stdc_ours": "4_stdc_ours.png",
+        "hrnet": "5_hrnet.png",
+        "hrnet_ours": "6_hrnet_ours.png"
       },
       "box": null,
       "size": [
@@ -117,14 +119,19 @@
       ],
       "dataset": "synthia",
       "name": "0003112",
-      "rank": 1,
+      "rank": 40,
       "n": 940,
-      "score": 0.21846908933582676,
+      "score": 0.10098667697455575,
       "gains": {
         "stdc": {
           "band": 0.06523167926388432,
           "thin": 0.3064748201438849,
           "full": 0.009833471697130808
+        },
+        "hrnet": {
+          "band": 0.035039434768320735,
+          "thin": 0.13189448441247004,
+          "full": -0.0014665598324592791
         }
       }
     },
@@ -134,7 +141,9 @@
         "rgb": "1_rgb.png",
         "gt": "2_gt.png",
         "stdc": "3_stdc.png",
-        "stdc_ours": "4_stdc_ours.png"
+        "stdc_ours": "4_stdc_ours.png",
+        "hrnet": "5_hrnet.png",
+        "hrnet_ours": "6_hrnet_ours.png"
       },
       "box": null,
       "size": [
@@ -159,14 +168,19 @@
       ],
       "dataset": "synthia",
       "name": "0007665",
-      "rank": 2,
+      "rank": 44,
       "n": 940,
-      "score": 0.20431534116843175,
+      "score": 0.09999921556717259,
       "gains": {
         "stdc": {
           "band": 0.07071566619551735,
           "thin": 0.26719934994582883,
           "full": 0.013781167373493277
+        },
+        "hrnet": {
+          "band": 0.04636974644474572,
+          "thin": 0.10725893824485373,
+          "full": 0.003959938933749363
         }
       }
     },
@@ -176,7 +190,9 @@
         "rgb": "1_rgb.png",
         "gt": "2_gt.png",
         "stdc": "3_stdc.png",
-        "stdc_ours": "4_stdc_ours.png"
+        "stdc_ours": "4_stdc_ours.png",
+        "hrnet": "5_hrnet.png",
+        "hrnet_ours": "6_hrnet_ours.png"
       },
       "box": null,
       "size": [
@@ -195,14 +211,19 @@
       ],
       "dataset": "rugd",
       "name": "park-8_00391",
-      "rank": 1,
+      "rank": 434,
       "n": 733,
-      "score": 0.3642562268335326,
+      "score": 0.029915430578498388,
       "gains": {
         "stdc": {
           "band": 0.05137972080943621,
           "thin": 0.6257530120481928,
           "full": 0.015224630021141649
+        },
+        "hrnet": {
+          "band": 0.034433502867655015,
+          "thin": -0.009036144578313253,
+          "full": 0.005113636363636364
         }
       }
     },
@@ -212,7 +233,9 @@
         "rgb": "1_rgb.png",
         "gt": "2_gt.png",
         "stdc": "3_stdc.png",
-        "stdc_ours": "4_stdc_ours.png"
+        "stdc_ours": "4_stdc_ours.png",
+        "hrnet": "5_hrnet.png",
+        "hrnet_ours": "6_hrnet_ours.png"
       },
       "box": null,
       "size": [
@@ -230,14 +253,19 @@
       ],
       "dataset": "rugd",
       "name": "trail-5_00606",
-      "rank": 57,
+      "rank": 10,
       "n": 733,
-      "score": 0.19399677155704226,
+      "score": 0.17592216934529764,
       "gains": {
         "stdc": {
           "band": 0.06363559774214383,
           "thin": 0.26072234762979685,
           "full": 0.013025898520084567
+        },
+        "hrnet": {
+          "band": 0.04330365918728411,
+          "thin": 0.2652370203160271,
+          "full": -0.058612579281183935
         }
       }
     }

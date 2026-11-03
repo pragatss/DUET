@@ -143,3 +143,147 @@ rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,sky,0.348614,1,9639354
 rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,tree,0.632898,1,17623637
 rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,vehicle,0.412413,1,350540
 rugd,stdc,STDC-Seg + Ours,main,RUGD-HI1,bnd_r3,water,0.290499,0,55291
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,asphalt,0.902294,1,10629992
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,bicycle,,0,0
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,bridge,,0,0
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,building,0.382255,1,996788
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,bush,0.298319,1,2969700
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,concrete,0.131452,0,219103
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,container,0.298259,0,41224
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,dirt,0.000000,1,374314
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,fence,0.251023,1,2664957
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,grass,0.851830,1,59322369
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,gravel,0.805985,1,15249455
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,log,0.379179,1,2084525
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,mulch,0.824602,1,43613398
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,person,0.119296,0,4019
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,picnic-table,0.694720,1,423724
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,pole,0.392105,0,229159
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,rock,0.555320,1,604762
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,rock-bed,,0,0
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,sand,,0,0
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,sign,0.009664,0,9246
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,sky,0.718751,1,17528365
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,tree,0.916709,1,119274410
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,vehicle,0.653235,1,790182
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,full,water,0.518364,0,176061
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,asphalt,0.319177,1,214283
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,bicycle,,0,0
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,bridge,,0,0
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,building,0.226312,1,305793
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,bush,0.216023,1,377639
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,concrete,0.070820,0,83913
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,container,0.315983,0,18135
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,dirt,0.000000,1,49209
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,fence,0.182781,1,363015
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,grass,0.436754,1,2289245
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,gravel,0.384006,1,444152
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,log,0.199024,1,527147
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,mulch,0.352750,1,1752797
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,person,0.045714,0,2087
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,picnic-table,0.446591,1,150164
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,pole,0.346121,0,145141
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,rock,0.276202,1,108672
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,rock-bed,,0,0
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,sand,,0,0
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,sign,0.009116,0,5348
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,sky,0.489040,1,6453584
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,tree,0.593282,1,9201398
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,vehicle,0.351263,1,184720
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r1,water,0.274068,0,29185
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,asphalt,0.383725,1,402613
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,bicycle,,0,0
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,bridge,,0,0
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,building,0.282761,1,503607
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,bush,0.247007,1,721026
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,concrete,0.098194,0,134183
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,container,0.396544,0,30991
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,dirt,0.000000,1,92830
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,fence,0.215074,1,677078
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,grass,0.503079,1,4501471
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,gravel,0.439903,1,917616
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,log,0.265506,1,979807
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,mulch,0.419581,1,3388023
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,person,0.092354,0,3322
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,picnic-table,0.576506,1,260109
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,pole,0.423763,0,200642
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,rock,0.333558,1,210897
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,rock-bed,,0,0
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,sand,,0,0
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,sign,0.011006,0,8096
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,sky,0.601064,1,9639354
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,tree,0.704817,1,17623637
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,vehicle,0.472819,1,350540
+rugd,hrnet,HRNet-W48,main,RUGD-baseline,bnd_r3,water,0.340607,0,55291
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,asphalt,0.916784,1,10629992
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,bicycle,,0,0
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,bridge,,0,0
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,building,0.363919,1,996788
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,bush,0.331234,1,2969700
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,concrete,0.109863,0,219103
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,container,0.414455,0,41224
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,dirt,0.000000,1,374314
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,fence,0.265768,1,2664957
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,grass,0.854378,1,59322369
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,gravel,0.824891,1,15249455
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,log,0.371662,1,2084525
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,mulch,0.813707,1,43613398
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,person,0.107826,0,4019
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,picnic-table,0.724061,1,423724
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,pole,0.435525,0,229159
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,rock,0.543787,1,604762
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,rock-bed,,0,0
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,sand,,0,0
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,sign,0.000000,0,9246
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,sky,0.765848,1,17528365
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,tree,0.922331,1,119274410
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,vehicle,0.700992,1,790182
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,full,water,0.563838,0,176061
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,asphalt,0.323190,1,214283
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,bicycle,,0,0
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,bridge,,0,0
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,building,0.219422,1,305793
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,bush,0.239269,1,377639
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,concrete,0.063292,0,83913
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,container,0.379441,0,18135
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,dirt,0.000000,1,49209
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,fence,0.220768,1,363015
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,grass,0.443799,1,2289245
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,gravel,0.386234,1,444152
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,log,0.270832,1,527147
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,mulch,0.378849,1,1752797
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,person,0.039656,0,2087
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,picnic-table,0.492991,1,150164
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,pole,0.432829,0,145141
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,rock,0.294414,1,108672
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,rock-bed,,0,0
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,sand,,0,0
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,sign,0.000000,0,5348
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,sky,0.642228,1,6453584
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,tree,0.661611,1,9201398
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,vehicle,0.417771,1,184720
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r1,water,0.286540,0,29185
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,asphalt,0.388624,1,402613
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,bicycle,,0,0
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,bridge,,0,0
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,building,0.279844,1,503607
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,bush,0.274834,1,721026
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,concrete,0.094414,0,134183
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,container,0.436506,0,30991
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,dirt,0.000000,1,92830
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,fence,0.259047,1,677078
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,grass,0.512834,1,4501471
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,gravel,0.447764,1,917616
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,log,0.341460,1,979807
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,mulch,0.448236,1,3388023
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,person,0.076022,0,3322
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,picnic-table,0.617962,1,260109
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,pole,0.486191,0,200642
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,rock,0.372635,1,210897
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,rock-bed,,0,0
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,sand,,0,0
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,sign,0.000000,0,8096
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,sky,0.719250,1,9639354
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,tree,0.755317,1,17623637
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,vehicle,0.540179,1,350540
+rugd,hrnet,HRNet-W48 + Ours,main,RUGD-HI1,bnd_r3,water,0.353946,0,55291

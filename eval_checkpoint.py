@@ -112,7 +112,7 @@ def main():
             '%+9.2f' % (100 * (r[h] - b[h])) if r[h] is not None and b[h] is not None else '%9s' % '-'
             for h in hdr)))
     if ds['min_support']:
-        print('(mIoU over every present class, unfiltered: %s)' % ', '.join(
+        print('(mIoU over every class with GT pixels, unfiltered: %s)' % ', '.join(
             '%.2f' % (100 * r['full_all']) for _, r in results))
 
     if args.per_class:

@@ -20,3 +20,9 @@ resultData/qualitative/fig_framework/
 resultData/qualitative/more_candidates_*/
 # framework-figure tiles from tools/make_figure_assets.py (~41 MB)
 resultData/figure_assets/
+
+# figure images from gen_qualitative.py (row panels, legends, previews, candidates)
+resultData/qualitative/fig_qualitative/
+resultData/qualitative/ignore_example.png
+# reference screenshots of the paper's figures/tables (the .pptx and goal.txt stay tracked)
+ref_images/**/*.png
