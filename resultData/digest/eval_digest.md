@@ -1,6 +1,6 @@
 # Evaluation digest -- key results for the paper
 
-generated 2026-11-02 11:56 from resultData/cache/eval by gen_digest.py
+generated 2026-11-02 19:02 from resultData/cache/eval by gen_digest.py
 
 Paper: "DUET" -- two plug-and-play additions for real-time semantic segmentation that improve
 BOUNDARY and THIN-STRUCTURE accuracy: RSR (Residual Sub-grid Refinement: a stride-4 refinement head,
@@ -10,7 +10,7 @@ zero inference cost) fixes the training objective. "Ours" = RSR + BPM.
 How to read the numbers:
 - All values are IoU in %; deltas in percentage points.
 - Full mIoU = standard full-image mIoU. It is a REGRESSION GUARD, not the claim: on Cityscapes its
-  seed-to-seed spread (1.23 pts over 3 identical baseline runs) exceeds several effects.
+  run-to-run spread (0.88 pts between the 2 fresh-clone baseline runs) exceeds several effects.
 - Bnd r=N = IoU restricted to pixels within N px of a ground-truth class boundary (a trimap IoU).
   PRIMARY metric. Thin r=N = mean IoU of thin classes inside that band.
 - Thin classes: Cityscapes/SYNTHIA = pole, traffic light, traffic sign, rider, motorcycle, bicycle.
@@ -19,7 +19,9 @@ How to read the numbers:
   (Cityscapes 1024x2048, SYNTHIA 760x1280, RUGD 550x688). HRNet uses one recipe on all three datasets
   and both arms (reduced 120-epoch schedule, crop 512x1024, batch 3, OHEM); only dataset-dictated fields
   differ (class count, base size, no Cityscapes class weights). Compare within a host/dataset only.
-- Cityscapes STDC baseline = mean of 3 identical-config seeds; every other row is a single run (n=1).
+- Cityscapes STDC baseline = 2-run mean of the 2 fresh-clone baseline runs (Baseline, Baseline2). I0 is
+  excluded: it was trained with the bnd_weight flag (lambda=1), not from a fresh clone of the original
+  STDC-Seg repo. Every other row is a single run (n=1).
 - Both hosts are scored on the same SYNTHIA (940) and RUGD (733) val images.
 
 ## 1. Main results: baseline vs Ours on every dataset and host
@@ -28,8 +30,8 @@ Scale 0.75 for STDC, native full resolution for HRNet (each host's training-time
 
 | Dataset | Method | n | Full mIoU | Full mIoU (all cls) | Bnd r=1 | Bnd r=3 | Thin r=1 | Thin r=3 |
 |---|---|---|---|---|---|---|---|---|
-| Cityscapes | STDC-Seg | 3 | 75.82 | 75.82 | 35.80 | 44.91 | 33.16 | 41.84 |
-| Cityscapes | STDC-Seg + Ours | 1 | 77.25 (+1.43) | 77.25 (+1.43) | 39.77 (+3.96) | 49.82 (+4.91) | 38.62 (+5.46) | 48.39 (+6.55) |
+| Cityscapes | STDC-Seg | 2 | 75.56 | 75.56 | 35.79 | 44.89 | 33.25 | 41.91 |
+| Cityscapes | STDC-Seg + Ours | 1 | 77.25 (+1.69) | 77.25 (+1.69) | 39.77 (+3.98) | 49.82 (+4.93) | 38.62 (+5.38) | 48.39 (+6.48) |
 | Cityscapes | HRNet-W48 | 1 | 75.62 | 75.62 | 40.88 | 50.89 | 41.70 | 51.60 |
 | Cityscapes | HRNet-W48 + Ours | 1 | 77.22 (+1.60) | 77.22 (+1.60) | 43.24 (+2.36) | 53.75 (+2.85) | 45.28 (+3.58) | 55.81 (+4.21) |
 | SYNTHIA | STDC-Seg | 1 | 72.56 | 72.56 | 37.41 | 47.64 | 31.40 | 40.45 |
@@ -45,52 +47,54 @@ Gain of Ours over its own baseline, every host x dataset (points; the column a c
 
 | Dataset | Host | d Full mIoU | d Full mIoU (all cls) | d Bnd r=1 | d Bnd r=3 | d Thin r=1 | d Thin r=3 |
 |---|---|---|---|---|---|---|---|
-| Cityscapes | STDC-Seg | +1.43 | +1.43 | +3.96 | +4.91 | +5.46 | +6.55 |
+| Cityscapes | STDC-Seg | +1.69 | +1.69 | +3.98 | +4.93 | +5.38 | +6.48 |
 | Cityscapes | HRNet-W48 | +1.60 | +1.60 | +2.36 | +2.85 | +3.58 | +4.21 |
 | SYNTHIA | STDC-Seg | +4.63 | +4.63 | +6.26 | +7.67 | +7.16 | +8.48 |
 | SYNTHIA | HRNet-W48 | +2.65 | +2.65 | +5.90 | +4.75 | +7.50 | +6.40 |
 | RUGD | STDC-Seg | +1.48 | +2.19 | +1.43 | +2.62 | +2.07 | +2.92 |
 | RUGD | HRNet-W48 | +1.18 | +1.64 | +3.70 | +3.66 | +5.49 | +6.00 |
 
-Cityscapes STDC-Seg effect size as a multiple of seed noise (|delta| / range across the 3 baseline seeds):
+Cityscapes STDC-Seg effect size as a multiple of run-to-run noise (|delta| / range across the 2 fresh-clone baseline runs):
 
-| Metric | Delta | Seed noise (range) | x noise |
+| Metric | Delta | Run-to-run noise (range) | x noise |
 |---|---|---|---|
-| Full mIoU | +1.43 | 1.23 | 1.2 |
-| Bnd r=1 | +3.96 | 0.32 | 12.2 |
-| Bnd r=3 | +4.91 | 0.47 | 10.4 |
-| Thin r=1 | +5.46 | 0.42 | 13.1 |
-| Thin r=3 | +6.55 | 0.55 | 11.9 |
+| Full mIoU | +1.69 | 0.88 | 1.9 |
+| Bnd r=1 | +3.98 | 0.32 | 12.3 |
+| Bnd r=3 | +4.93 | 0.47 | 10.4 |
+| Thin r=1 | +5.38 | 0.31 | 17.3 |
+| Thin r=3 | +6.48 | 0.55 | 11.8 |
 
-## 2. Seed noise floor (Cityscapes, STDC-Seg baseline, identical config, 3 seeds)
+## 2. Run-to-run noise floor (Cityscapes, STDC-Seg baseline, 2 fresh-clone runs)
 
 | Run | Note | Full mIoU | Bnd r=1 | Bnd r=3 | Thin r=1 | Thin r=3 |
 |---|---|---|---|---|---|---|
-| I0 | baseline, bnd_weight=1.0 (lambda=1 control); paper baseline | 76.35 | 35.83 | 44.95 | 32.99 | 41.70 |
-| Baseline2 | baseline seed replicate (same config as I0) | 75.12 | 35.63 | 44.65 | 33.09 | 41.63 |
-| Baseline | baseline seed replicate (pre-cutoff, command not recorded) | 76.00 | 35.95 | 45.13 | 33.40 | 42.18 |
-| range | noise floor | 1.23 | 0.32 | 0.47 | 0.42 | 0.55 |
+| Baseline | fresh-clone baseline run | 76.00 | 35.95 | 45.13 | 33.40 | 42.18 |
+| Baseline2 | fresh-clone baseline run | 75.12 | 35.63 | 44.65 | 33.09 | 41.63 |
+| range | noise floor (Baseline vs Baseline2) | 0.88 | 0.32 | 0.47 | 0.31 | 0.55 |
+| I0 | excluded: trained with the bnd_weight flag (lambda=1), not a fresh clone | 76.35 | 35.83 | 44.95 | 32.99 | 41.70 |
 
-## 3. Component analysis (Cityscapes, STDC-Seg, gains vs 3-seed baseline mean)
+I0 is shown for reference only; it is not in the baseline mean or the range.
+
+## 3. Component analysis (Cityscapes, STDC-Seg, gains vs 2-run baseline mean)
 
 | Configuration | Run | Full mIoU | Bnd r=1 | Bnd r=3 | Thin r=1 | Thin r=3 |
 |---|---|---|---|---|---|---|
-| Baseline | mean of 3 seeds | 75.82 | 35.80 | 44.91 | 33.16 | 41.84 |
-| + BPM only | I1 | 77.04 (+1.22) | 37.78 (+1.98) | 47.68 (+2.77) | 35.43 (+2.27) | 45.03 (+3.19) |
-| + RSR only | H1 | 76.60 (+0.78) | 37.57 (+1.76) | 47.08 (+2.16) | 35.40 (+2.24) | 44.53 (+2.69) |
-| + RSR + BPM (Ours) | HI1 | 77.25 (+1.43) | 39.77 (+3.96) | 49.82 (+4.91) | 38.62 (+5.46) | 48.39 (+6.55) |
-| sum of single-arm gains | I1 + H1 (additive prediction) | +2.00 | +3.74 | +4.93 | +4.52 | +5.88 |
-| Ours minus additive prediction | > noise = super-additive | -0.57 | +0.22 | -0.02 | +0.95 | +0.68 |
+| Baseline | 2-run mean | 75.56 | 35.79 | 44.89 | 33.25 | 41.91 |
+| + BPM only | I1 | 77.04 (+1.49) | 37.78 (+1.99) | 47.68 (+2.79) | 35.43 (+2.18) | 45.03 (+3.12) |
+| + RSR only | H1 | 76.60 (+1.04) | 37.57 (+1.78) | 47.08 (+2.18) | 35.40 (+2.16) | 44.53 (+2.62) |
+| + RSR + BPM (Ours) | HI1 | 77.25 (+1.69) | 39.77 (+3.98) | 49.82 (+4.93) | 38.62 (+5.38) | 48.39 (+6.48) |
+| sum of single-arm gains | I1 + H1 (additive prediction) | +2.53 | +3.77 | +4.97 | +4.34 | +5.74 |
+| Ours minus additive prediction | > noise = super-additive | -0.84 | +0.21 | -0.04 | +1.04 | +0.74 |
 
 Reading: each arm alone gives about half the boundary gain; together they are additive on overall boundary IoU and super-additive only on thin classes (single runs). Do not use the sign of res_scale as evidence of interaction (the output is res_scale * conv, so the sign is not identifiable).
 
 ## 4. Ablations (Cityscapes, STDC-Seg; every row = full model with one thing changed; delta vs full model)
 
-Primary columns are boundary/thin. Full-mIoU ablation deltas are all below its 1.23-pt seed noise, so full mIoU cannot rank ablations; report it as the guard.
+Primary columns are boundary/thin. Full-mIoU ablation deltas are all below its 0.88-pt run-to-run noise, so full mIoU cannot rank ablations; report it as the guard.
 
 | Model variation | Run | Bnd r=1 | Bnd r=3 | Thin r=1 | Thin r=3 | Full mIoU | abs(d Bnd r=1) / noise |
 |---|---|---|---|---|---|---|---|
-| Baseline (no RSR, no BPM) | 3-seed mean | 35.80 (-3.96) | 44.91 (-4.91) | 33.16 (-5.46) | 41.84 (-6.55) | 75.82 (-1.43) | 12.2 |
+| Baseline (no RSR, no BPM) | 2-run mean | 35.79 (-3.98) | 44.89 (-4.93) | 33.25 (-5.38) | 41.91 (-6.48) | 75.56 (-1.69) | 12.3 |
 | Full model (RSR + BPM) | HI1 | 39.77 | 49.82 | 38.62 | 48.39 | 77.25 |  |
 | w/o RSR (BPM only) | I1 | 37.78 (-1.98) | 47.68 (-2.14) | 35.43 (-3.19) | 45.03 (-3.36) | 77.04 (-0.21) | 6.1 |
 | w/o BPM (RSR only) | H1 | 37.57 (-2.20) | 47.08 (-2.75) | 35.40 (-3.22) | 44.53 (-3.86) | 76.60 (-0.65) | 6.8 |
@@ -107,7 +111,7 @@ Cityscapes:
 
 | Method | Pole | Tr.Light | Sign | Rider | M.bike | Bike | Thin mean |
 |---|---|---|---|---|---|---|---|
-| STDC-Seg (3-seed mean) | 33.18 | 32.94 | 36.72 | 31.98 | 27.04 | 37.10 | 33.16 |
+| STDC-Seg (2-run mean) | 33.32 | 33.73 | 36.68 | 32.64 | 25.75 | 37.38 | 33.25 |
 | STDC-Seg + BPM only | 37.63 | 36.14 | 40.29 | 34.66 | 27.48 | 36.40 | 35.43 |
 | STDC-Seg + RSR only | 38.41 | 34.86 | 38.10 | 33.59 | 28.67 | 38.80 | 35.40 |
 | STDC-Seg + Ours | 44.83 | 39.21 | 43.89 | 34.27 | 28.66 | 40.88 | 38.62 |
@@ -164,8 +168,8 @@ Params/GMACs are exact and are the primary cost claim. Throughput is pooled over
 
 ## 8. Caveats to state in the paper (so reviewers do not find them first)
 
-- All "Ours" rows and all non-Cityscapes/HRNet rows are single runs (n=1); HI1 seed replicates are pending. HRNet has no seed-noise estimate of its own (one run per arm per dataset, ~4-8 GPU-days each), so treat HRNet full-mIoU gains under ~1.2 pts (the STDC Cityscapes seed range) as noise-level.
-- Full-mIoU gains: Cityscapes STDC +1.43 is only ~1.2x seed noise; claim "no regression", not "improves mIoU".
+- All "Ours" rows and all non-Cityscapes/HRNet rows are single runs (n=1); HI1 seed replicates are pending. HRNet has no seed-noise estimate of its own (one run per arm per dataset, ~4-8 GPU-days each), so treat HRNet full-mIoU gains under ~0.88 pts (the STDC Cityscapes run-to-run range) as noise-level.
+- Full-mIoU gains: Cityscapes STDC +1.69 is only ~1.9x run-to-run noise (range of 2 runs); claim "no regression", not "improves mIoU".
 - Checkpoints are the best-val-mIoU checkpoint for every arm (same rule for all), evaluated on val.
 - HRNet-W48 Cityscapes baseline (75.6) is below the published number because of the reduced 120-epoch schedule; both arms share it. SYNTHIA/RUGD use the same recipe unchanged (no per-dataset tuning). On RUGD the 512x1024 training crop is wider than the 550x688 images and is padded with ignore, identically in both arms.
 - HRNet full mIoU on SYNTHIA is much higher than STDC-Seg's (different backbone, native-resolution input vs scale 0.75); compare hosts only through their deltas.

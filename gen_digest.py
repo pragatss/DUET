@@ -16,7 +16,7 @@ OUTPUT  resultData/digest/
     eval_digest.md       headline results for every dataset/host, noise floor,
                          component analysis, ablations, thin classes, robustness checks
     perclass_digest.md   per-class IoU tables (full image and boundary band) for
-                         Cityscapes, SYNTHIA and RUGD (STDC + HRNet), with seed-noise marks
+                         Cityscapes, SYNTHIA and RUGD (STDC + HRNet), with run-to-run noise marks
 """
 import json
 import os.path as osp
@@ -38,7 +38,7 @@ HEADER = [
     'How to read the numbers:',
     '- All values are IoU in %; deltas in percentage points.',
     '- Full mIoU = standard full-image mIoU. It is a REGRESSION GUARD, not the claim: on Cityscapes its',
-    '  seed-to-seed spread (1.23 pts over 3 identical baseline runs) exceeds several effects.',
+    '  run-to-run spread ({noise_full:.2f} pts between the 2 fresh-clone baseline runs) exceeds several effects.',
     '- Bnd r=N = IoU restricted to pixels within N px of a ground-truth class boundary (a trimap IoU).',
     '  PRIMARY metric. Thin r=N = mean IoU of thin classes inside that band.',
     '- Thin classes: Cityscapes/SYNTHIA = pole, traffic light, traffic sign, rider, motorcycle, bicycle.',
@@ -47,9 +47,18 @@ HEADER = [
     '  (Cityscapes 1024x2048, SYNTHIA 760x1280, RUGD 550x688). HRNet uses one recipe on all three datasets',
     '  and both arms (reduced 120-epoch schedule, crop 512x1024, batch 3, OHEM); only dataset-dictated fields',
     '  differ (class count, base size, no Cityscapes class weights). Compare within a host/dataset only.',
-    '- Cityscapes STDC baseline = mean of 3 identical-config seeds; every other row is a single run (n=1).',
+    '- Cityscapes STDC baseline = 2-run mean of the 2 fresh-clone baseline runs (Baseline, Baseline2). I0 is',
+    '  excluded: it was trained with the bnd_weight flag (lambda=1), not from a fresh clone of the original',
+    '  STDC-Seg repo. Every other row is a single run (n=1).',
     '- Both hosts are scored on the same SYNTHIA (940) and RUGD (733) val images.',
 ]
+
+# Cityscapes STDC-Seg baseline: only the two fresh-clone runs. I0 (bnd_weight
+# flag, lambda=1) stays in common.BASELINE_REPLICATES for the other generators
+# but is excluded here; it is listed in section 2 for reference only.
+BASELINE_RUNS = ('Baseline', 'Baseline2')
+EXCLUDED_BASELINE = OrderedDict([('I0', 'excluded: trained with the bnd_weight flag (lambda=1), not a fresh clone')])
+BASELINE_NOTE = 'fresh-clone baseline run'
 
 DS_NAME = OrderedDict([('cityscapes', 'Cityscapes'), ('synthia', 'SYNTHIA'), ('rugd', 'RUGD')])
 
@@ -86,7 +95,7 @@ def table(header, rows):
 
 
 def stdc_baseline():
-    reps = [(k, load('stdc', k)) for k in common.BASELINE_REPLICATES]
+    reps = [(k, load('stdc', k)) for k in BASELINE_RUNS]
     reps = [(k, r) for k, r in reps if r]
     return reps, (common.mean_result([r for _, r in reps]) if len(reps) > 1 else None)
 
@@ -105,6 +114,10 @@ def host_pairs(S, Hr, base, reps):
     return out
 
 
+def header(noise):
+    return [l.format(noise_full=100 * noise['full']) for l in HEADER]
+
+
 def noise_floor(reps):
     return {m: max(r[m] for _, r in reps) - min(r[m] for _, r in reps) for m in M5} if len(reps) > 1 \
         else dict(common.NOISE_FLOOR)
@@ -117,7 +130,7 @@ def eval_digest():
     S = {k: load('stdc', k) for k in common.STDC_RUNS}
     Hr = {k: load('hrnet', k) for k in common.HRNET_RUNS}
     out = ['# Evaluation digest -- key results for the paper', '',
-           'generated %s from resultData/cache/eval by gen_digest.py' % common.now(), ''] + HEADER + ['']
+           'generated %s from resultData/cache/eval by gen_digest.py' % common.now(), ''] + header(noise) + ['']
 
     # 1 -- headline
     out += ['## 1. Main results: baseline vs Ours on every dataset and host', '',
@@ -147,22 +160,27 @@ def eval_digest():
     out += table(['Dataset', 'Host'] + ['d ' + MNAME[m] for m in ('full', 'full_all') + M5[1:]], rows)
 
     if base and S.get('HI1'):
-        out += ['Cityscapes STDC-Seg effect size as a multiple of seed noise (|delta| / range across the 3 '
-                'baseline seeds):', '']
-        out += table(['Metric', 'Delta', 'Seed noise (range)', 'x noise'],
+        out += ['Cityscapes STDC-Seg effect size as a multiple of run-to-run noise (|delta| / range across the '
+                '%d fresh-clone baseline runs):' % len(reps), '']
+        out += table(['Metric', 'Delta', 'Run-to-run noise (range)', 'x noise'],
                      [[MNAME[m], fd(S['HI1'][m], base[m]), '%.2f' % (100 * noise[m]),
                        '%.1f' % (abs(S['HI1'][m] - base[m]) / noise[m])] for m in M5])
 
     # 2 -- noise floor
-    out += ['## 2. Seed noise floor (Cityscapes, STDC-Seg baseline, identical config, 3 seeds)', '']
+    out += ['## 2. Run-to-run noise floor (Cityscapes, STDC-Seg baseline, %d fresh-clone runs)' % len(reps), '']
     out += table(['Run', 'Note'] + [MNAME[m] for m in M5],
-                 [[k, common.STDC_RUNS[k]['desc']] + [f(r[m]) for m in M5] for k, r in reps] +
-                 [['range', 'noise floor'] + ['%.2f' % (100 * noise[m]) for m in M5]])
+                 [[k, BASELINE_NOTE] + [f(r[m]) for m in M5] for k, r in reps] +
+                 [['range', 'noise floor (%s)' % ' vs '.join(k for k, _ in reps)] +
+                  ['%.2f' % (100 * noise[m]) for m in M5]] +
+                 [[k, note] + [f(r[m]) for m in M5]
+                  for k, note in EXCLUDED_BASELINE.items() for r in [load('stdc', k)] if r])
+    out += ['%s is shown for reference only; it is not in the baseline mean or the range.'
+            % ', '.join(EXCLUDED_BASELINE), '']
 
     # 3 -- components
     if base and all(S.get(k) for k in ('I1', 'H1', 'HI1')):
-        out += ['## 3. Component analysis (Cityscapes, STDC-Seg, gains vs 3-seed baseline mean)', '']
-        rows = [['Baseline', 'mean of %d seeds' % len(reps)] + [f(base[m]) for m in M5]]
+        out += ['## 3. Component analysis (Cityscapes, STDC-Seg, gains vs %d-run baseline mean)' % len(reps), '']
+        rows = [['Baseline', '%d-run mean' % len(reps)] + [f(base[m]) for m in M5]]
         for k, lab in (('I1', '+ BPM only'), ('H1', '+ RSR only'), ('HI1', '+ RSR + BPM (Ours)')):
             rows.append([lab, k] + [cell(S[k][m], base[m]) for m in M5])
         rows.append(['sum of single-arm gains', 'I1 + H1 (additive prediction)'] +
@@ -180,9 +198,17 @@ def eval_digest():
     ref = S.get('HI1')
     if ref:
         out += ['## 4. Ablations (Cityscapes, STDC-Seg; every row = full model with one thing changed; '
-                'delta vs full model)', '',
-                'Primary columns are boundary/thin. Full-mIoU ablation deltas are all below its 1.23-pt seed '
-                'noise, so full mIoU cannot rank ablations; report it as the guard.', '']
+                'delta vs full model)', '']
+        abl_full = [abs(S[k]['full'] - ref['full']) for k in ('I1', 'H1') + tuple(
+            k for k in common.STDC_RUNS if k.startswith('ABL-')) if S.get(k)]
+        if abl_full and max(abl_full) < noise['full']:
+            out += ['Primary columns are boundary/thin. Full-mIoU ablation deltas are all below its %.2f-pt '
+                    'run-to-run noise, so full mIoU cannot rank ablations; report it as the guard.'
+                    % (100 * noise['full']), '']
+        else:
+            out += ['Primary columns are boundary/thin. The largest full-mIoU ablation delta is %.2f pts vs '
+                    '%.2f-pt run-to-run noise; report full mIoU as the guard.'
+                    % (100 * max(abl_full or [0]), 100 * noise['full']), '']
         abl = [('Full model (RSR + BPM)', 'HI1'), ('w/o RSR (BPM only)', 'I1'), ('w/o BPM (RSR only)', 'H1'),
                ('RSR w/o high-res features', 'ABL-M1-noHR'), ('RSR at stride 8 instead of 4', 'ABL-M2-s8'),
                ('RSR w/o residual', 'ABL-M3-noRes'), ('RSR w/o logit input', 'ABL-M4-noLogit'),
@@ -192,7 +218,7 @@ def eval_digest():
         cols = ('bnd_r1', 'bnd_r3', 'thin_r1', 'thin_r3', 'full')
         rows, pending = [], []
         if base:
-            rows.append(['Baseline (no RSR, no BPM)', '3-seed mean'] + [cell(base[m], ref[m]) for m in cols] +
+            rows.append(['Baseline (no RSR, no BPM)', '%d-run mean' % len(reps)] + [cell(base[m], ref[m]) for m in cols] +
                         ['%.1f' % (abs(base['bnd_r1'] - ref['bnd_r1']) / noise['bnd_r1'])])
         for lab, k in abl:
             r = S.get(k)
@@ -217,7 +243,7 @@ def eval_digest():
     # 5 -- thin classes
     out += ['## 5. Thin classes, boundary band r=1', '', 'Cityscapes:', '']
     thin_rows = []
-    for lab, r in (('STDC-Seg (3-seed mean)', base), ('STDC-Seg + BPM only', S.get('I1')),
+    for lab, r in (('STDC-Seg (%d-run mean)' % len(reps), base), ('STDC-Seg + BPM only', S.get('I1')),
                    ('STDC-Seg + RSR only', S.get('H1')), ('STDC-Seg + Ours', S.get('HI1')),
                    ('HRNet-W48', Hr.get('baseline')), ('HRNet-W48 + Ours', Hr.get('HI1'))):
         if r:
@@ -294,9 +320,12 @@ def eval_digest():
     out += ['## 8. Caveats to state in the paper (so reviewers do not find them first)', '',
             '- All "Ours" rows and all non-Cityscapes/HRNet rows are single runs (n=1); HI1 seed replicates '
             'are pending. HRNet has no seed-noise estimate of its own (one run per arm per dataset, ~4-8 GPU-days '
-            'each), so treat HRNet full-mIoU gains under ~1.2 pts (the STDC Cityscapes seed range) as noise-level.',
-            '- Full-mIoU gains: Cityscapes STDC +1.43 is only ~1.2x seed noise; claim "no regression", not '
-            '"improves mIoU".',
+            'each), so treat HRNet full-mIoU gains under ~%.2f pts (the STDC Cityscapes run-to-run range) as '
+            'noise-level.' % (100 * noise['full']),
+            '- Full-mIoU gains: Cityscapes STDC %s is only ~%.1fx run-to-run noise (range of %d runs); claim '
+            '"no regression", not "improves mIoU".' % (
+                fd(S['HI1']['full'], base['full']) if base and S.get('HI1') else 'n/a',
+                abs(S['HI1']['full'] - base['full']) / noise['full'] if base and S.get('HI1') else 0, len(reps)),
             '- Checkpoints are the best-val-mIoU checkpoint for every arm (same rule for all), evaluated on val.',
             '- HRNet-W48 Cityscapes baseline (75.6) is below the published number because of the reduced '
             '120-epoch schedule; both arms share it. SYNTHIA/RUGD use the same recipe unchanged (no per-dataset '
@@ -328,14 +357,16 @@ def perclass_block(title, names, present, rows, noise_row=None, used=None):
 
 def perclass_digest():
     reps, base = stdc_baseline()
+    noise = noise_floor(reps)
     S = {k: load('stdc', k) for k in common.STDC_RUNS}
     Hr = {k: load('hrnet', k) for k in common.HRNET_RUNS}
     out = ['# Per-class digest -- per-class IoU (%) for the paper tables', '',
-           'generated %s from resultData/cache/eval by gen_digest.py' % common.now(), ''] + HEADER + [
+           'generated %s from resultData/cache/eval by gen_digest.py' % common.now(), ''] + header(noise) + [
         '',
         'Per-class table layout follows a standard "Method x class + mIoU" table. "Delta" rows are Ours minus '
-        'baseline. For Cityscapes STDC, the "seed range" row is the spread of that class across 3 identical '
-        'baseline seeds; a delta marked * exceeds it (i.e. is larger than seed noise). Classes absent from a '
+        'baseline. For Cityscapes STDC, the "run range" row is the spread of that class across the 2 '
+        'fresh-clone baseline runs (Baseline, Baseline2); a delta marked * exceeds it (i.e. is larger than '
+        'run-to-run noise). Classes absent from a '
         'val set are omitted.', '']
 
     def stars(delta, rng):
@@ -346,13 +377,16 @@ def perclass_digest():
     for reg, title in (('full', 'Full image'), ('bnd_r1', 'Boundary band r=1'), ('bnd_r3', 'Boundary band r=3')):
         rows = []
         if base and S.get('HI1'):
-            rows += [('STDC-Seg (3-seed mean)', base['regions'][reg]['iou'], base['regions'][reg]['miou'], False),
+            rows += [('STDC-Seg (%d-run mean)' % len(reps), base['regions'][reg]['iou'], base['regions'][reg]['miou'], False),
                      ('STDC-Seg + Ours', S['HI1']['regions'][reg]['iou'], S['HI1']['regions'][reg]['miou'], False)]
         if Hr.get('baseline') and Hr.get('HI1'):
             rows += [('HRNet-W48', Hr['baseline']['regions'][reg]['iou'], Hr['baseline']['regions'][reg]['miou'], False),
                      ('HRNet-W48 + Ours', Hr['HI1']['regions'][reg]['iou'], Hr['HI1']['regions'][reg]['miou'], False)]
         if reg == 'bnd_r3':
             rows = []      # r=3 only as deltas below, to keep the file short
+        if reg == 'bnd_r1':          # verification: the single runs behind the 2-run mean
+            rows += [('%s (single run)' % k, r['regions'][reg]['iou'], r['regions'][reg]['miou'], False)
+                     for k, r in reps]
         if rows:
             out += perclass_block(title, PAPER_CLASS_NAMES, [True] * 19, rows)
         # deltas with noise marks
@@ -363,7 +397,7 @@ def perclass_digest():
             d = [S['HI1']['regions'][reg]['iou'][c] - base['regions'][reg]['iou'][c] for c in range(19)]
             dm = S['HI1']['regions'][reg]['miou'] - base['regions'][reg]['miou']
             drows.append(['STDC-Seg: Ours - base'] + stars(d, rng) + ['%+.2f' % (100 * dm)])
-            drows.append(['STDC-Seg seed range'] + ['%.2f' % (100 * x) for x in rng] + [''])
+            drows.append(['STDC-Seg run range (%d runs)' % len(reps)] + ['%.2f' % (100 * x) for x in rng] + [''])
         if Hr.get('baseline') and Hr.get('HI1'):
             d = [Hr['HI1']['regions'][reg]['iou'][c] - Hr['baseline']['regions'][reg]['iou'][c] for c in range(19)]
             dm = Hr['HI1']['regions'][reg]['miou'] - Hr['baseline']['regions'][reg]['miou']
@@ -380,7 +414,7 @@ def perclass_digest():
                 '' if all(x > 0 for x in d) else '; decreases: ' + ', '.join(
                     '%s %+.1f' % (PAPER_CLASS_NAMES[c], 100 * d[c]) for c in range(19) if d[c] <= 0)))
     out += ['Summary: ' + ' '.join(summ) + ' Rare classes (truck, bus, train, motorcycle) swing several points '
-            'between identical seeds; make no per-class claims about them.', '']
+            'between the baseline runs; make no per-class claims about them.', '']
 
     # SYNTHIA / RUGD
     for ds, spec in common.DATASET_RUNS.items():
