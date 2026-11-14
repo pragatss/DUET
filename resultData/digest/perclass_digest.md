@@ -1,6 +1,6 @@
 # Per-class digest -- per-class IoU (%) for the paper tables
 
-generated 2026-11-02 19:02 from resultData/cache/eval by gen_digest.py
+generated 2026-11-07 14:29 from resultData/cache/eval by gen_digest.py
 
 Paper: "DUET" -- two plug-and-play additions for real-time semantic segmentation that improve
 BOUNDARY and THIN-STRUCTURE accuracy: RSR (Residual Sub-grid Refinement: a stride-4 refinement head,
@@ -102,31 +102,27 @@ SYNTHIA labels use Cityscapes classes; terrain, truck and train do not occur in 
 
 ## RUGD (STDC-Seg and HRNet-W48, n=1)
 
-Only classes with >= 0.1% of val pixels are shown/averaged: asphalt, building, bush, dirt, fence, grass, gravel, log, mulch, picnic-table, rock, sky, tree, vehicle. Excluded rare classes: concrete (0.079%), container (0.015%), person (0.001%), pole (0.083%), sign (0.003%), water (0.064%).
+All 20 classes with val pixels are shown and averaged; bicycle, bridge, rock-bed, sand have no val pixels and cannot be scored. Rare classes and their share of val pixels: concrete 0.079%, container 0.015%, person 0.001%, pole 0.083%, sign 0.003%, water 0.064%. dirt scores 0.00 for every model (its pixels are predicted as mulch, gravel or grass).
 
 ### Full image
 
-| Method | asphalt | building | bush | dirt | fence | grass | gravel | log | mulch | picnic-table | rock | sky | tree | vehicle | mean |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| STDC-Seg | 84.24 | 34.56 | 38.97 | 0.00 | 25.59 | 85.16 | 77.13 | 29.57 | 80.22 | 54.16 | 39.56 | 53.99 | 88.74 | 52.14 | 53.14 |
-| STDC-Seg + Ours | 93.21 | 35.70 | 25.53 | 0.00 | 28.56 | 85.33 | 82.36 | 27.36 | 81.01 | 59.25 | 37.17 | 58.99 | 89.25 | 60.96 | 54.62 |
-| HRNet-W48 | 90.23 | 38.23 | 29.83 | 0.00 | 25.10 | 85.18 | 80.60 | 37.92 | 82.46 | 69.47 | 55.53 | 71.88 | 91.67 | 65.32 | 58.82 |
-| HRNet-W48 + Ours | 91.68 | 36.39 | 33.12 | 0.00 | 26.58 | 85.44 | 82.49 | 37.17 | 81.37 | 72.41 | 54.38 | 76.58 | 92.23 | 70.10 | 60.00 |
-| STDC-Seg: Ours - base | +8.97 | +1.14 | -13.44 | +0.00 | +2.97 | +0.17 | +5.23 | -2.21 | +0.79 | +5.09 | -2.39 | +5.00 | +0.51 | +8.82 | +1.48 |
-| HRNet-W48: Ours - base | +1.45 | -1.83 | +3.29 | +0.00 | +1.47 | +0.25 | +1.89 | -0.75 | -1.09 | +2.93 | -1.15 | +4.71 | +0.56 | +4.78 | +1.18 |
+| Method | asphalt | building | bush | concrete | container | dirt | fence | grass | gravel | log | mulch | person | picnic-table | pole | rock | sign | sky | tree | vehicle | water | mean |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| STDC-Seg | 84.24 | 34.56 | 38.97 | 0.41 | 14.48 | 0.00 | 25.59 | 85.16 | 77.13 | 29.57 | 80.22 | 0.00 | 54.16 | 20.09 | 39.56 | 0.00 | 53.99 | 88.74 | 52.14 | 52.21 | 41.56 |
+| STDC-Seg + Ours | 93.21 | 35.70 | 25.53 | 4.55 | 22.53 | 0.00 | 28.56 | 85.33 | 82.36 | 27.36 | 81.01 | 0.00 | 59.25 | 28.10 | 37.17 | 0.00 | 58.99 | 89.25 | 60.96 | 55.24 | 43.75 |
+| HRNet-W48 | 90.23 | 38.23 | 29.83 | 13.15 | 29.83 | 0.00 | 25.10 | 85.18 | 80.60 | 37.92 | 82.46 | 11.93 | 69.47 | 39.21 | 55.53 | 0.97 | 71.88 | 91.67 | 65.32 | 51.84 | 48.52 |
+| HRNet-W48 + Ours | 91.68 | 36.39 | 33.12 | 10.99 | 41.45 | 0.00 | 26.58 | 85.44 | 82.49 | 37.17 | 81.37 | 10.78 | 72.41 | 43.55 | 54.38 | 0.00 | 76.58 | 92.23 | 70.10 | 56.38 | 50.15 |
+| STDC-Seg: Ours - base | +8.97 | +1.14 | -13.44 | +4.14 | +8.04 | +0.00 | +2.97 | +0.17 | +5.23 | -2.21 | +0.79 | +0.00 | +5.09 | +8.01 | -2.39 | +0.00 | +5.00 | +0.51 | +8.82 | +3.02 | +2.19 |
+| HRNet-W48: Ours - base | +1.45 | -1.83 | +3.29 | -2.16 | +11.62 | +0.00 | +1.47 | +0.25 | +1.89 | -0.75 | -1.09 | -1.15 | +2.93 | +4.34 | -1.15 | -0.97 | +4.71 | +0.56 | +4.78 | +4.55 | +1.64 |
 
 ### Boundary band r=1
 
-| Method | asphalt | building | bush | dirt | fence | grass | gravel | log | mulch | picnic-table | rock | sky | tree | vehicle | mean |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| STDC-Seg | 29.02 | 17.11 | 21.28 | 0.00 | 17.89 | 37.46 | 36.54 | 16.43 | 36.00 | 28.89 | 20.61 | 16.71 | 50.54 | 24.62 | 25.22 |
-| STDC-Seg + Ours | 30.11 | 16.02 | 21.30 | 0.00 | 22.06 | 41.76 | 35.65 | 16.40 | 35.78 | 34.24 | 13.61 | 21.43 | 53.42 | 31.29 | 26.65 |
-| HRNet-W48 | 31.92 | 22.63 | 21.60 | 0.00 | 18.28 | 43.68 | 38.40 | 19.90 | 35.28 | 44.66 | 27.62 | 48.90 | 59.33 | 35.13 | 31.95 |
-| HRNet-W48 + Ours | 32.32 | 21.94 | 23.93 | 0.00 | 22.08 | 44.38 | 38.62 | 27.08 | 37.88 | 49.30 | 29.44 | 64.22 | 66.16 | 41.78 | 35.65 |
-| STDC-Seg: Ours - base | +1.09 | -1.09 | +0.02 | +0.00 | +4.17 | +4.30 | -0.89 | -0.03 | -0.23 | +5.35 | -7.00 | +4.72 | +2.88 | +6.67 | +1.43 |
-| HRNet-W48: Ours - base | +0.40 | -0.69 | +2.32 | +0.00 | +3.80 | +0.70 | +0.22 | +7.18 | +2.61 | +4.64 | +1.82 | +15.32 | +6.83 | +6.65 | +3.70 |
-
-Excluded but notable, STDC-Seg -- pole (0.083% of val px): full 20.09 -> 28.10, boundary r=1 15.67 -> 27.62.
-
-Excluded but notable, HRNet-W48 -- pole (0.083% of val px): full 39.21 -> 43.55, boundary r=1 34.61 -> 43.28.
+| Method | asphalt | building | bush | concrete | container | dirt | fence | grass | gravel | log | mulch | person | picnic-table | pole | rock | sign | sky | tree | vehicle | water | mean |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| STDC-Seg | 29.02 | 17.11 | 21.28 | 0.28 | 9.17 | 0.00 | 17.89 | 37.46 | 36.54 | 16.43 | 36.00 | 0.00 | 28.89 | 15.67 | 20.61 | 0.00 | 16.71 | 50.54 | 24.62 | 12.61 | 19.54 |
+| STDC-Seg + Ours | 30.11 | 16.02 | 21.30 | 6.96 | 14.22 | 0.00 | 22.06 | 41.76 | 35.65 | 16.40 | 35.78 | 0.00 | 34.24 | 27.62 | 13.61 | 0.00 | 21.43 | 53.42 | 31.29 | 23.30 | 22.26 |
+| HRNet-W48 | 31.92 | 22.63 | 21.60 | 7.08 | 31.60 | 0.00 | 18.28 | 43.68 | 38.40 | 19.90 | 35.28 | 4.57 | 44.66 | 34.61 | 27.62 | 0.91 | 48.90 | 59.33 | 35.13 | 27.41 | 27.68 |
+| HRNet-W48 + Ours | 32.32 | 21.94 | 23.93 | 6.33 | 37.94 | 0.00 | 22.08 | 44.38 | 38.62 | 27.08 | 37.88 | 3.97 | 49.30 | 43.28 | 29.44 | 0.00 | 64.22 | 66.16 | 41.78 | 28.65 | 30.97 |
+| STDC-Seg: Ours - base | +1.09 | -1.09 | +0.02 | +6.68 | +5.05 | +0.00 | +4.17 | +4.30 | -0.89 | -0.03 | -0.23 | +0.00 | +5.35 | +11.95 | -7.00 | +0.00 | +4.72 | +2.88 | +6.67 | +10.70 | +2.72 |
+| HRNet-W48: Ours - base | +0.40 | -0.69 | +2.32 | -0.75 | +6.35 | +0.00 | +3.80 | +0.70 | +0.22 | +7.18 | +2.61 | -0.61 | +4.64 | +8.67 | +1.82 | -0.91 | +15.32 | +6.83 | +6.65 | +1.25 | +3.29 |
 

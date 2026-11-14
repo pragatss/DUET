@@ -64,7 +64,34 @@ DS_NAME = OrderedDict([('cityscapes', 'Cityscapes'), ('synthia', 'SYNTHIA'), ('r
 
 
 def load(host, key, size32=False):
-    return common.load_cached(host, key, size32)
+    res = common.load_cached(host, key, size32)
+    if res is not None and common.run_dataset(host, key) == 'rugd':
+        res = every_val_class(res)
+    return res
+
+
+def every_val_class(res):
+    """RUGD in this digest: every mean (full, boundary, thin) over all classes
+    with GT pixels in val (20 of 24), not the >= 0.1% support filter the cache
+    was written with. Recomputed from the cached per-class IoU; the class set
+    is decided once from the full image, so all regions average the same classes."""
+    res = json.loads(json.dumps(res))
+    keep = [g > 0 for g in res['regions']['full']['gt_pixels']]
+    thin = [res['class_names'].index(n) for n in res['thin_classes']]
+    for reg, R in res['regions'].items():
+        idx = [c for c, k in enumerate(keep) if k]
+        tidx = [c for c in thin if keep[c]]
+        R['present'] = list(keep)
+        R['used'] = list(keep)
+        R['miou'] = sum(R['iou'][c] for c in idx) / float(len(idx))
+        R['thin'] = sum(R['iou'][c] for c in tidx) / float(len(tidx)) if tidx else None
+    res['full'] = res['regions']['full']['miou']
+    for reg in res['regions']:
+        if reg.startswith('bnd_r'):
+            res[reg] = res['regions'][reg]['miou']
+            res['thin_r' + reg[5:]] = res['regions'][reg]['thin']
+    res['thin_full'] = res['regions']['full']['thin']
+    return res
 
 
 def v(res, m):
@@ -135,9 +162,8 @@ def eval_digest():
     # 1 -- headline
     out += ['## 1. Main results: baseline vs Ours on every dataset and host', '',
             'Scale 0.75 for STDC, native full resolution for HRNet (each host\'s training-time val protocol). '
-            'RUGD means use only classes with >= 0.1% '
-            'of val pixels (RUGD val is two videos; rarer classes give meaningless IoU); "all cls" is the '
-            'unfiltered mean that the training log reports.', '']
+            'RUGD means use all 20 classes with val pixels (bicycle, bridge, rock-bed, sand never occur in RUGD '
+            'val), so RUGD full and "all cls" are the same number; "all cls" is the mean the training log reports.', '']
     rows = []
 
     def pair(ds, host, bname, b, oname, o, n):
@@ -258,11 +284,8 @@ def eval_digest():
         ref = meths[0][1]['regions']['full']
         names = DATASETS[ds]['paper_classes']
         cls = [c for c in DATASETS[ds]['thin'] if ref['present'][c]]
-        excl = [c for c in cls if not ref['used'][c]]
-        out += ['Thin classes, boundary band r=1 (%s)%s:' % (
-            DS_NAME[ds], '' if not excl else '; classes marked (excl.) are below the 0.1% support filter and '
-            'are not in the thin mean' ), '']
-        out += table(['Method'] + [names[c] + (' (excl.)' if c in excl else '') for c in cls] + ['Thin mean'],
+        out += ['Thin classes, boundary band r=1 (%s):' % DS_NAME[ds], '']
+        out += table(['Method'] + [names[c] for c in cls] + ['Thin mean'],
                      [[lab] + [f(r['regions']['bnd_r1']['iou'][c]) for c in cls] + [f(r['thin_r1'])]
                       for lab, r in meths])
 
@@ -333,9 +356,10 @@ def eval_digest():
             'ignore, identically in both arms.',
             '- HRNet full mIoU on SYNTHIA is much higher than STDC-Seg\'s (different backbone, native-resolution '
             'input vs scale 0.75); compare hosts only through their deltas.',
-            '- RUGD: several classes are rare in val; means are support-filtered (>= 0.1% of val pixels). '
-            'RUGD thin mean covers only fence and log (bicycle absent; pole, sign below threshold -- pole '
-            'still shows the largest STDC-Seg RUGD boundary gain, 15.7 -> 27.6, but is excluded from the mean).',
+            '- RUGD: means cover all 20 classes with val pixels, including very rare ones (person 0.001%, '
+            'sign 0.003% of val pixels), whose IoU is decided by a few hundred pixels. dirt (0.135%) scores 0.00 '
+            'for every model (predicted as mulch/gravel/grass). bicycle, bridge, rock-bed, sand have no val '
+            'pixels and cannot be scored. RUGD thin mean = pole, sign, fence, log (bicycle absent).',
             '- Cost is not zero for a real-time method (section 7). The strongest defence is an equal-latency '
             'comparison (baseline at a larger input scale vs Ours); not in this digest yet.', '']
     return out
@@ -425,15 +449,17 @@ def perclass_digest():
             continue
         names = DATASETS[ds]['paper_classes']
         present = b['regions']['full'].get('present', [True] * len(names))
-        used = b['regions']['full'].get('used') if DATASETS[ds]['min_support'] else None
+        used = None
         out += ['## %s (STDC-Seg%s, n=1)' % ('RUGD' if ds == 'rugd' else 'SYNTHIA',
                                             ' and HRNet-W48' if hb and ho else ''), '']
         if ds == 'rugd':
             sup = b['support']
-            out += ['Only classes with >= 0.1%% of val pixels are shown/averaged: %s. Excluded rare classes: %s.'
-                    % (', '.join(n for n, u in zip(names, used) if u),
-                       ', '.join('%s (%.3f%%)' % (n, 100 * s) for n, s, u, p in zip(names, sup, used, present)
-                                 if p and not u)), '']
+            out += ['All %d classes with val pixels are shown and averaged; %s have no val pixels and cannot be '
+                    'scored. Rare classes and their share of val pixels: %s. dirt scores 0.00 for every model '
+                    '(its pixels are predicted as mulch, gravel or grass).'
+                    % (sum(present), ', '.join(n for n, p in zip(names, present) if not p),
+                       ', '.join('%s %.3f%%' % (n, 100 * s) for n, s, p in zip(names, sup, present)
+                                 if p and s < 0.001)), '']
         else:
             out += ['SYNTHIA labels use Cityscapes classes; terrain, truck and train do not occur in val.', '']
         for reg, title in (('full', 'Full image'), ('bnd_r1', 'Boundary band r=1')):
@@ -449,14 +475,6 @@ def perclass_digest():
                 rows.append(('HRNet-W48: Ours - base', [x - y for x, y in zip(HO['iou'], HB['iou'])],
                              HO['miou'] - HB['miou'], True))
             out += perclass_block(title, names, present, rows, used=used)
-        if ds == 'rugd':
-            pi = names.index('pole')
-            for lab, bb, oo in (('STDC-Seg', b, o), ('HRNet-W48', hb, ho)):
-                if bb and oo:
-                    out += ['Excluded but notable, %s -- pole (0.083%% of val px): full %s -> %s, boundary r=1 '
-                            '%s -> %s.' % (lab, f(bb['regions']['full']['iou'][pi]), f(oo['regions']['full']['iou'][pi]),
-                                           f(bb['regions']['bnd_r1']['iou'][pi]), f(oo['regions']['bnd_r1']['iou'][pi])),
-                            '']
     return out
 
 
