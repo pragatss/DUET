@@ -28,3 +28,6 @@ resultData/qualitative/ignore_example.png
 ref_images/**/*.png
 # dated Figure A row sets from gen_qual_rows.py: images stay local, SELECTION.md / CSVs are tracked
 resultData/qualitative/fig_qualitative_*/**/*.png
+# traversability maps from gen_trav.py
+resultData/traversability/**/*.png
+resultData/traversability/cityscapes/gt/color/frankfurt_000000_000294.png
