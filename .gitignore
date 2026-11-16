@@ -26,3 +26,5 @@ resultData/qualitative/fig_qualitative/
 resultData/qualitative/ignore_example.png
 # reference screenshots of the paper's figures/tables (the .pptx and goal.txt stay tracked)
 ref_images/**/*.png
+# dated Figure A row sets from gen_qual_rows.py: images stay local, SELECTION.md / CSVs are tracked
+resultData/qualitative/fig_qualitative_*/**/*.png
